@@ -71,6 +71,9 @@ export default function App() {
 
           <div className='bg-white p-6 rounded-xl shadow'>
             <h2 className='font-semibold text-xl mb-2'>Bateria</h2>
+            <p>
+              {data.battery_percent.toFixed(0)}% - {data.battery_status}
+            </p>
             {data.battery_hours_left >= 0 && data.battery_status !== 'full' && (
               <p>
                 {data.battery_status === 'charging'
