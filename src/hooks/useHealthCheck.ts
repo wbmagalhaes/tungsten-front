@@ -5,5 +5,6 @@ export default function useHealthCheck() {
   return useQuery({
     queryKey: ['health-check'],
     queryFn: healthCheck,
+    refetchInterval: 5000,
   });
 }
