@@ -73,6 +73,7 @@ export default function App() {
             <h2 className='font-semibold text-xl mb-2'>Bateria</h2>
             <p>
               {data.battery_percent.toFixed(0)}% - {data.battery_status}
+              <p>Tempo restante: {data.battery_hours_left.toFixed(2)} h</p>
             </p>
           </div>
         </div>

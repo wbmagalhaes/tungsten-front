@@ -26,6 +26,7 @@ export type SystemStatus = {
   net_out: number;
   battery_percent: number;
   battery_status: string;
+  battery_hours_left: number;
   uptime: number;
   name: string;
   kernel_version: string;
