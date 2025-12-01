@@ -5,6 +5,5 @@ export default function useHealthCheck() {
   return useQuery({
     queryKey: ['health-check'],
     queryFn: healthCheck,
-    refetchOnWindowFocus: false,
   });
 }

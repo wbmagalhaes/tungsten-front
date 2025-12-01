@@ -1,5 +1,4 @@
 import useHealthCheck from './hooks/useHealthCheck';
-import './App.css';
 
 function App() {
   const { data, error, isLoading } = useHealthCheck();
