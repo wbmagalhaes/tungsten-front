@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eux
 
-APP_NAME="tungsten-back"
+APP_NAME="tungsten-front"
 FRONT_DIR="$HOME/$APP_NAME"
 
 echo "[Deploy] Installing deps..."
