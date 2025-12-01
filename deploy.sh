@@ -13,6 +13,7 @@ npm run build
 echo "[Deploy] Moving dist..."
 rm -rf "$FRONT_DIR/dist"
 mkdir -p "$FRONT_DIR"
-cp dist "$FRONT_DIR/dist"
+
+cp -r dist "$FRONT_DIR/dist"
 
 echo "[Deploy] Done."
