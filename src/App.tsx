@@ -1,22 +1,82 @@
 import useHealthCheck from './hooks/useHealthCheck';
 
-function App() {
-  const { data, error, isLoading } = useHealthCheck();
+export default function App() {
+  const { data, isLoading, error } = useHealthCheck();
+
+  if (isLoading) return <p className='p-6'>Carregando...</p>;
+  if (error || !data) return <p className='p-6'>Erro ao carregar dados</p>;
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center p-6'>
-      <div className='shadow-xl rounded-2xl p-10 w-full max-w-lg text-center border'>
-        <h1 className='text-3xl font-bold mb-4'>Tungsten Dashboard</h1>
-        {isLoading && <p>Carregando...</p>}
-        {error && <p>Erro ao conectar</p>}
-        {data && (
-          <pre className='bg-gray-100 p-4 rounded-xl text-left text-sm overflow-auto'>
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        )}
+    <div className='min-h-screen p-6 bg-gray-50 font-sans'>
+      <div className='max-w-6xl mx-auto'>
+        <h1 className='text-4xl font-bold mb-6 text-center'>
+          System Dashboard
+        </h1>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>CPU</h2>
+            <p>Uso: {data.cpu_usage}%</p>
+            <h3 className='mt-4 font-semibold'>Componentes:</h3>
+            <ul className='ml-4 list-disc'>
+              {data.comp_temps.map((c) => (
+                <li key={c.label}>
+                  {c.label}: {c.temperature}°C
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>
+              GPU ({data.gpu_vendor})
+            </h2>
+            <p>Uso: {data.gpu_usage}%</p>
+            <p>Temperatura: {data.gpu_temp}°C</p>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>Memória</h2>
+            <p>
+              {(data.mem_used / 1024 ** 2).toFixed(2)} MB /{' '}
+              {(data.mem_total / 1024 ** 2).toFixed(2)} MB
+            </p>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>Disco</h2>
+            <p>
+              {(data.disk_used / 1024 ** 3).toFixed(2)} GB /{' '}
+              {(data.disk_total / 1024 ** 3).toFixed(2)} GB
+            </p>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>Rede</h2>
+            <p>Entrada: {(data.net_in / 1024 ** 2).toFixed(2)} MB</p>
+            <p>Saída: {(data.net_out / 1024 ** 2).toFixed(2)} MB</p>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow'>
+            <h2 className='font-semibold text-xl mb-2'>Bateria</h2>
+            <p>
+              {data.battery_percent}% - {data.battery_status}
+            </p>
+          </div>
+
+          <div className='bg-white p-6 rounded-xl shadow col-span-full'>
+            <h2 className='font-semibold text-xl mb-2'>Sistema</h2>
+            <p>Hostname: {data.hostname}</p>
+            <p>OS: {data.os_version}</p>
+            <p>Kernel: {data.kernel_version}</p>
+            <p>
+              Uptime: {Math.floor(data.uptime / 3600)}h{' '}
+              {Math.floor(data.uptime / 60) % 60}m
+            </p>
+            <p>Data atual: {new Date(data.current_time).toLocaleString()}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-export default App;
