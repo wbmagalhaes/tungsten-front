@@ -26,14 +26,16 @@ export default function App() {
 
           <div className='bg-white p-6 rounded-xl shadow'>
             <h2 className='font-semibold text-xl mb-2'>CPU</h2>
-            <p>Uso: {data.cpu_usage}%</p>
+            <p>Uso: {data.cpu_usage.toFixed(0)}%</p>
             <h3 className='mt-4 font-semibold'>Componentes:</h3>
             <ul className='ml-4 list-disc'>
-              {data.comp_temps.map((c) => (
-                <li key={c.label}>
-                  {c.label}: {c.temperature}°C
-                </li>
-              ))}
+              {data.comp_temps
+                .sort((a, b) => a.label.localeCompare(b.label))
+                .map((c) => (
+                  <li key={c.label}>
+                    {c.label}: {c.temperature.toFixed(1)}°C
+                  </li>
+                ))}
             </ul>
           </div>
 
@@ -42,7 +44,7 @@ export default function App() {
               GPU ({data.gpu_vendor})
             </h2>
             <p>Uso: {data.gpu_usage}%</p>
-            <p>Temperatura: {data.gpu_temp}°C</p>
+            <p>Temperatura: {data.gpu_temp.toFixed(1)}°C</p>
           </div>
 
           <div className='bg-white p-6 rounded-xl shadow'>
@@ -70,7 +72,7 @@ export default function App() {
           <div className='bg-white p-6 rounded-xl shadow'>
             <h2 className='font-semibold text-xl mb-2'>Bateria</h2>
             <p>
-              {data.battery_percent}% - {data.battery_status}
+              {data.battery_percent.toFixed(0)}% - {data.battery_status}
             </p>
           </div>
         </div>
