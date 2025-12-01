@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -eux
 
 APP_NAME="tungsten-back"
 FRONT_DIR="$HOME/$APP_NAME"
