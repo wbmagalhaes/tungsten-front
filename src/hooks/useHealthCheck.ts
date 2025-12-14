@@ -3,7 +3,7 @@ import { healthCheck } from '../services/health-check.service';
 
 export default function useHealthCheck() {
   return useQuery({
-    queryKey: ['health-check'],
+    queryKey: ['system-health'],
     queryFn: healthCheck,
     refetchInterval: 5000,
   });
