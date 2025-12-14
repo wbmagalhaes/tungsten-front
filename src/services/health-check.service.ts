@@ -1,7 +1,7 @@
 import api from './api';
 
 export const healthCheck = async () => {
-  const res = await api.get<SystemStatus>('/system/health');
+  const res = await api.get<SystemStatus>('/system/health/');
   return res.data;
 };
 
@@ -35,4 +35,3 @@ export type SystemStatus = {
   os_version: string;
   hostname: string;
 };
-
