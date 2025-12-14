@@ -35,3 +35,4 @@ export type SystemStatus = {
   os_version: string;
   hostname: string;
 };
+
