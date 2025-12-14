@@ -20,6 +20,8 @@ export type SystemStatus = {
   gpu_temp: number;
   mem_total: number;
   mem_used: number;
+  swap_total: number;
+  swap_used: number;
   disk_total: number;
   disk_used: number;
   net_in: number;

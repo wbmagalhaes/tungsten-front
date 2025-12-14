@@ -53,6 +53,11 @@ export default function App() {
               {(data.mem_used / 1024 ** 3).toFixed(2)} GB /{' '}
               {(data.mem_total / 1024 ** 3).toFixed(2)} GB
             </p>
+            <h2 className='font-semibold text-xl mb-2'>Swap</h2>
+            <p>
+              {(data.swap_used / 1024 ** 3).toFixed(2)} GB /{' '}
+              {(data.swap_total / 1024 ** 3).toFixed(2)} GB
+            </p>
           </div>
 
           <div className='bg-white p-6 rounded-xl shadow'>
