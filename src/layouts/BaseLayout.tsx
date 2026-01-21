@@ -13,7 +13,7 @@ function SideBar() {
     <aside className='w-56 shrink-0 border-r bg-white p-4'>
       <nav className='space-y-2 text-sm'>
         <Link to='/' className='block font-medium'>
-          Dashboard
+          Home
         </Link>
         <Link to='/media' className='block font-medium'>
           Media
