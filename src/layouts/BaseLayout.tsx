@@ -1,8 +1,8 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
 function Header() {
   return (
-    <header className='h-14 flex items-center px-6 border-b bg-white'>
+    <header className='h-12 flex items-center px-4 border-b bg-white'>
       <h1 className='text-xl font-bold'>Tungsten</h1>
     </header>
   );
@@ -12,9 +12,12 @@ function SideBar() {
   return (
     <aside className='w-56 shrink-0 border-r bg-white p-4'>
       <nav className='space-y-2 text-sm'>
-        <a href='/' className='block font-medium'>
+        <Link to='/' className='block font-medium'>
           Dashboard
-        </a>
+        </Link>
+        <Link to='/media' className='block font-medium'>
+          Media
+        </Link>
       </nav>
     </aside>
   );
