@@ -1,3 +1,4 @@
+import { isDesktop } from '@utils/isDesktop';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -14,13 +15,14 @@ interface SidebarState extends SidebarData {
 export const useSidebarStore = create<SidebarState>()(
   persist(
     (set) => ({
-      isOpen: true,
+      isOpen: isDesktop(),
       toggle: () => set((s) => ({ isOpen: !s.isOpen })),
       open: () => set({ isOpen: true }),
       close: () => set({ isOpen: false }),
     }),
     {
       name: 'sidebar-preference',
+      partialize: (state) => (isDesktop() ? { isOpen: state.isOpen } : {}),
     },
   ),
 );
