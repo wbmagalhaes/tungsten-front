@@ -9,6 +9,10 @@ import ChatPage from '@pages/ChatPage';
 import ImageGenPage from '@pages/ImageGenPage';
 import BgJobsPage from '@pages/BgJobsPage';
 import SystemHealthPage from '@pages/SystemHealthPage';
+import ConfigPage from '@pages/ConfigPage';
+import HelpPage from '@pages/HelpPage';
+import NotFoundPage from '@pages/NotFoundPage';
+import ProfilePage from '@pages/ProfilePage';
 
 export default function AppRoutes() {
   return (
@@ -23,6 +27,10 @@ export default function AppRoutes() {
         <Route path='chat' element={<ChatPage />} />
         <Route path='img-gen' element={<ImageGenPage />} />
         <Route path='bg-jobs' element={<BgJobsPage />} />
+        <Route path='config' element={<ConfigPage />} />
+        <Route path='help' element={<HelpPage />} />
+        <Route path='profile' element={<ProfilePage />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

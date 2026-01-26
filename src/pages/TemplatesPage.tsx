@@ -1,3 +1,3 @@
 export default function TemplatesPage() {
-  return <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>TemplatesPage</div>;
+  return <div>TemplatesPage</div>;
 }
