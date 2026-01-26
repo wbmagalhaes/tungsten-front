@@ -1,4 +1,4 @@
-import useHealthCheck from '@hooks/useHealthCheck';
+import useHealthCheck from '@hooks/system/useHealthCheck';
 
 export default function SystemDashboardPage() {
   const { data, isLoading, error } = useHealthCheck();
