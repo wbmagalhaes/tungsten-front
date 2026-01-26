@@ -17,7 +17,7 @@ export const sidebarItems = [
   { label: 'Media', to: '/media', icon: HardDrive },
   { label: 'Templates', to: '/templates', icon: LucideBookDashed },
   { label: 'Sandbox', to: '/sandbox', icon: FlaskConical },
-  { label: 'Chat', to: '/chat', icon: BotMessageSquare },
-  { label: 'Image Gen', to: '/img-gen', icon: ImagePlus },
-  { label: 'BG Jobs', to: '/bg-jobs', icon: ServerCog },
+  { label: 'ChatBot', to: '/chat-bot', icon: BotMessageSquare },
+  { label: 'Image Generation', to: '/image-generation', icon: ImagePlus },
+  { label: 'Background Jobs', to: '/background-jobs', icon: ServerCog },
 ];

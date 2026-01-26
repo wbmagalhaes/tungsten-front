@@ -1,0 +1,56 @@
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@components/base/breadcrumb';
+import { Fragment } from 'react';
+import { useBreadcrumbs } from '@hooks/use-breadcrumbs';
+import { useIsMobile } from '@hooks/use-mobile';
+
+export function HeaderBreadcrumbs() {
+  const crumbs = useBreadcrumbs();
+
+  const isMobile = useIsMobile();
+  const visibleCrumbs = isMobile ? collapseCrumbs(crumbs) : crumbs;
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        {visibleCrumbs.map((c, i) => {
+          const isLast = i === visibleCrumbs.length - 1;
+          const isCollapsed = c.label === '...';
+
+          return (
+            <Fragment key={`${c.label}-${i}`}>
+              {i > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{c.label}</BreadcrumbPage>
+                ) : isCollapsed ? (
+                  <span className='text-muted-foreground select-none'>...</span>
+                ) : (
+                  <BreadcrumbLink render={<a href={c.href} />}>
+                    {c.label}
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
+
+type Crumb = {
+  label: string;
+  href: string;
+};
+
+function collapseCrumbs(crumbs: Crumb[]) {
+  if (crumbs.length <= 2) return crumbs;
+  return [crumbs[0], { label: '...', href: '' }, crumbs[crumbs.length - 1]];
+}

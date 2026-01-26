@@ -5,9 +5,9 @@ import MediaPage from '@pages/MediaPage';
 import NotesPage from '@pages/NotesPage';
 import TemplatesPage from '@pages/TemplatesPage';
 import SandboxPage from '@pages/SandboxPage';
-import ChatPage from '@pages/ChatPage';
-import ImageGenPage from '@pages/ImageGenPage';
-import BgJobsPage from '@pages/BgJobsPage';
+import ChatBotPage from '@pages/ChatBotPage';
+import ImageGenerationPage from '@pages/ImageGenerationPage';
+import BackgroundJobsPage from '@pages/BackgroundJobsPage';
 import SystemHealthPage from '@pages/SystemHealthPage';
 import ConfigPage from '@pages/ConfigPage';
 import HelpPage from '@pages/HelpPage';
@@ -24,9 +24,9 @@ export default function AppRoutes() {
         <Route path='media' element={<MediaPage />} />
         <Route path='templates' element={<TemplatesPage />} />
         <Route path='sandbox' element={<SandboxPage />} />
-        <Route path='chat' element={<ChatPage />} />
-        <Route path='img-gen' element={<ImageGenPage />} />
-        <Route path='bg-jobs' element={<BgJobsPage />} />
+        <Route path='chat-bot' element={<ChatBotPage />} />
+        <Route path='image-generation' element={<ImageGenerationPage />} />
+        <Route path='background-jobs' element={<BackgroundJobsPage />} />
         <Route path='config' element={<ConfigPage />} />
         <Route path='help' element={<HelpPage />} />
         <Route path='profile' element={<ProfilePage />} />
