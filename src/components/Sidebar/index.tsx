@@ -47,9 +47,9 @@ export default function Sidebar() {
           <Separator />
 
           <SidebarProfile
-            username='william-magalhaes'
+            username='user'
             avatarSrc='/avatar.png'
-            avatarFallback='WM'
+            avatarFallback='US'
           />
         </SidebarFooter>
 
