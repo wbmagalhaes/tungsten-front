@@ -13,6 +13,9 @@ export const breadcrumbMap: Record<string, { label: string; parent?: string }> =
     '/templates': { label: 'templates', parent: '/' },
     '/templates/:id': { label: 'template', parent: '/templates' },
 
+    '/sandbox': { label: 'sandbox', parent: '/' },
+    '/sandbox/:id': { label: 'run', parent: '/sandbox' },
+
     '/chat-bot': { label: 'chat-bot', parent: '/' },
     '/chat-bot/:id': { label: 'conversation', parent: '/chat-bot' },
 
