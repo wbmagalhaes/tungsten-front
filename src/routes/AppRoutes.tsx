@@ -23,6 +23,7 @@ import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
 import { useAuthStore } from '@stores/useAuthStore';
+import SingleUserPage from '@pages/SingleUserPage';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -60,6 +61,14 @@ export default function AppRoutes() {
             element={
               <ProtectedPage requireScope='users:List'>
                 <UsersPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='users/:id'
+            element={
+              <ProtectedPage requireScope='users:Get'>
+                <SingleUserPage />
               </ProtectedPage>
             }
           />

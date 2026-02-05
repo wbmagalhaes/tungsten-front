@@ -55,7 +55,7 @@ function PublicFooter() {
   return (
     <footer className='container mx-auto px-4 py-4 mt-20 border-t border-gray-700'>
       <div className='text-start text-gray-400'>
-        <p>&copy; 2026 Tungsten</p>
+        <p>&copy; 2026 tungsten</p>
       </div>
     </footer>
   );

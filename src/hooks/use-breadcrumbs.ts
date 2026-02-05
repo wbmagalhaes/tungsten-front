@@ -1,8 +1,13 @@
-import { matchPath, useLocation } from 'react-router-dom';
+import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { breadcrumbMap } from '@components/Header/breadcrumbs';
+import { useUser } from './users/use-users';
 
 export function useBreadcrumbs() {
   const { pathname } = useLocation();
+  const { id = '' } = useParams();
+
+  const isUserRoute = !!matchPath('/users/:id', pathname);
+  const userQuery = useUser(id, { enabled: isUserRoute });
 
   if (pathname === '*' || pathname === '/404') {
     return [
@@ -24,14 +29,20 @@ export function useBreadcrumbs() {
 
   const [path, config] = matchEntry;
 
-  const crumbs = [];
+  const crumbs: { label: string; href: string }[] = [];
 
   let current: typeof config | undefined = config;
   let currentPath: string | undefined = path;
 
   while (current && currentPath) {
+    let label = current.label;
+
+    if (currentPath === '/users/:id' && userQuery.data) {
+      label = userQuery.data.username;
+    }
+
     crumbs.unshift({
-      label: current.label,
+      label: label,
       href: currentPath.includes(':') ? pathname : currentPath,
     });
 

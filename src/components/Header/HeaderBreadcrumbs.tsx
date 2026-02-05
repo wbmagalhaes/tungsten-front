@@ -9,6 +9,7 @@ import {
 import { Fragment } from 'react';
 import { useBreadcrumbs } from '@hooks/use-breadcrumbs';
 import { useIsMobile } from '@hooks/use-mobile';
+import { Link } from 'react-router-dom';
 
 export function HeaderBreadcrumbs() {
   const crumbs = useBreadcrumbs();
@@ -24,7 +25,7 @@ export function HeaderBreadcrumbs() {
           const isLast = i === visibleCrumbs.length - 1;
           const isCollapsed = c.label === '...';
 
-          const firstClass = isFirst ? 'font-semibold' : '';
+          const firstClass = isFirst ? 'font-bold' : '';
 
           return (
             <Fragment key={`${c.label}-${i}`}>
@@ -39,7 +40,7 @@ export function HeaderBreadcrumbs() {
                 ) : (
                   <BreadcrumbLink
                     className={firstClass}
-                    render={<a href={c.href} />}
+                    render={<Link to={c.href} />}
                   >
                     {c.label}
                   </BreadcrumbLink>
