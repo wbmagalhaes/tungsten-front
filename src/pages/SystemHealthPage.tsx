@@ -29,7 +29,7 @@ export default function SystemDashboardPage() {
   }
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-4'>
       <SystemCard
         title='System'
         icon={<Server className='w-5 h-5' />}

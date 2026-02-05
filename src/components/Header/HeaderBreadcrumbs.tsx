@@ -17,22 +17,30 @@ export function HeaderBreadcrumbs() {
   const visibleCrumbs = isMobile ? collapseCrumbs(crumbs) : crumbs;
 
   return (
-    <Breadcrumb className='text-gray-200'>
+    <Breadcrumb className='text-gray-300'>
       <BreadcrumbList>
         {visibleCrumbs.map((c, i) => {
+          const isFirst = i === 0;
           const isLast = i === visibleCrumbs.length - 1;
           const isCollapsed = c.label === '...';
+
+          const firstClass = isFirst ? 'font-semibold' : '';
 
           return (
             <Fragment key={`${c.label}-${i}`}>
               {i > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{c.label}</BreadcrumbPage>
+                  <BreadcrumbPage className={firstClass}>
+                    {c.label}
+                  </BreadcrumbPage>
                 ) : isCollapsed ? (
                   <span className='text-white select-none'>...</span>
                 ) : (
-                  <BreadcrumbLink render={<a href={c.href} />}>
+                  <BreadcrumbLink
+                    className={firstClass}
+                    render={<a href={c.href} />}
+                  >
                     {c.label}
                   </BreadcrumbLink>
                 )}

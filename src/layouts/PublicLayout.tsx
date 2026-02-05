@@ -35,14 +35,14 @@ function PublicHeader() {
       {isAuthenticated ? (
         <button
           onClick={() => navigate('/init')}
-          className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm'
+          className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold'
         >
           Dashboard
         </button>
       ) : (
         <button
           onClick={() => navigate('/login')}
-          className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm'
+          className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold'
         >
           Login
         </button>

@@ -22,8 +22,11 @@ import InitPage from '@pages/InitPage';
 import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
+import { useAuthStore } from '@stores/useAuthStore';
 
 export default function AppRoutes() {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <Routes>
       <Route element={<BaseLayout />}>
@@ -136,7 +139,14 @@ export default function AppRoutes() {
           <Route path='403' element={<AccessDeniedPage />} />
         </Route>
 
-        <Route path='*' element={<NotFoundPage />} />
+        <Route
+          element={isAuthenticated ? <AuthenticatedLayout /> : <PublicLayout />}
+        >
+          <Route
+            path='*'
+            element={<NotFoundPage isAuthenticated={isAuthenticated} />}
+          />
+        </Route>
       </Route>
     </Routes>
   );

@@ -29,7 +29,7 @@ export default function SystemDashboardPage() {
 
   return (
     <div className='grid grid-cols-1 gap-4'>
-      <div className='bg-white p-4 rounded-sm shadow flex items-center justify-between'>
+      <div className='bg-gray-900 p-4 rounded-sm shadow flex items-center justify-between'>
         <span className='font-medium'>MEDIA</span>
 
         <label className='cursor-pointer px-3 py-1 text-sm bg-blue-600 text-white rounded'>
@@ -38,9 +38,9 @@ export default function SystemDashboardPage() {
         </label>
       </div>
 
-      <div className='bg-white rounded-sm shadow overflow-x-auto'>
+      <div className='bg-gray-900 rounded-sm shadow overflow-x-auto'>
         <table className='min-w-full text-sm'>
-          <thead className='border-b bg-gray-50'>
+          <thead className='border-b'>
             <tr>
               <th className='text-left px-3 py-2'>ID</th>
               <th className='text-left px-3 py-2'>Nome</th>
