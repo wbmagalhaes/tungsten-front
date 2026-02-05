@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUsers, useCreateUser } from '@hooks/users/use-users';
+import ProtectedComponent from '@components/ProtectedComponent';
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
@@ -24,12 +25,14 @@ export default function UsersPage() {
       <div className='flex items-center'>
         <h1 className='text-xl font-semibold'>Users</h1>
 
-        <button
-          onClick={handleAddUser}
-          className='ml-auto px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600'
-        >
-          Add user
-        </button>
+        <ProtectedComponent requireScope='users:Create'>
+          <button
+            onClick={handleAddUser}
+            className='ml-auto px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600'
+          >
+            Add user
+          </button>
+        </ProtectedComponent>
       </div>
 
       <table className='w-full text-sm border-gray-700 rounded-sm overflow-hidden'>
@@ -50,13 +53,16 @@ export default function UsersPage() {
               <td className='p-2'>{u.fullname}</td>
               <td className='p-2'>{u.email}</td>
               <td className='p-2'>{u.is_sudo ? 'yes' : 'no'}</td>
+
               <td className='p-2 text-right'>
-                <Link
-                  to={`/users/${u.id}`}
-                  className='px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600'
-                >
-                  Edit
-                </Link>
+                <ProtectedComponent requireScope='users:Get'>
+                  <Link
+                    to={`/users/${u.id}`}
+                    className='px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600'
+                  >
+                    Open
+                  </Link>
+                </ProtectedComponent>
               </td>
             </tr>
           ))}

@@ -7,6 +7,7 @@ import {
   useUser,
 } from '@hooks/users/use-users';
 import type { UpdateUserRequest } from '@services/users.service';
+import ProtectedComponent from '@components/ProtectedComponent';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
@@ -51,7 +52,11 @@ export default function SingleUserPage() {
           {...form.register('avatar')}
         />
 
-        <button className='px-4 py-2 bg-gray-700 rounded'>Save profile</button>
+        <ProtectedComponent requireScope='users:Edit'>
+          <button className='px-4 py-2 bg-gray-700 rounded'>
+            Save profile
+          </button>
+        </ProtectedComponent>
       </form>
 
       <div className='space-y-3'>
@@ -98,12 +103,14 @@ export default function SingleUserPage() {
             {user.is_sudo ? 'enabled' : 'disabled'}
           </div>
 
-          <button
-            onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
-            className='px-3 py-2 bg-gray-700 rounded'
-          >
-            Toggle sudo
-          </button>
+          <ProtectedComponent requireScope='scope:GiveSudo'>
+            <button
+              onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
+              className='px-3 py-2 bg-gray-700 rounded'
+            >
+              Toggle sudo
+            </button>
+          </ProtectedComponent>
         </div>
       </div>
     </div>
