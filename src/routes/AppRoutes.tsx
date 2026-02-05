@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import BaseLayout from '@layouts/BaseLayout';
-import ProtectedRoute from './ProtectedRoutes';
+import ProtectedPage from './ProtectedPage';
 import AuthenticatedLayout from '@layouts/AuthenticatedLayout';
+
 import HomePage from '@pages/HomePage';
 import MediaPage from '@pages/MediaPage';
 import NotesPage from '@pages/NotesPage';
@@ -26,60 +27,109 @@ export default function AppRoutes() {
       <Route element={<BaseLayout />}>
         <Route index element={<HomePage />} />
         <Route path='login' element={<LoginPage />} />
+        <Route path='help' element={<HelpPage />} />
       </Route>
 
       <Route element={<AuthenticatedLayout />}>
-        <ProtectedRoute index element={<OverviewPage />} />
-        <ProtectedRoute
-          path='system-health'
-          element={<SystemHealthPage />}
-          requireScope={'system:View'}
+        <Route
+          path='overview'
+          element={
+            <ProtectedPage>
+              <OverviewPage />
+            </ProtectedPage>
+          }
         />
-        <ProtectedRoute
-          path='users'
-          element={<UsersPage />}
-          requireScope={'users:List'}
-        />
-        <ProtectedRoute
-          path='notes'
-          element={<NotesPage />}
-          requireScope={'notes:List'}
-        />
-        <ProtectedRoute
-          path='media'
-          element={<MediaPage />}
-          requireScope={'media:List'}
-        />
-        <ProtectedRoute
-          path='templates'
-          element={<TemplatesPage />}
-          requireScope={'templates:List'}
-        />
-        <ProtectedRoute
-          path='sandbox'
-          element={<SandboxPage />}
-          requireScope={'sandbox:List'}
-        />
-        <ProtectedRoute
-          path='chat-bot'
-          element={<ChatBotPage />}
-          requireScope={'chat:List'}
-        />
-        <ProtectedRoute
-          path='image-generation'
-          element={<ImageGenerationPage />}
-          requireScope={'image-gen:List'}
-        />
-        <ProtectedRoute
-          path='background-jobs'
-          element={<BackgroundJobsPage />}
-          requireScope={'bg-jobs:List'}
-        />
-        <ProtectedRoute path='config' element={<ConfigPage />} />
-        <ProtectedRoute path='help' element={<HelpPage />} />
-        <ProtectedRoute path='profile' element={<ProfilePage />} />
 
-        <ProtectedRoute path='403' element={<AccessDeniedPage />} />
+        <Route
+          path='system-health'
+          element={
+            <ProtectedPage requireScope='system:View'>
+              <SystemHealthPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='users'
+          element={
+            <ProtectedPage requireScope='users:List'>
+              <UsersPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='notes'
+          element={
+            <ProtectedPage requireScope='notes:List'>
+              <NotesPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='media'
+          element={
+            <ProtectedPage requireScope='media:List'>
+              <MediaPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='templates'
+          element={
+            <ProtectedPage requireScope='templates:List'>
+              <TemplatesPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='sandbox'
+          element={
+            <ProtectedPage requireScope='sandbox:List'>
+              <SandboxPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='chat-bot'
+          element={
+            <ProtectedPage requireScope='chat:List'>
+              <ChatBotPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='image-generation'
+          element={
+            <ProtectedPage requireScope='image-gen:List'>
+              <ImageGenerationPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='background-jobs'
+          element={
+            <ProtectedPage requireScope='bg-jobs:List'>
+              <BackgroundJobsPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='config'
+          element={
+            <ProtectedPage>
+              <ConfigPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path='profile'
+          element={
+            <ProtectedPage>
+              <ProfilePage />
+            </ProtectedPage>
+          }
+        />
+
+        <Route path='403' element={<AccessDeniedPage />} />
       </Route>
 
       <Route path='*' element={<NotFoundPage />} />

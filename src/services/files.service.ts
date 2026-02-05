@@ -3,7 +3,7 @@ import type { FileMetadata } from '@models/file-metadata';
 import type { PaginatedResponse } from '@models/paginated';
 
 export const listFiles = async (params: ListFilesParams) => {
-  const res = await api.get<PaginatedResponse<FileMetadata>>('/files', {
+  const res = await api.get<PaginatedResponse<FileMetadata>>('/api/files', {
     params,
   });
   return res.data;
@@ -18,7 +18,7 @@ export const uploadFile = async ({ file, dir }: UploadFileParams) => {
     formData.append('dir', dir);
   }
 
-  const res = await api.post<FileMetadata>('/files/upload', formData, {
+  const res = await api.post<FileMetadata>('/api/files/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -28,47 +28,47 @@ export const uploadFile = async ({ file, dir }: UploadFileParams) => {
 };
 
 export const readFile = async (id: string) => {
-  const res = await api.get<FileMetadata>(`/files/${id}`);
+  const res = await api.get<FileMetadata>(`/api/files/${id}`);
   return res.data;
 };
 
 export const downloadFile = async (id: string) => {
-  const res = await api.get<FileMetadata>(`/files/${id}/download`);
+  const res = await api.get<FileMetadata>(`/api/files/${id}/download`);
   return res.data;
 };
 
 export const deleteFile = async (id: string) => {
-  const res = await api.delete<void>(`/files/${id}`);
+  const res = await api.delete<void>(`/api/files/${id}`);
   return res.data;
 };
 
 export const renameFile = async (id: string, body: RenameRequest) => {
-  const res = await api.post<FileMetadata>(`/files/${id}/rename`, body);
+  const res = await api.post<FileMetadata>(`/api/files/${id}/rename`, body);
   return res.data;
 };
 
 export const moveFile = async (id: string, body: MoveRequest) => {
-  const res = await api.post<FileMetadata>(`/files/${id}/move`, body);
+  const res = await api.post<FileMetadata>(`/api/files/${id}/move`, body);
   return res.data;
 };
 
 export const archiveFile = async (id: string) => {
-  const res = await api.post<void>(`/files/${id}/archive`);
+  const res = await api.post<void>(`/api/files/${id}/archive`);
   return res.data;
 };
 
 export const compressFile = async (id: string) => {
-  const res = await api.post<FileMetadata>(`/files/${id}/compress`);
+  const res = await api.post<FileMetadata>(`/api/files/${id}/compress`);
   return res.data;
 };
 
 export const decompressFile = async (id: string) => {
-  const res = await api.post<FileMetadata>(`/files/${id}/decompress`);
+  const res = await api.post<FileMetadata>(`/api/files/${id}/decompress`);
   return res.data;
 };
 
 export const streamFile = async (id: string) => {
-  const res = await api.get<FileMetadata>(`/files/${id}/stream`);
+  const res = await api.get<FileMetadata>(`/api/files/${id}/stream`);
   return res.data;
 };
 

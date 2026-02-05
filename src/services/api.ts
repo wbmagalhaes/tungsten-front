@@ -6,7 +6,7 @@ import { refreshToken as refreshTokenRequest } from './auth.service';
 const baseURL = import.meta.env.VITE_API_BASE_URL || '/';
 
 const api = axios.create({
-  baseURL: new URL('api', baseURL).toString(),
+  baseURL: new URL(baseURL).toString(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -66,6 +66,12 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshErr) {
         useAuthStore.getState().clearTokens();
+
+        const redirectTo = `/login?cb_url=${encodeURIComponent(
+          window.location.pathname + window.location.search,
+        )}`;
+        window.location.href = redirectTo;
+
         return Promise.reject(refreshErr);
       }
     }

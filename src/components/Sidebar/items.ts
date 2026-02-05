@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export const sidebarItems = [
-  { label: 'Home', to: '/', icon: Home },
+  { label: 'Overview', to: '/overview', icon: Home },
   { label: 'System Health', to: '/system-health', icon: Activity },
   // { label: 'Users', to: '/users', icon: UsersRound },
   // { label: 'Notes', to: '/notes', icon: StickyNote },

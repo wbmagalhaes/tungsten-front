@@ -1,7 +1,7 @@
 import api from './api';
 
 export const healthCheck = async () => {
-  const res = await api.get<SystemStatus>('/system/health');
+  const res = await api.get<SystemStatus>('/api/system/health');
   return res.data;
 };
 
