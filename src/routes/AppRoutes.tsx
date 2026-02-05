@@ -20,6 +20,7 @@ import ProfilePage from '@pages/ProfilePage';
 import InitPage from '@pages/InitPage';
 import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
+import LogoutPage from '@pages/LogoutPage';
 
 export default function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
       <Route element={<BaseLayout />}>
         <Route index element={<HomePage />} />
         <Route path='login' element={<LoginPage />} />
+        <Route path='logout' element={<LogoutPage />} />
         <Route path='help' element={<HelpPage />} />
       </Route>
 

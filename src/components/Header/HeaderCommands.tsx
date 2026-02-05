@@ -24,7 +24,10 @@ export function HeaderCommands() {
 
   return (
     <div>
-      <Button className='md:border md:border-gray-500' onClick={() => setOpen(true)}>
+      <Button
+        className='md:border md:border-gray-500'
+        onClick={() => setOpen(true)}
+      >
         <SearchIcon className='h-4 w-4 text-muted-foreground' />
         {!isMobile && (
           <>
@@ -38,7 +41,7 @@ export function HeaderCommands() {
         )}
       </Button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={setOpen} className='bg-gray-200'>
         <Command>
           <CommandInput placeholder='Type a command or search...' />
           <CommandList>

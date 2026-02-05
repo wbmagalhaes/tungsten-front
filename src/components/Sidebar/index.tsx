@@ -22,8 +22,13 @@ import {
   DropdownMenuTrigger,
 } from '@components/base/dropdown-menu';
 import { Separator } from '@components/base/separator';
+import { useGetProfile } from '@hooks/profile/use-get-profile';
+import type { User } from '@models/user';
+import { getInitials } from '@models/user';
 
 export default function Sidebar() {
+  const { data: user, isLoading } = useGetProfile();
+
   return (
     <>
       <SidebarBackdrop />
@@ -37,20 +42,12 @@ export default function Sidebar() {
         </SidebarMenu>
 
         <SidebarFooter>
-          <SidebarMenuLink to={'/config'} label='Config' icon={Settings} />
-          <SidebarMenuLink
-            to={'/help'}
-            label='Help'
-            icon={CircleQuestionMark}
-          />
+          <SidebarMenuLink to='/config' label='Config' icon={Settings} />
+          <SidebarMenuLink to='/help' label='Help' icon={CircleQuestionMark} />
 
           <Separator />
 
-          <SidebarProfile
-            username='user'
-            avatarSrc='/avatar.png'
-            avatarFallback='US'
-          />
+          <SidebarProfile user={user} loading={isLoading} />
         </SidebarFooter>
 
         <SidebarRail />
@@ -110,7 +107,7 @@ function SidebarMenu({ children }: { children: React.ReactNode }) {
 type SidebarMenuItemProps = {
   className?: string;
   children: React.ReactNode;
-  tooltip: string;
+  tooltip?: string;
   active?: boolean;
 };
 
@@ -121,6 +118,20 @@ function SidebarMenuItem({
   active,
 }: SidebarMenuItemProps) {
   const { isOpen } = useSidebarStore();
+
+  if (!tooltip) {
+    return (
+      <div
+        className={cn(
+          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-100',
+          active && 'bg-gray-100 font-medium',
+          className,
+        )}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <Tooltip disabled={isOpen}>
@@ -172,36 +183,46 @@ function SidebarMenuLink({ to, icon: Icon, label }: SidebarMenuLinkProps) {
 }
 
 type SidebarProfileProps = {
-  username: string;
-  avatarSrc: string;
-  avatarFallback: string;
+  user?: User;
+  loading: boolean;
 };
 
-function SidebarProfile({
-  username,
-  avatarSrc,
-  avatarFallback,
-}: SidebarProfileProps) {
+function SidebarProfile({ user, loading }: SidebarProfileProps) {
+  const displayName = user?.fullname ?? user?.username;
+  const avatarSrc = user?.avatar;
+  const avatarFallback = getInitials(user);
+
   return (
-    <SidebarMenuItem tooltip={username} className='p-2 hover:bg-transparent'>
+    <SidebarMenuItem
+      tooltip={loading ? displayName : undefined}
+      className='p-2 hover:bg-transparent'
+    >
       <DropdownMenu>
-        <DropdownMenuTrigger className='flex w-full items-center gap-3 cursor-pointer'>
-          <Avatar className='bg-gray-300'>
-            <AvatarImage src={avatarSrc} alt={`@${username}`} />
+        <DropdownMenuTrigger
+          className='flex w-full items-center gap-3 cursor-pointer'
+          disabled={loading}
+        >
+          <Avatar className='bg-gray-300' loading={loading}>
+            <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
             <AvatarFallback>{avatarFallback}</AvatarFallback>
           </Avatar>
 
           <span className='flex-1 truncate text-sm font-medium text-nowrap'>
-            {username}
+            {displayName}
           </span>
 
           <ChevronUp className='h-4 w-4' />
         </DropdownMenuTrigger>
-        <DropdownMenuContent side='top' sideOffset={20}>
-          <DropdownMenuItem>
-            <Link to='/profile'>Profile</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+
+        <DropdownMenuContent side='top' sideOffset={20} className='bg-gray-200'>
+          <DropdownMenuItem
+            className='cursor-pointer hover:bg-gray-300'
+            render={<Link to='/profile'>Profile</Link>}
+          />
+          <DropdownMenuItem
+            className='cursor-pointer hover:bg-gray-300 text-red-600'
+            render={<Link to='/logout'>Logout</Link>}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>
