@@ -116,11 +116,11 @@ const ALL_SCOPES = [
   'system:Read',
   'system:Edit',
 
-  'user:List',
-  'user:Get',
-  'user:Create',
-  'user:Edit',
-  'user:Delete',
+  'users:List',
+  'users:Get',
+  'users:Create',
+  'users:Edit',
+  'users:Delete',
 
   'scope:Modify',
   'scope:GiveSudo',

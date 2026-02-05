@@ -59,7 +59,7 @@ export default function AppRoutes() {
           <Route
             path='users'
             element={
-              <ProtectedPage requireScope='user:List'>
+              <ProtectedPage requireScope='users:List'>
                 <UsersPage />
               </ProtectedPage>
             }
@@ -67,7 +67,7 @@ export default function AppRoutes() {
           <Route
             path='users/:id'
             element={
-              <ProtectedPage requireScope='user:Get'>
+              <ProtectedPage requireScope='users:Get'>
                 <SingleUserPage />
               </ProtectedPage>
             }
