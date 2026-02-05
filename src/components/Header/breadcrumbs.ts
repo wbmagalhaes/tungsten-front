@@ -2,7 +2,7 @@ export const breadcrumbMap: Record<string, { label: string; parent?: string }> =
   {
     '/': { label: 'tungsten' },
 
-    '/overview': { label: 'tungsten' },
+    '/init': { label: 'init', parent: '/' },
 
     '/login': { label: 'login', parent: '/' },
 
