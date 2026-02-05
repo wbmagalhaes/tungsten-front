@@ -37,7 +37,11 @@ export function HeaderAlerts() {
           }
         />
 
-        <PopoverContent side='bottom' sideOffset={12} className='bg-gray-200'>
+        <PopoverContent
+          side='bottom'
+          sideOffset={12}
+          className='bg-gray-800 text-white'
+        >
           <PopoverHeader>
             <PopoverTitle>Alerts</PopoverTitle>
             <PopoverDescription>Alerts are displayed here.</PopoverDescription>
@@ -45,7 +49,7 @@ export function HeaderAlerts() {
         </PopoverContent>
       </Popover>
 
-      <TooltipContent className='pr-1.5 bg-gray-800 text-white' >
+      <TooltipContent className='pr-1.5 bg-gray-900 text-white'>
         <div className='flex items-center gap-2'>
           Open Notifications
           <KbdGroup>

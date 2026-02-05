@@ -17,7 +17,7 @@ export function HeaderBreadcrumbs() {
   const visibleCrumbs = isMobile ? collapseCrumbs(crumbs) : crumbs;
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className='text-gray-200'>
       <BreadcrumbList>
         {visibleCrumbs.map((c, i) => {
           const isLast = i === visibleCrumbs.length - 1;
@@ -30,7 +30,7 @@ export function HeaderBreadcrumbs() {
                 {isLast ? (
                   <BreadcrumbPage>{c.label}</BreadcrumbPage>
                 ) : isCollapsed ? (
-                  <span className='text-muted-foreground select-none'>...</span>
+                  <span className='text-white select-none'>...</span>
                 ) : (
                   <BreadcrumbLink render={<a href={c.href} />}>
                     {c.label}

@@ -2,10 +2,8 @@ import { Outlet } from 'react-router-dom';
 
 export default function BaseLayout() {
   return (
-    <div className='min-h-screen flex flex-col bg-gray-50 font-sans overflow-x-hidden'>
-      <main className='flex-1 p-4'>
-        <Outlet />
-      </main>
+    <div className='font-sans overflow-x-hidden bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white'>
+      <Outlet />
     </div>
   );
 }

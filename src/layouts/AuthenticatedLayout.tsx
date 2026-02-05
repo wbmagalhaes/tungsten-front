@@ -2,9 +2,9 @@ import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import { Outlet } from 'react-router-dom';
 
-export default function BaseLayout() {
+export default function AuthenticatedLayout() {
   return (
-    <div className='min-h-screen flex flex-col bg-gray-50 font-sans overflow-x-hidden'>
+    <div className='min-h-screen flex flex-col'>
       <Header />
       <div className='flex flex-1'>
         <Sidebar />

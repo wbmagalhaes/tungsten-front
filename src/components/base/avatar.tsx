@@ -19,7 +19,7 @@ function Avatar({
       data-size={size}
       className={cn(
         'size-8 rounded-sm after:rounded-sm data-[size=lg]:size-10 data-[size=sm]:size-6 after:border-border group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten',
-        loading && 'bg-gray-300 animate-pulse',
+        loading && 'bg-gray-950 animate-pulse',
         className,
       )}
       {...props}

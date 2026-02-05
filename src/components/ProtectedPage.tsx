@@ -22,6 +22,7 @@ export default function ProtectedPage({ children, requireScope }: Props) {
     const scopesRequired = Array.isArray(requireScope)
       ? requireScope
       : [requireScope];
+
     const hasScope = scopesRequired.every((s) => userScope?.includes(s));
 
     if (!hasScope) {

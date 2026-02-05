@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import BaseLayout from '@layouts/BaseLayout';
-import ProtectedPage from './ProtectedPage';
+import PublicLayout from '@layouts/PublicLayout';
 import AuthenticatedLayout from '@layouts/AuthenticatedLayout';
+import ProtectedPage from '@components/ProtectedPage';
 
 import HomePage from '@pages/HomePage';
 import MediaPage from '@pages/MediaPage';
@@ -26,115 +27,117 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<BaseLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path='login' element={<LoginPage />} />
-        <Route path='logout' element={<LogoutPage />} />
-        <Route path='help' element={<HelpPage />} />
+        <Route element={<PublicLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path='login' element={<LoginPage />} />
+          <Route path='logout' element={<LogoutPage />} />
+          <Route path='help' element={<HelpPage />} />
+        </Route>
+
+        <Route element={<AuthenticatedLayout />}>
+          <Route
+            path='init'
+            element={
+              <ProtectedPage>
+                <InitPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='system-health'
+            element={
+              <ProtectedPage requireScope='system:View'>
+                <SystemHealthPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='users'
+            element={
+              <ProtectedPage requireScope='users:List'>
+                <UsersPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='notes'
+            element={
+              <ProtectedPage requireScope='notes:List'>
+                <NotesPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='media'
+            element={
+              <ProtectedPage requireScope='media:List'>
+                <MediaPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='templates'
+            element={
+              <ProtectedPage requireScope='templates:List'>
+                <TemplatesPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='sandbox'
+            element={
+              <ProtectedPage requireScope='sandbox:List'>
+                <SandboxPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='chat-bot'
+            element={
+              <ProtectedPage requireScope='chat:List'>
+                <ChatBotPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='image-generation'
+            element={
+              <ProtectedPage requireScope='image-gen:List'>
+                <ImageGenerationPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='background-jobs'
+            element={
+              <ProtectedPage requireScope='bg-jobs:List'>
+                <BackgroundJobsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='config'
+            element={
+              <ProtectedPage>
+                <ConfigPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='profile'
+            element={
+              <ProtectedPage>
+                <ProfilePage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route path='403' element={<AccessDeniedPage />} />
+        </Route>
+
+        <Route path='*' element={<NotFoundPage />} />
       </Route>
-
-      <Route element={<AuthenticatedLayout />}>
-        <Route
-          path='init'
-          element={
-            <ProtectedPage>
-              <InitPage />
-            </ProtectedPage>
-          }
-        />
-
-        <Route
-          path='system-health'
-          element={
-            <ProtectedPage requireScope='system:View'>
-              <SystemHealthPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='users'
-          element={
-            <ProtectedPage requireScope='users:List'>
-              <UsersPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='notes'
-          element={
-            <ProtectedPage requireScope='notes:List'>
-              <NotesPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='media'
-          element={
-            <ProtectedPage requireScope='media:List'>
-              <MediaPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='templates'
-          element={
-            <ProtectedPage requireScope='templates:List'>
-              <TemplatesPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='sandbox'
-          element={
-            <ProtectedPage requireScope='sandbox:List'>
-              <SandboxPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='chat-bot'
-          element={
-            <ProtectedPage requireScope='chat:List'>
-              <ChatBotPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='image-generation'
-          element={
-            <ProtectedPage requireScope='image-gen:List'>
-              <ImageGenerationPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='background-jobs'
-          element={
-            <ProtectedPage requireScope='bg-jobs:List'>
-              <BackgroundJobsPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='config'
-          element={
-            <ProtectedPage>
-              <ConfigPage />
-            </ProtectedPage>
-          }
-        />
-        <Route
-          path='profile'
-          element={
-            <ProtectedPage>
-              <ProfilePage />
-            </ProtectedPage>
-          }
-        />
-
-        <Route path='403' element={<AccessDeniedPage />} />
-      </Route>
-
-      <Route path='*' element={<NotFoundPage />} />
     </Routes>
   );
 }

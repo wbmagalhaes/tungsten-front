@@ -23,12 +23,12 @@ export function HeaderCommands() {
   useHotkeys('ctrl+k', () => setOpen(true));
 
   return (
-    <div>
+    <div className='text-gray-200'>
       <Button
-        className='md:border md:border-gray-500'
+        className='md:border md:border-gray-500 bg-gray-900/70'
         onClick={() => setOpen(true)}
       >
-        <SearchIcon className='h-4 w-4 text-muted-foreground' />
+        <SearchIcon className='h-4 w-4' />
         {!isMobile && (
           <>
             <span>Search or type a command...</span>
@@ -41,7 +41,11 @@ export function HeaderCommands() {
         )}
       </Button>
 
-      <CommandDialog open={open} onOpenChange={setOpen} className='bg-gray-200'>
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        className='bg-gray-900 text-gray-200'
+      >
         <Command>
           <CommandInput placeholder='Type a command or search...' />
           <CommandList>

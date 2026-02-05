@@ -75,7 +75,7 @@ function SidebarContent({ children }: { children: React.ReactNode }) {
   return (
     <aside
       className={cn(
-        'z-50 bg-white border-r',
+        'z-50 bg-gray-900 border-r border-gray-700',
         'transition-all duration-300 ease-in-out',
         'flex flex-col fixed inset-y-0 left-0 w-64',
         'md:static md:translate-x-0 md:w-auto',
@@ -92,8 +92,11 @@ function SidebarHeader() {
   const { close } = useSidebarStore();
 
   return (
-    <div className='flex items-center border-b p-2 md:hidden'>
-      <button onClick={close} className='rounded-md p-2 hover:bg-gray-100'>
+    <div className='flex items-center border-b border-gray-700 p-2 md:hidden'>
+      <button
+        onClick={close}
+        className='rounded-md p-2 hover:bg-gray-800 text-gray-200'
+      >
         <ChevronLeft className='h-5 w-5' />
       </button>
     </div>
@@ -123,8 +126,8 @@ function SidebarMenuItem({
     return (
       <div
         className={cn(
-          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-100',
-          active && 'bg-gray-100 font-medium',
+          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300',
+          active && 'bg-gray-800 font-medium',
           className,
         )}
       >
@@ -140,8 +143,8 @@ function SidebarMenuItem({
           <div
             {...props}
             className={cn(
-              'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-100',
-              active && 'bg-gray-100 font-medium',
+              'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300',
+              active && 'bg-gray-800 font-medium',
               className,
             )}
           >
@@ -153,7 +156,7 @@ function SidebarMenuItem({
       <TooltipContent
         side='right'
         sideOffset={20}
-        className='bg-gray-900 text-white'
+        className='bg-gray-950 text-white'
       >
         {tooltip}
       </TooltipContent>
@@ -202,7 +205,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           className='flex w-full items-center gap-3 cursor-pointer'
           disabled={loading}
         >
-          <Avatar className='bg-gray-300' loading={loading}>
+          <Avatar className='bg-gray-950 after:border-0' loading={loading}>
             <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
             <AvatarFallback>{avatarFallback}</AvatarFallback>
           </Avatar>
@@ -214,13 +217,13 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           <ChevronUp className='h-4 w-4' />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side='top' sideOffset={20} className='bg-gray-200'>
+        <DropdownMenuContent side='top' sideOffset={20} className='bg-gray-800'>
           <DropdownMenuItem
-            className='cursor-pointer hover:bg-gray-300'
+            className='cursor-pointer hover:bg-gray-700 text-gray-200'
             render={<Link to='/profile'>Profile</Link>}
           />
           <DropdownMenuItem
-            className='cursor-pointer hover:bg-gray-300 text-red-600'
+            className='cursor-pointer hover:bg-gray-700 text-red-400'
             render={<Link to='/logout'>Logout</Link>}
           />
         </DropdownMenuContent>
