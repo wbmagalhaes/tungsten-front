@@ -51,7 +51,7 @@ export default function AppRoutes() {
           <Route
             path='system-health'
             element={
-              <ProtectedPage requireScope='system:View'>
+              <ProtectedPage requireScope='system:Read'>
                 <SystemHealthPage />
               </ProtectedPage>
             }
@@ -59,7 +59,7 @@ export default function AppRoutes() {
           <Route
             path='users'
             element={
-              <ProtectedPage requireScope='users:List'>
+              <ProtectedPage requireScope='user:List'>
                 <UsersPage />
               </ProtectedPage>
             }
@@ -67,7 +67,7 @@ export default function AppRoutes() {
           <Route
             path='users/:id'
             element={
-              <ProtectedPage requireScope='users:Get'>
+              <ProtectedPage requireScope='user:Get'>
                 <SingleUserPage />
               </ProtectedPage>
             }
