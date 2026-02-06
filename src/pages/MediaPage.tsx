@@ -14,6 +14,7 @@ export default function SystemDashboardPage() {
     uploadFile.mutate({
       file,
       dir: '',
+      visibility: 'public',
     });
 
     e.target.value = '';

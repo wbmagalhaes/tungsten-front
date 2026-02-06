@@ -9,13 +9,21 @@ export const listFiles = async (params: ListFilesParams) => {
   return res.data;
 };
 
-export const uploadFile = async ({ file, dir }: UploadFileParams) => {
+export const uploadFile = async ({
+  file,
+  dir,
+  visibility,
+}: UploadFileParams) => {
   const formData = new FormData();
 
   formData.append('file', file);
 
   if (dir) {
     formData.append('dir', dir);
+  }
+
+  if (visibility) {
+    formData.append('visibility', visibility);
   }
 
   const res = await api.post<FileMetadata>('/api/files/upload', formData, {
@@ -83,6 +91,7 @@ export type ListFilesParams = {
 export type UploadFileParams = {
   file: File;
   dir?: string;
+  visibility?: string;
 };
 
 export type RenameRequest = {
