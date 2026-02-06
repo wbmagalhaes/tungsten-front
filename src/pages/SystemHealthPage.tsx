@@ -66,7 +66,7 @@ export default function SystemDashboardPage() {
             <div>
               <div className='flex justify-between items-center mb-1'>
                 <span className='text-sm text-gray-400'>Usage</span>
-                <span className='text-lg font-bold text-white'>
+                <span className='text-lg font-bold text-white text-nowrap'>
                   {data.cpu_usage.toFixed(1)}%
                 </span>
               </div>
@@ -83,8 +83,8 @@ export default function SystemDashboardPage() {
                   .map((c) => (
                     <div key={c.label} className='flex justify-between text-sm'>
                       <span className='text-gray-400'>{c.label}</span>
-                      <span className='text-gray-200'>
-                        {c.temperature.toFixed(1)} °C
+                      <span className='text-gray-200 text-nowrap'>
+                        {c.temperature.toFixed(1)}°C
                       </span>
                     </div>
                   ))}
@@ -101,7 +101,7 @@ export default function SystemDashboardPage() {
             <div>
               <div className='flex justify-between items-center mb-1'>
                 <span className='text-sm text-gray-400'>Usage</span>
-                <span className='text-lg font-bold text-white'>
+                <span className='text-lg font-bold text-white text-nowrap'>
                   {data.gpu_usage}%
                 </span>
               </div>
@@ -110,7 +110,7 @@ export default function SystemDashboardPage() {
 
             <InfoItem
               label='Temperature'
-              value={`${data.gpu_temp.toFixed(1)} °C`}
+              value={`${data.gpu_temp.toFixed(1)}°C`}
             />
           </div>
         </SystemCard>
@@ -120,7 +120,7 @@ export default function SystemDashboardPage() {
             <div>
               <div className='flex justify-between items-center mb-1'>
                 <span className='text-sm text-gray-400'>RAM</span>
-                <span className='text-sm text-gray-200'>
+                <span className='text-sm text-gray-200 text-nowrap'>
                   {(data.mem_used / 1024 ** 3).toFixed(2)} GB /{' '}
                   {(data.mem_total / 1024 ** 3).toFixed(2)} GB
                 </span>
@@ -134,7 +134,7 @@ export default function SystemDashboardPage() {
             <div>
               <div className='flex justify-between items-center mb-1'>
                 <span className='text-sm text-gray-400'>Swap</span>
-                <span className='text-sm text-gray-200'>
+                <span className='text-sm text-gray-200 text-nowrap'>
                   {(data.swap_used / 1024 ** 3).toFixed(2)} GB /{' '}
                   {(data.swap_total / 1024 ** 3).toFixed(2)} GB
                 </span>
@@ -151,7 +151,7 @@ export default function SystemDashboardPage() {
           <div>
             <div className='flex justify-between items-center mb-1'>
               <span className='text-sm text-gray-400'>Storage</span>
-              <span className='text-sm text-gray-200'>
+              <span className='text-sm text-gray-200 text-nowrap'>
                 {(data.disk_used / 1024 ** 3).toFixed(2)} GB /{' '}
                 {(data.disk_total / 1024 ** 3).toFixed(2)} GB
               </span>
@@ -183,7 +183,7 @@ export default function SystemDashboardPage() {
                 <span className='text-sm text-gray-400 capitalize'>
                   {data.battery_status}
                 </span>
-                <span className='text-lg font-bold text-white'>
+                <span className='text-lg font-bold text-white text-nowrap'>
                   {data.battery_percent.toFixed(0)}%
                 </span>
               </div>
@@ -191,7 +191,7 @@ export default function SystemDashboardPage() {
             </div>
 
             {data.battery_hours_left >= 0 && data.battery_status !== 'full' && (
-              <div className='text-sm text-gray-400'>
+              <div className='text-sm text-gray-400 text-nowrap'>
                 {data.battery_status === 'charging'
                   ? `Time to 100%: ${data.battery_hours_left.toFixed(1)}h`
                   : `Time remaining: ${data.battery_hours_left.toFixed(1)}h`}
@@ -234,7 +234,9 @@ function InfoItem({ label, value }: InfoItemProps) {
   return (
     <div className='flex justify-between items-center'>
       <span className='text-sm text-gray-400'>{label}:</span>
-      <span className='text-sm text-gray-200 font-medium'>{value}</span>
+      <span className='text-sm text-gray-200 font-medium text-nowrap'>
+        {value}
+      </span>
     </div>
   );
 }

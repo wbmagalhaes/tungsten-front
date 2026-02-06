@@ -16,8 +16,6 @@ export const uploadFile = async ({
 }: UploadFileParams) => {
   const formData = new FormData();
 
-  formData.append('file', file);
-
   if (dir) {
     formData.append('dir', dir);
   }
@@ -25,6 +23,8 @@ export const uploadFile = async ({
   if (visibility) {
     formData.append('visibility', visibility);
   }
+
+  formData.append('file', file);
 
   const res = await api.post<FileMetadata>('/api/files/upload', formData, {
     headers: {
@@ -41,8 +41,25 @@ export const readFile = async (id: string) => {
 };
 
 export const downloadFile = async (id: string) => {
-  const res = await api.get<FileMetadata>(`/api/files/${id}/download`);
-  return res.data;
+  const res = await api.get<Blob>(`/api/files/${id}/download`, {
+    responseType: 'blob',
+  });
+
+  const disposition = res.headers['content-disposition'] || '';
+  const match = disposition.match(/filename="(.+)"/);
+  const filename = match ? match[1] : 'file';
+
+  const blob = new Blob([res.data]);
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 };
 
 export const deleteFile = async (id: string) => {
