@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useUsers, useCreateUser } from '@hooks/users/use-users';
+import { useListUsers } from '@hooks/users/use-list-users';
+import { useCreateUser } from '@hooks/users/user-create-user';
 import ProtectedComponent from '@components/ProtectedComponent';
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useUsers({ page, page_size: 25 });
+  const { data, isLoading } = useListUsers({ page, page_size: 25 });
   const createUser = useCreateUser();
 
   function handleAddUser() {

@@ -1,13 +1,13 @@
 import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { breadcrumbMap } from '@components/Header/breadcrumbs';
-import { useUser } from './users/use-users';
+import { useGetUser } from './users/use-get-user';
 
 export function useBreadcrumbs() {
   const { pathname } = useLocation();
   const { id = '' } = useParams();
 
   const isUserRoute = !!matchPath('/users/:id', pathname);
-  const userQuery = useUser(id, { enabled: isUserRoute });
+  const userQuery = useGetUser(id, { enabled: isUserRoute });
 
   if (pathname === '*' || pathname === '/404') {
     return [

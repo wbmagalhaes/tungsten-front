@@ -1,9 +1,9 @@
 import api from './api';
 import type { FileMetadata } from '@models/file-metadata';
-import type { PaginatedResponse } from '@models/paginated';
+import type { Paginated } from '@models/paginated';
 
 export const listFiles = async (params: ListFilesParams) => {
-  const res = await api.get<PaginatedResponse<FileMetadata>>('/api/files', {
+  const res = await api.get<Paginated<FileMetadata>>('/api/files', {
     params,
   });
   return res.data;

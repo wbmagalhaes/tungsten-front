@@ -55,7 +55,7 @@ export default function SystemDashboardPage() {
           </thead>
 
           <tbody>
-            {data.result.map((file) => (
+            {data.results.map((file) => (
               <tr key={file.id} className='border-b last:border-b-0'>
                 <td className='px-3 py-2'>{file.id}</td>
                 <td className='px-3 py-2'>{file.basename}</td>
@@ -85,7 +85,7 @@ export default function SystemDashboardPage() {
           </tbody>
         </table>
 
-        {data.result.length === 0 && (
+        {data.results.length === 0 && (
           <div className='p-4 text-sm text-gray-500'>Nenhum arquivo</div>
         )}
       </div>

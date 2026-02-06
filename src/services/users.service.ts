@@ -1,12 +1,15 @@
+import type { Paginated } from '@models/paginated';
 import api from './api';
 import type { User } from '@models/user';
 
-export async function list(params: ListUsersParams) {
-  const { data } = await api.get<Paginated<User>>('/api/users', { params });
+export async function listUsers(params: ListUsersParams) {
+  const { data } = await api.get<Paginated<User>>('/api/users', {
+    params,
+  });
   return data;
 }
 
-export async function get(id: string) {
+export async function getUser(id: string) {
   const { data } = await api.get<User>(`/api/users/${id}`);
   return data;
 }
@@ -16,17 +19,17 @@ export async function getProfile() {
   return data;
 }
 
-export async function create(req: CreateUserRequest) {
+export async function createUser(req: CreateUserRequest) {
   const { data } = await api.post<User>('/api/users', req);
   return data;
 }
 
-export async function update(id: string, req: UpdateUserRequest) {
+export async function updateUser(id: string, req: UpdateUserRequest) {
   const { data } = await api.patch<User>(`/api/users/${id}`, req);
   return data;
 }
 
-export async function remove(id: string) {
+export async function deleteUser(id: string) {
   await api.delete(`/api/users/${id}`);
 }
 
@@ -41,11 +44,6 @@ export async function updatePermissions(
 export async function updateSudo(id: string, req: UpdateSudoRequest) {
   const { data } = await api.patch<User>(`/api/users/${id}/sudo`, req);
   return data;
-}
-
-export interface Paginated<T> {
-  count: number;
-  results: T[];
 }
 
 export interface ListUsersParams {

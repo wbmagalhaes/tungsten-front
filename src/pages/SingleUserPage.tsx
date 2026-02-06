@@ -1,17 +1,15 @@
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import {
-  useUpdatePermissions,
-  useUpdateSudo,
-  useUpdateUser,
-  useUser,
-} from '@hooks/users/use-users';
 import type { UpdateUserRequest } from '@services/users.service';
+import { useUpdateSudo } from '@hooks/users/use-update-sudo';
+import { useUpdateUser } from '@hooks/users/use-update-user';
+import { useGetUser } from '@hooks/users/use-get-user';
+import { useUpdatePermissions } from '@hooks/users/use-update-permissions';
 import ProtectedComponent from '@components/ProtectedComponent';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
-  const { data: user, isLoading } = useUser(id);
+  const { data: user, isLoading } = useGetUser(id);
 
   const updateUser = useUpdateUser(id);
   const updatePerms = useUpdatePermissions(id);
