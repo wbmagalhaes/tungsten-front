@@ -18,7 +18,7 @@ import ConfigPage from '@pages/ConfigPage';
 import HelpPage from '@pages/HelpPage';
 import NotFoundPage from '@pages/NotFoundPage';
 import ProfilePage from '@pages/ProfilePage';
-import InitPage from '@pages/InitPage';
+import RootPage from '@pages/RootPage';
 import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
@@ -40,10 +40,10 @@ export default function AppRoutes() {
 
         <Route element={<AuthenticatedLayout />}>
           <Route
-            path='init'
+            path='root'
             element={
               <ProtectedPage>
-                <InitPage />
+                <RootPage />
               </ProtectedPage>
             }
           />

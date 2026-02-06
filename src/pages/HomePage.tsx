@@ -63,7 +63,7 @@ export default function HomePage() {
           {isAuthenticated ? (
             <>
               <button
-                onClick={() => navigate('/init')}
+                onClick={() => navigate('/root')}
                 className='px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all text-lg'
               >
                 Access Dashboard

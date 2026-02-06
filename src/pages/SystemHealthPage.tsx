@@ -46,15 +46,12 @@ export default function SystemDashboardPage() {
             <InfoItem label='Kernel' value={data.kernel_version} />
           </div>
           <div className='md:pr-4'>
-            <InfoItem
-              label='Uptime'
-              value={`${Math.floor(data.uptime / 3600)}h ${Math.floor(data.uptime / 60) % 60}m`}
-            />
+            <InfoItem label='Uptime' value={formatUptime(data.uptime)} />
           </div>
           <div className='md:pr-4'>
             <InfoItem
               label='Current Time'
-              value={new Date(data.current_time).toLocaleString('en-US')}
+              value={new Date(data.current_time).toLocaleString('pt-BR')}
             />
           </div>
         </div>
@@ -165,14 +162,8 @@ export default function SystemDashboardPage() {
 
         <SystemCard title='Network' icon={<Network className='w-5 h-5' />}>
           <div className='space-y-2'>
-            <InfoItem
-              label='Received'
-              value={`${(data.net_in / 1024 ** 2).toFixed(2)} MB`}
-            />
-            <InfoItem
-              label='Sent'
-              value={`${(data.net_out / 1024 ** 2).toFixed(2)} MB`}
-            />
+            <InfoItem label='Received' value={formatBytes(data.net_in)} />
+            <InfoItem label='Sent' value={formatBytes(data.net_out)} />
           </div>
         </SystemCard>
 
@@ -263,4 +254,28 @@ function ProgressBar({ value, color = 'default' }: ProgressBarProps) {
       />
     </div>
   );
+}
+
+function formatUptime(seconds: number) {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  const parts = [];
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+
+  return parts.join(' ') || '0m';
+}
+
+function formatBytes(bytes: number) {
+  const KB = 1024;
+  const MB = KB * 1024;
+  const GB = MB * 1024;
+
+  if (bytes < KB) return `${bytes} B`;
+  if (bytes < MB) return `${(bytes / KB).toFixed(2)} KB`;
+  if (bytes < GB) return `${(bytes / MB).toFixed(2)} MB`;
+  return `${(bytes / GB).toFixed(2)} GB`;
 }

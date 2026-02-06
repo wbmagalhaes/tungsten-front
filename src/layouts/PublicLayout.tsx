@@ -34,7 +34,7 @@ function PublicHeader() {
 
       {isAuthenticated ? (
         <button
-          onClick={() => navigate('/init')}
+          onClick={() => navigate('/root')}
           className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold'
         >
           Dashboard

@@ -11,7 +11,7 @@ export function useBreadcrumbs() {
 
   if (pathname === '*' || pathname === '/404') {
     return [
-      { label: 'tungsten', href: '/' },
+      { label: 'tungsten', href: '/root' },
       { label: 'not found', href: pathname },
     ];
   }
@@ -22,7 +22,7 @@ export function useBreadcrumbs() {
 
   if (!matchEntry) {
     return [
-      { label: 'tungsten', href: '/' },
+      { label: 'tungsten', href: '/root' },
       { label: 'not found', href: pathname },
     ];
   }
@@ -50,6 +50,10 @@ export function useBreadcrumbs() {
 
     currentPath = current.parent;
     current = breadcrumbMap[current.parent];
+  }
+
+  if (crumbs.length > 0) {
+    crumbs[0].href = '/root';
   }
 
   return crumbs;

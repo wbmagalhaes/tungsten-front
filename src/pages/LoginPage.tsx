@@ -16,7 +16,7 @@ export default function LoginPage() {
 
     const params = new URLSearchParams(location.search);
     const cbUrl = params.get('cb_url');
-    navigate(cbUrl || '/init', { replace: true });
+    navigate(cbUrl || '/root', { replace: true });
   };
 
   return (

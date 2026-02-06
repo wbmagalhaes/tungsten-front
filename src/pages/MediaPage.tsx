@@ -206,7 +206,7 @@ function FileCard({ file }: FileCardProps) {
         <div className='flex justify-between'>
           <span className='text-gray-400'>Created:</span>
           <span className='text-gray-200 text-nowrap'>
-            {new Date(file.created_at).toLocaleDateString('pt-BR')}
+            {new Date(file.created_at).toLocaleString('pt-BR')}
           </span>
         </div>
       </div>

@@ -17,7 +17,7 @@ export default function AccessDeniedPage() {
 
           <div className='flex gap-3 justify-center'>
             <Link
-              to='/init'
+              to='/root'
               className='inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-gray-800 hover:bg-gray-700 transition'
             >
               <Home className='h-4 w-4' />
