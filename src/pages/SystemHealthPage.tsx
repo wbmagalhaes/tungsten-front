@@ -84,7 +84,7 @@ export default function SystemDashboardPage() {
                     <div key={c.label} className='flex justify-between text-sm'>
                       <span className='text-gray-400'>{c.label}</span>
                       <span className='text-gray-200 text-nowrap'>
-                        {c.temperature.toFixed(1)}°C
+                        {c.temperature.toFixed(1)} °C
                       </span>
                     </div>
                   ))}
@@ -110,7 +110,7 @@ export default function SystemDashboardPage() {
 
             <InfoItem
               label='Temperature'
-              value={`${data.gpu_temp.toFixed(1)}°C`}
+              value={`${data.gpu_temp.toFixed(1)} °C`}
             />
           </div>
         </SystemCard>
