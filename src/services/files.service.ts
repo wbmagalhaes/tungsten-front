@@ -13,6 +13,7 @@ export const uploadFile = async ({
   file,
   dir,
   visibility,
+  onProgress,
 }: UploadFileParams) => {
   const formData = new FormData();
 
@@ -26,13 +27,17 @@ export const uploadFile = async ({
 
   formData.append('file', file);
 
-  const res = await api.post<FileMetadata>('/api/files/upload', formData, {
+  await api.post('/api/files/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
+    onUploadProgress: (event) => {
+      if (event.total && onProgress) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        onProgress(percent);
+      }
+    },
   });
-
-  return res.data;
 };
 
 export const readFile = async (id: string) => {
@@ -40,9 +45,15 @@ export const readFile = async (id: string) => {
   return res.data;
 };
 
-export const downloadFile = async (id: string) => {
+export const downloadFile = async ({ id, onProgress }: DownloadFileParams) => {
   const res = await api.get<Blob>(`/api/files/${id}/download`, {
     responseType: 'blob',
+    onDownloadProgress: (event) => {
+      if (event.total && onProgress) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        onProgress(percent);
+      }
+    },
   });
 
   const disposition = res.headers['content-disposition'] || '';
@@ -109,6 +120,12 @@ export type UploadFileParams = {
   file: File;
   dir?: string;
   visibility?: string;
+  onProgress?: (percent: number) => void;
+};
+
+export type DownloadFileParams = {
+  id: string;
+  onProgress?: (percent: number) => void;
 };
 
 export type RenameRequest = {

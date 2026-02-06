@@ -1,7 +1,4 @@
-import useDeleteFile from '@hooks/files/useDeleteFile';
-import useListFiles from '@hooks/files/useListFiles';
-import useUploadFile from '@hooks/files/useUploadFile';
-import useDownloadFile from '@hooks/files/useDownloadFile';
+import { useState } from 'react';
 import {
   Upload,
   Trash2,
@@ -14,32 +11,40 @@ import {
   FileText,
   Archive,
 } from 'lucide-react';
+import useDeleteFile from '@hooks/files/useDeleteFile';
+import useListFiles from '@hooks/files/useListFiles';
+import useUploadFile from '@hooks/files/useUploadFile';
+import useDownloadFile from '@hooks/files/useDownloadFile';
 import type { FileMetadata } from '@models/file-metadata';
 
 export default function MediaPage() {
   const { data, isLoading, error } = useListFiles({});
+
   const uploadFile = useUploadFile();
-  const deleteFile = useDeleteFile();
-  const downloadFile = useDownloadFile();
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    uploadFile.mutate({
-      file,
-      dir: '',
-      visibility: 'public',
-    });
+
+    setUploadProgress(0);
+    uploadFile.mutate(
+      {
+        file,
+        dir: '',
+        visibility: 'public',
+        onProgress: (p) => {
+          setUploadProgress(p);
+        },
+      },
+      {
+        onSuccess: () => setUploadProgress(null),
+        onSettled: () => setUploadProgress(null),
+        onError: () => setUploadProgress(null),
+      },
+    );
+
     e.target.value = '';
-  };
-
-  const handleDelete = (id: string) => {
-    if (!confirm('Delete this file?')) return;
-    deleteFile.mutate(id);
-  };
-
-  const handleDownload = (id: string) => {
-    downloadFile.mutate({ id });
   };
 
   if (isLoading) {
@@ -62,13 +67,20 @@ export default function MediaPage() {
     <div className='space-y-4'>
       <div className='bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-lg flex items-center justify-between'>
         <h1 className='text-xl font-semibold text-white flex items-center gap-2'>
-          <Archive className='w-5 h-5' />
-          Media Files
+          <Archive className='w-5 h-5' /> Media Files
         </h1>
         <label className='cursor-pointer px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2'>
-          <Upload className='w-4 h-4' />
-          Upload
-          <input type='file' className='hidden' onChange={handleUpload} />
+          {uploadProgress === null ? (
+            <>
+              <Upload className='w-4 h-4' />
+              Upload
+              <input type='file' className='hidden' onChange={handleUpload} />
+            </>
+          ) : (
+            <span className='text-white ml-4'>
+              Uploading: {uploadProgress}%
+            </span>
+          )}
         </label>
       </div>
 
@@ -80,13 +92,7 @@ export default function MediaPage() {
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
           {data.results.map((file) => (
-            <FileCard
-              key={file.id}
-              file={file}
-              onDelete={handleDelete}
-              onDownload={handleDownload}
-              isDeleting={deleteFile.isPending}
-            />
+            <FileCard key={file.id} file={file} />
           ))}
         </div>
       )}
@@ -96,21 +102,23 @@ export default function MediaPage() {
 
 interface FileCardProps {
   file: FileMetadata;
-  onDelete: (id: string) => void;
-  onDownload: (id: string, filename: string) => void;
-  isDeleting: boolean;
 }
 
-function FileCard({ file, onDelete, onDownload, isDeleting }: FileCardProps) {
+function FileCard({ file }: FileCardProps) {
+  const deleteFile = useDeleteFile();
+  const downloadFile = useDownloadFile();
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+
   const getFileIcon = (mime?: string) => {
     if (!mime) return <File className='w-8 h-8' />;
-
     if (mime.startsWith('image/')) return <Image className='w-8 h-8' />;
     if (mime.startsWith('video/')) return <Video className='w-8 h-8' />;
     if (mime.startsWith('audio/')) return <Music className='w-8 h-8' />;
     if (mime.includes('text') || mime.includes('json') || mime.includes('xml'))
       return <FileText className='w-8 h-8' />;
-
     return <File className='w-8 h-8' />;
   };
 
@@ -119,6 +127,35 @@ function FileCard({ file, onDelete, onDownload, isDeleting }: FileCardProps) {
     if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
     if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
     return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
+  };
+
+  const handleDelete = () => {
+    if (!confirm('Delete this file?')) return;
+    setIsDeleting(true);
+    deleteFile.mutate(file.id, {
+      onSuccess: () => setIsDeleting(false),
+      onError: () => setIsDeleting(false),
+    });
+  };
+
+  const handleDownload = () => {
+    setIsDownloading(true);
+    downloadFile.mutate(
+      {
+        id: file.id,
+        onProgress: (p) => setDownloadProgress(p),
+      },
+      {
+        onSuccess: () => {
+          setIsDownloading(false);
+          setDownloadProgress(0);
+        },
+        onError: () => {
+          setIsDownloading(false);
+          setDownloadProgress(0);
+        },
+      },
+    );
   };
 
   return (
@@ -176,11 +213,12 @@ function FileCard({ file, onDelete, onDownload, isDeleting }: FileCardProps) {
 
       <div className='flex gap-2 pt-3 border-t border-gray-700'>
         <button
-          onClick={() => onDownload(file.id, file.basename)}
-          className='flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2'
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className='flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50'
         >
           <Download className='w-4 h-4' />
-          Download
+          {isDownloading ? `Downloading ${downloadProgress}%` : 'Download'}
         </button>
 
         {file.canonical_uri && (
@@ -196,7 +234,7 @@ function FileCard({ file, onDelete, onDownload, isDeleting }: FileCardProps) {
         )}
 
         <button
-          onClick={() => onDelete(file.id)}
+          onClick={handleDelete}
           disabled={isDeleting}
           className='px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-sm font-medium transition-colors flex items-center justify-center disabled:opacity-50'
           title='Delete file'
