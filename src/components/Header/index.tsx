@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 export default function Header() {
   const { toggle } = useSidebarStore();
   return (
-    <header className='h-12 flex items-center gap-2 md:gap-3 px-2 md:px-4 border-b border-gray-700 bg-gray-800'>
+    <header className='h-12 flex items-center gap-2 md:gap-3 pl-2 pr-1 md:px-4 border-b border-gray-700 bg-gray-800'>
       <button
         onClick={toggle}
         className='block md:hidden p-2 rounded-md hover:bg-gray-700'
@@ -20,7 +20,7 @@ export default function Header() {
         <MiniLogo />
       </div>
 
-      <div className='flex-1 overflow-hidden md:mr-4'>
+      <div className='flex-1 overflow-hidden mr-1 md:mr-4'>
         <HeaderBreadcrumbs />
       </div>
 
