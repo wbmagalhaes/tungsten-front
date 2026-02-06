@@ -191,6 +191,8 @@ type SidebarProfileProps = {
 };
 
 function SidebarProfile({ user, loading }: SidebarProfileProps) {
+  const { close } = useSidebarStore();
+
   const displayName = user?.fullname ?? user?.username;
   const avatarSrc = user?.avatar;
   const avatarFallback = getInitials(user);
@@ -210,7 +212,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
             <AvatarFallback>{avatarFallback}</AvatarFallback>
           </Avatar>
 
-          <span className='flex-1 truncate text-sm font-medium text-nowrap'>
+          <span className='flex-1 truncate text-left text-sm font-medium text-nowrap'>
             {displayName}
           </span>
 
@@ -221,10 +223,12 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           <DropdownMenuItem
             className='cursor-pointer hover:bg-gray-700 text-gray-200'
             render={<Link to='/profile'>Profile</Link>}
+            onClick={close}
           />
           <DropdownMenuItem
             className='cursor-pointer hover:bg-gray-700 text-red-400'
             render={<Link to='/logout'>Logout</Link>}
+            onClick={close}
           />
         </DropdownMenuContent>
       </DropdownMenu>
