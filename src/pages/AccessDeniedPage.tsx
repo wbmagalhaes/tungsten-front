@@ -15,7 +15,7 @@ export default function AccessDeniedPage() {
             You do not have permission to access this page.
           </p>
 
-          <div className='flex gap-3 justify-center'>
+          <div className='flex gap-3 justify-center flex-wrap'>
             <Link
               to='/root'
               className='inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-gray-800 hover:bg-gray-700 transition'

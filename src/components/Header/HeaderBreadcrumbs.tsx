@@ -10,6 +10,7 @@ import { Fragment } from 'react';
 import { useBreadcrumbs } from '@hooks/use-breadcrumbs';
 import { useIsMobile } from '@hooks/use-mobile';
 import { Link } from 'react-router-dom';
+import { cn } from '@utils/cn';
 
 export function HeaderBreadcrumbs() {
   const crumbs = useBreadcrumbs();
@@ -25,22 +26,20 @@ export function HeaderBreadcrumbs() {
           const isLast = i === visibleCrumbs.length - 1;
           const isCollapsed = c.label === '...';
 
-          const firstClass = isFirst ? 'font-bold' : '';
-
           return (
             <Fragment key={`${c.label}-${i}`}>
               {i > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage className={firstClass}>
+                  <BreadcrumbPage className={cn(isFirst && 'font-bold')}>
                     {c.label}
                   </BreadcrumbPage>
                 ) : isCollapsed ? (
                   <span className='text-white select-none'>...</span>
                 ) : (
                   <BreadcrumbLink
-                    className={firstClass}
-                    render={<Link to={c.href} />}
+                    className={cn(isFirst && 'font-bold')}
+                    render={<Link to={c.href ?? ''} />}
                   >
                     {c.label}
                   </BreadcrumbLink>
@@ -56,10 +55,10 @@ export function HeaderBreadcrumbs() {
 
 type Crumb = {
   label: string;
-  href: string;
+  href?: string;
 };
 
 function collapseCrumbs(crumbs: Crumb[]) {
   if (crumbs.length <= 2) return crumbs;
-  return [crumbs[0], { label: '...', href: '' }, crumbs[crumbs.length - 1]];
+  return [crumbs[0], { label: '...' }, crumbs[crumbs.length - 1]];
 }

@@ -9,11 +9,12 @@ export function useBreadcrumbs() {
   const isUserRoute = !!matchPath('/users/:id', pathname);
   const userQuery = useGetUser(id, { enabled: isUserRoute });
 
+  if (pathname === '*' || pathname === '/403') {
+    return [{ label: 'tungsten', href: '/root' }, { label: 'denied' }];
+  }
+
   if (pathname === '*' || pathname === '/404') {
-    return [
-      { label: 'tungsten', href: '/root' },
-      { label: 'not found', href: pathname },
-    ];
+    return [{ label: 'tungsten', href: '/root' }, { label: 'not found' }];
   }
 
   const matchEntry = Object.entries(breadcrumbMap).find(([path]) =>
@@ -21,10 +22,7 @@ export function useBreadcrumbs() {
   );
 
   if (!matchEntry) {
-    return [
-      { label: 'tungsten', href: '/root' },
-      { label: 'not found', href: pathname },
-    ];
+    return [{ label: 'tungsten', href: '/root' }, { label: 'not found' }];
   }
 
   const [path, config] = matchEntry;
