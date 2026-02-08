@@ -7,12 +7,15 @@ import {
   ImagePlus,
   FlaskConical,
 } from 'lucide-react';
+import { usePwaInstall } from '@hooks/use-pwa-install';
 import { cn } from '@utils/cn';
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
   const { data: user } = useGetProfile();
   const navigate = useNavigate();
+
+  const { canInstall, install, needsInstructions } = usePwaInstall();
 
   return (
     <div className='container mx-auto px-4 py-20'>
@@ -82,6 +85,23 @@ export default function HomePage() {
             >
               Login
             </button>
+          )}
+        </div>
+
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mt-6'>
+          {canInstall && (
+            <button
+              onClick={install}
+              className='px-6 py-3 bg-emerald-600 text-white rounded-sm font-semibold hover:bg-emerald-500 transition-all'
+            >
+              Instalar App
+            </button>
+          )}
+
+          {needsInstructions && (
+            <div className='text-sm text-gray-400'>
+              On iOS: share &gt add to homepage
+            </div>
           )}
         </div>
       </div>

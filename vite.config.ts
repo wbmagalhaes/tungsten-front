@@ -38,6 +38,7 @@ export default defineConfig({
         short_name: 'tungsten',
         start_url: '/',
         display: 'standalone',
+        orientation: 'portrait',
         background_color: '#111827',
         theme_color: '#111827',
         icons: [
