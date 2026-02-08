@@ -4,12 +4,12 @@ import type { TokenPair } from '@services/auth.service';
 import { useAuthStore } from '@stores/useAuthStore';
 
 export const useSwitchSudo = () => {
-  const setTokens = useAuthStore((state) => state.setTokens);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   return useMutation<TokenPair, unknown>({
     mutationFn: async () => {
       const tokens = await switchSudoService();
-      setTokens(tokens.access, tokens.refresh);
+      setAccessToken(tokens.access);
       return tokens;
     },
   });

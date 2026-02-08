@@ -25,6 +25,7 @@ import { Separator } from '@components/base/separator';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import type { User } from '@models/user';
 import { getInitials } from '@models/user';
+import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
@@ -197,6 +198,8 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
   const avatarSrc = user?.avatar;
   const avatarFallback = getInitials(user);
 
+  const switchSudo = useSwitchSudo();
+
   return (
     <SidebarMenuItem
       tooltip={loading ? displayName : undefined}
@@ -225,6 +228,17 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
             render={<Link to='/profile'>Profile</Link>}
             onClick={close}
           />
+          {user?.is_sudo && (
+            <DropdownMenuItem
+              className='cursor-pointer hover:bg-gray-700 text-gray-200'
+              onClick={() => {
+                switchSudo.mutate();
+                close();
+              }}
+            >
+              Sudo Mode
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             className='cursor-pointer hover:bg-gray-700 text-red-400'
             render={<Link to='/logout'>Logout</Link>}
