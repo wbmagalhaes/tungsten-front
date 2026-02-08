@@ -28,6 +28,7 @@ export const revokeAll = async () => {
 export type LoginRequest = {
   username: string;
   password: string;
+  token: string;
 };
 
 export type RefreshRequest = {

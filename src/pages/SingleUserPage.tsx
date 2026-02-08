@@ -116,8 +116,6 @@ export default function SingleUserPage() {
 }
 
 const ALL_SCOPES = [
-  'sudo',
-
   'system:Read',
   'system:Edit',
 
