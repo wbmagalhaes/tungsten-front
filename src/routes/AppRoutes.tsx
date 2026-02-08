@@ -83,7 +83,7 @@ export default function AppRoutes() {
           <Route
             path='media'
             element={
-              <ProtectedPage requireScope='media:List'>
+              <ProtectedPage requireScope='files:List'>
                 <MediaPage />
               </ProtectedPage>
             }
