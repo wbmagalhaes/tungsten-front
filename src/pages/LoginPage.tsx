@@ -97,6 +97,7 @@ export default function LoginPage() {
             <div className='flex flex-col gap-4 justify-center'>
               <Turnstile
                 as='aside'
+                className='max-w-full w-full'
                 siteKey={SITE_KEY}
                 onSuccess={(t) => setToken(t)}
                 options={{
