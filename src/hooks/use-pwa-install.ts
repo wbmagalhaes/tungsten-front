@@ -27,6 +27,11 @@ function detectStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches;
 }
 
+function detectFirefox() {
+  if (typeof navigator === 'undefined') return false;
+  return /firefox/i.test(navigator.userAgent);
+}
+
 export function usePwaInstall() {
   const [promptEvent, setPromptEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -34,6 +39,7 @@ export function usePwaInstall() {
   const isIOS = detectIOS();
   const isIOSStandalone = detectStandaloneIOS();
   const isStandalone = detectStandalone();
+  const isFirefox = detectFirefox();
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -59,33 +65,6 @@ export function usePwaInstall() {
   return {
     canInstall: !!promptEvent && !isStandalone,
     install,
-    needsInstructions: isIOS && !isIOSStandalone,
+    needsInstructions: (isIOS && !isIOSStandalone) || isFirefox,
   };
 }
-
-// import { usePwaInstall } from '@hooks/use-pwa-install';
-
-// export function InstallPwaButton() {
-//   const { canInstall, install, needsInstructions } = usePwaInstall();
-
-//   if (canInstall) {
-//     return (
-//       <button
-//         onClick={install}
-//         className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700"
-//       >
-//         Instalar app
-//       </button>
-//     );
-//   }
-
-//   if (needsInstructions) {
-//     return (
-//       <div className="text-sm opacity-80">
-//         No iOS: Compartilhar → Adicionar à Tela de Início
-//       </div>
-//     );
-//   }
-
-//   return null;
-// }

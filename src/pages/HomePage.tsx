@@ -88,25 +88,29 @@ export default function HomePage() {
           )}
         </div>
 
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mt-6'>
-          {canInstall && (
-            <button
-              onClick={install}
-              className='px-6 py-3 bg-emerald-600 text-white rounded-sm font-semibold hover:bg-emerald-500 transition-all'
-            >
-              Instalar App
-            </button>
-          )}
+        {isAuthenticated && (
+          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mt-6'>
+            {canInstall && (
+              <button
+                onClick={install}
+                className='px-6 py-3 bg-emerald-600 text-white rounded-sm font-semibold hover:bg-emerald-500 transition-all'
+              >
+                Install App
+              </button>
+            )}
 
-          {needsInstructions && (
-            <div className='text-sm text-gray-400'>
-              On iOS: share &gt add to homepage
-            </div>
-          )}
-        </div>
+            {needsInstructions && (
+              <div className='text-sm text-gray-400 text-center'>
+                iOS: Share → Add to Home Screen
+                <br />
+                Firefox: Browser menu → Add to Home Screen
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className='mt-32 max-w-4xl mx-auto'>
+      <div className='mt-16 max-w-4xl mx-auto'>
         <div className='grid md:grid-cols-2 gap-6'>
           <FeatureCard
             icon={<StickyNote className='w-6 h-6' />}
