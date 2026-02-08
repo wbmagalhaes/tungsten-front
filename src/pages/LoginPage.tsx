@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { LogIn, User, Lock, AlertCircle } from 'lucide-react';
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -9,60 +10,98 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
   const [token, setToken] = useState('');
-
   const { mutateAsync, isPending, error, isError } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     await mutateAsync({ username, password, token });
-
     const params = new URLSearchParams(location.search);
     const cbUrl = params.get('cb_url');
-    navigate(cbUrl || '/root', { replace: true });
+    navigate(cbUrl || '/init', { replace: true });
   };
 
   return (
-    <div className='max-w-md mx-auto mt-20'>
-      <div className='p-6 border rounded shadow'>
-        <h1 className='text-2xl font-bold mb-4'>Login</h1>
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <input
-            type='text'
-            placeholder='Username'
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className='border p-2 rounded'
-            required
-          />
-          <input
-            type='password'
-            placeholder='Password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className='border p-2 rounded'
-            required
-          />
+    <div className='min-h-screen flex justify-center p-4 mt-4 md:mt-12'>
+      <div className='w-full max-w-md space-y-6'>
+        <div className='text-center'>
+          <div className='relative inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg mb-4'>
+            <span className='text-white font-bold text-3xl'>W</span>
+            <span className='absolute top-0.5 right-1 text-white text-sm font-mono font-bold'>
+              74
+            </span>
+          </div>
+          <h1 className='text-3xl font-bold text-white mb-2'>Tungsten</h1>
+          <p className='text-gray-400'>Sign in to your account</p>
+        </div>
 
-          <button
-            type='submit'
-            className='bg-blue-500 text-white p-2 rounded disabled:opacity-50'
-            disabled={isPending}
-          >
-            {isPending ? 'Entrando...' : 'Login'}
-          </button>
+        <div className='bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-6'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div>
+              <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
+                <User className='w-4 h-4' />
+                Username
+              </label>
+              <input
+                type='text'
+                placeholder='Enter your username'
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className='w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600'
+                required
+              />
+            </div>
 
-          {isError && <p className='text-red-500 mt-2'>{error.message}</p>}
-        </form>
+            <div>
+              <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
+                <Lock className='w-4 h-4' />
+                Password
+              </label>
+              <input
+                type='password'
+                placeholder='Enter your password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className='w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600'
+                required
+              />
+            </div>
+
+            {isError && (
+              <div className='p-3 bg-red-900/30 border border-red-700 rounded-lg text-red-400 text-sm flex items-start gap-2'>
+                <AlertCircle className='w-4 h-4 mt-0.5 shrink-0' />
+                <span>{error.message}</span>
+              </div>
+            )}
+
+            <button
+              type='submit'
+              disabled={isPending || !token}
+              className='w-full px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              <LogIn className='w-4 h-4' />
+              {isPending ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+        </div>
+
+        <p className='text-center text-sm text-gray-500'>
+          Tungsten Server • Personal Self-Hosted
+        </p>
+
+        <div className='flex justify-center'>
+          <Turnstile
+            as='aside'
+            siteKey={SITE_KEY}
+            onSuccess={(t) => setToken(t)}
+            options={{
+              theme: 'dark',
+              appearance: 'interaction-only',
+              language: 'en',
+            }}
+          />
+        </div>
       </div>
-
-      <Turnstile
-        className='mt-4'
-        siteKey={SITE_KEY}
-        onSuccess={(t) => setToken(t)}
-      />
     </div>
   );
 }

@@ -20,11 +20,23 @@ export default function HomePage() {
   const { updateAvailable, update } = usePwaUpdate();
 
   return (
-    <div className='container mx-auto px-4 py-20'>
+    <div className='container mx-auto px-4 pt-8 md:pt-20'>
       <div className='max-w-4xl mx-auto text-center'>
         {!isLoading && isAuthenticated && (
-          <div className='mb-12 inline-block px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full'>
-            Welcome back, {user?.fullname || user?.username || 'User'}!
+          <div className='flex flex-col items-center gap-2 mb-12'>
+            <div className='inline-block px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full'>
+              Welcome back, {user?.fullname || user?.username || 'User'}!
+            </div>
+
+            <span className='text-sm text-gray-400'>
+              Want to login with another account?{' '}
+              <button
+                onClick={() => navigate('/login')}
+                className='cursor-pointer text-blue-400 hover:text-blue-300 underline transition-colors'
+              >
+                Click here
+              </button>
+            </span>
           </div>
         )}
 
