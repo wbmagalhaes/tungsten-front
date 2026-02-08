@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import { useAuthStore } from '@stores/useAuthStore';
+import matchesScope from '@utils/matchesScope';
 
 interface Props {
   children: JSX.Element;
@@ -25,7 +26,9 @@ export default function ProtectedComponent({
       ? requireScope
       : [requireScope];
 
-    const hasScope = scopesRequired.every((s) => userScope?.includes(s));
+    const hasScope = scopesRequired.every((required) =>
+      userScope?.some((user) => matchesScope(user, required)),
+    );
 
     if (!hasScope) {
       return showError ? (

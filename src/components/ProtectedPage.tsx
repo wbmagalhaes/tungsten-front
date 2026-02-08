@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@stores/useAuthStore';
+import matchesScope from '@utils/matchesScope';
 
 interface Props {
   children: JSX.Element;
@@ -23,7 +24,9 @@ export default function ProtectedPage({ children, requireScope }: Props) {
       ? requireScope
       : [requireScope];
 
-    const hasScope = scopesRequired.every((s) => userScope?.includes(s));
+    const hasScope = scopesRequired.every((required) =>
+      userScope?.some((user) => matchesScope(user, required)),
+    );
 
     if (!hasScope) {
       return <Navigate to='/403' replace />;

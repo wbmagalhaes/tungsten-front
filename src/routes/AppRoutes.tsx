@@ -107,7 +107,7 @@ export default function AppRoutes() {
           <Route
             path='chat-bot'
             element={
-              <ProtectedPage requireScope='chat:List'>
+              <ProtectedPage requireScope='chat-bot:List'>
                 <ChatBotPage />
               </ProtectedPage>
             }
@@ -115,7 +115,7 @@ export default function AppRoutes() {
           <Route
             path='image-generation'
             element={
-              <ProtectedPage requireScope='image-gen:List'>
+              <ProtectedPage requireScope='img-gen:List'>
                 <ImageGenerationPage />
               </ProtectedPage>
             }

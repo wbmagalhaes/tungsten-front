@@ -116,24 +116,35 @@ export default function SingleUserPage() {
 }
 
 const ALL_SCOPES = [
+  'system:*',
   'system:Read',
   'system:Edit',
 
+  'users:*',
   'users:List',
   'users:Get',
   'users:Create',
   'users:Edit',
   'users:Delete',
 
+  'scope:*',
   'scope:Modify',
   'scope:GiveSudo',
 
+  'files:*',
   'files:List',
   'files:Get',
   'files:Upload',
   'files:Download',
   'files:Edit',
   'files:Delete',
+
+  'notes:*',
+  'templates:*',
+  'sandbox:*',
+  'chat-bot:*',
+  'img-gen:*',
+  'bg-jobs:*',
 ] as const;
 
 export type ScopeValue = (typeof ALL_SCOPES)[number];
