@@ -239,7 +239,7 @@ interface ProgressBarProps {
 
 function ProgressBar({ value, color = 'default' }: ProgressBarProps) {
   const colors = {
-    default: 'bg-gradient-to-r from-blue-600 to-purple-600',
+    default: 'bg-linear-to-r from-blue-600 to-purple-600',
     blue: 'bg-blue-500',
     green: 'bg-green-500',
     yellow: 'bg-yellow-500',
