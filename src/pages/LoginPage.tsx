@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { LogIn, User, Lock, AlertCircle } from 'lucide-react';
+import { LogIn, User, Lock, AlertCircle, EyeOff, Eye } from 'lucide-react';
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
   const { mutateAsync, isPending, error, isError } = useLogin();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +29,15 @@ export default function LoginPage() {
         <div className='bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-6'>
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div>
-              <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
+              <label
+                className='text-sm text-gray-400 mb-2 flex items-center gap-2'
+                htmlFor='username'
+              >
                 <User className='w-4 h-4' />
                 Username
               </label>
               <input
+                id='username'
                 type='text'
                 placeholder='Enter your username'
                 value={username}
@@ -42,18 +48,36 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
+              <label
+                className='text-sm text-gray-400 mb-2 flex items-center gap-2'
+                htmlFor='password'
+              >
                 <Lock className='w-4 h-4' />
                 Password
               </label>
-              <input
-                type='password'
-                placeholder='Enter your password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className='w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600'
-                required
-              />
+              <div className='flex'>
+                <input
+                  id='password'
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Enter your password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className='flex-1 p-3 bg-gray-900 border border-gray-700 rounded-l-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600'
+                  required
+                />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className='flex items-center justify-center p-3 bg-gray-900 hover:bg-gray-800 border border-l-0 border-gray-700 rounded-r-lg text-gray-200 hover:text-white transition-colors'
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className='w-6 h-6' />
+                  ) : (
+                    <Eye className='w-6 h-6' />
+                  )}
+                </button>
+              </div>
             </div>
 
             {isError && (
