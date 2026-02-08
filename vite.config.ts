@@ -32,6 +32,24 @@ export default defineConfig({
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
+        runtimeCaching: [
+          {
+            urlPattern: /index\.html$/,
+            handler: 'NetworkFirst',
+          },
+          {
+            urlPattern:
+              /\.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'static-assets',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'tungsten',
