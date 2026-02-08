@@ -74,33 +74,33 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button
-              type='submit'
-              disabled={isPending || !token}
-              className='w-full px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed'
-            >
-              <LogIn className='w-4 h-4' />
-              {isPending ? 'Signing in...' : 'Sign In'}
-            </button>
+            <div className='flex flex-col gap-2 justify-center'>
+              <Turnstile
+                as='aside'
+                siteKey={SITE_KEY}
+                onSuccess={(t) => setToken(t)}
+                options={{
+                  theme: 'dark',
+                  language: 'en',
+                  appearance: 'interaction-only',
+                }}
+              />
+
+              <button
+                type='submit'
+                disabled={isPending || !token}
+                className='w-full px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                <LogIn className='w-4 h-4' />
+                {isPending ? 'Signing in...' : 'Sign In'}
+              </button>
+            </div>
           </form>
         </div>
 
         <p className='text-center text-sm text-gray-500'>
           Tungsten Server • Personal Self-Hosted
         </p>
-
-        <div className='flex justify-center'>
-          <Turnstile
-            as='aside'
-            siteKey={SITE_KEY}
-            onSuccess={(t) => setToken(t)}
-            options={{
-              theme: 'dark',
-              appearance: 'interaction-only',
-              language: 'en',
-            }}
-          />
-        </div>
       </div>
     </div>
   );
