@@ -32,6 +32,7 @@ export default defineConfig({
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /index\.html$/,
