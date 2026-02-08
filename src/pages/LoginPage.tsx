@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -14,6 +14,7 @@ export default function LoginPage() {
   const { mutateAsync, isPending, error, isError } = useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,9 +24,14 @@ export default function LoginPage() {
     navigate(cbUrl || '/root', { replace: true });
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+    inputRef.current?.focus();
+  };
+
   return (
     <div className='min-h-screen flex justify-center p-4 mt-8 md:mt-32'>
-      <div className='w-full max-w-md space-y-6'>
+      <div className='w-full max-w-md space-y-4'>
         <div className='bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-6'>
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div>
@@ -58,6 +64,7 @@ export default function LoginPage() {
               <div className='flex items-center bg-gray-900 border border-gray-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-600'>
                 <input
                   id='password'
+                  ref={inputRef}
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter your password'
                   value={password}
@@ -67,7 +74,7 @@ export default function LoginPage() {
                 />
                 <button
                   type='button'
-                  onClick={() => setShowPassword((prev) => !prev)}
+                  onClick={toggleShowPassword}
                   className='flex items-center justify-center p-3 text-gray-200 hover:text-white hover:bg-gray-800 transition-colors rounded-r-lg border-l border-gray-700'
                   tabIndex={-1}
                 >
