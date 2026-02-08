@@ -35,25 +35,25 @@ export default function AuthenticatedLayout() {
         <>
           <span
             className={cn(
-              'fixed top-0 left-0 w-0 h-0 border-solid border-6',
+              'fixed top-0 left-0 w-0 h-0 border-solid border-6 z-9999',
               'border-t-red-500 border-l-red-500 border-r-transparent border-b-transparent',
             )}
           />
           <span
             className={cn(
-              'fixed top-0 right-0 w-0 h-0 border-solid border-6',
+              'fixed top-0 right-0 w-0 h-0 border-solid border-6 z-9999',
               'border-t-red-500 border-r-red-500 border-l-transparent border-b-transparent',
             )}
           />
           <span
             className={cn(
-              'fixed bottom-0 left-0 w-0 h-0 border-solid border-6',
+              'fixed bottom-0 left-0 w-0 h-0 border-solid border-6 z-9999',
               'border-b-red-500 border-l-red-500 border-t-transparent border-r-transparent',
             )}
           />
           <span
             className={cn(
-              'fixed bottom-0 right-0 w-0 h-0 border-solid border-6',
+              'fixed bottom-0 right-0 w-0 h-0 border-solid border-6 z-9999',
               'border-b-red-500 border-r-red-500 border-t-transparent border-l-transparent',
             )}
           />
