@@ -9,22 +9,34 @@ import {
 } from 'lucide-react';
 import { usePwaInstall } from '@hooks/use-pwa-install';
 import { cn } from '@utils/cn';
+import { usePwaUpdate } from '@hooks/use-pwa-update';
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
-  const { data: user } = useGetProfile();
+  const { data: user, isLoading } = useGetProfile();
   const navigate = useNavigate();
 
   const { canInstall, install, needsInstructions } = usePwaInstall();
+  const { updateAvailable, update } = usePwaUpdate();
 
   return (
     <div className='container mx-auto px-4 py-20'>
       <div className='max-w-4xl mx-auto text-center'>
-        {isAuthenticated && (
+        {!isLoading && isAuthenticated && (
           <div className='mb-12 inline-block px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full'>
             Welcome back, {user?.fullname || user?.username || 'User'}!
           </div>
         )}
+
+        {!isLoading && isAuthenticated && updateAvailable && (
+          <div
+            className='fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-2 rounded shadow-lg cursor-pointer'
+            onClick={update}
+          >
+            New version available - Click to update
+          </div>
+        )}
+
         <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
           Tungsten
         </h1>
