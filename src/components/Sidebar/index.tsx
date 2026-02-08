@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
+  CheckCircle,
   ChevronLeft,
   ChevronUp,
   CircleQuestionMark,
@@ -26,6 +27,7 @@ import { useGetProfile } from '@hooks/profile/use-get-profile';
 import type { User } from '@models/user';
 import { getInitials } from '@models/user';
 import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
+import { useAuthStore } from '@stores/useAuthStore';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
@@ -194,11 +196,14 @@ type SidebarProfileProps = {
 function SidebarProfile({ user, loading }: SidebarProfileProps) {
   const { close } = useSidebarStore();
 
+  const { isSudo } = useAuthStore();
+
   const displayName = user?.fullname ?? user?.username;
   const avatarSrc = user?.avatar;
   const avatarFallback = getInitials(user);
 
   const switchSudo = useSwitchSudo();
+  const canBeSudo = user?.is_sudo ?? false;
 
   return (
     <SidebarMenuItem
@@ -210,7 +215,13 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           className='flex w-full items-center gap-3 cursor-pointer'
           disabled={loading}
         >
-          <Avatar className='bg-gray-950 after:border-0' loading={loading}>
+          <Avatar
+            className={cn(
+              'after:border-0 bg-gray-950',
+              isSudo && 'bg-red-500 ring-2 ring-red-500',
+            )}
+            loading={loading}
+          >
             <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
             <AvatarFallback>{avatarFallback}</AvatarFallback>
           </Avatar>
@@ -228,15 +239,20 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
             render={<Link to='/profile'>Profile</Link>}
             onClick={close}
           />
-          {user?.is_sudo && (
+          {canBeSudo && (
             <DropdownMenuItem
-              className='cursor-pointer hover:bg-gray-700 text-gray-200'
+              className={'cursor-pointer hover:bg-gray-700 text-gray-200'}
               onClick={() => {
                 switchSudo.mutate();
                 close();
               }}
             >
               Sudo Mode
+              {isSudo && (
+                <span className='text-red-400 text-xs font-bold ml-auto'>
+                  <CheckCircle />
+                </span>
+              )}
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
