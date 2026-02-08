@@ -1,4 +1,4 @@
-import useHealthCheck from '@hooks/system/useHealthCheck';
+import useHealthCheck from '@hooks/system/use-health-check';
 import {
   Cpu,
   HardDrive,

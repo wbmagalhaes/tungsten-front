@@ -52,6 +52,8 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = Cookies.get('refresh');
+        console.log(refreshToken);
+
         if (!refreshToken) {
           return Promise.reject(err);
         }

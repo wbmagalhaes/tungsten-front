@@ -11,10 +11,10 @@ import {
   FileText,
   Archive,
 } from 'lucide-react';
-import useDeleteFile from '@hooks/files/useDeleteFile';
-import useListFiles from '@hooks/files/useListFiles';
-import useUploadFile from '@hooks/files/useUploadFile';
-import useDownloadFile from '@hooks/files/useDownloadFile';
+import useDeleteFile from '@hooks/files/use-delete-file';
+import useListFiles from '@hooks/files/use-list-files';
+import useUploadFile from '@hooks/files/use-upload-file';
+import useDownloadFile from '@hooks/files/use-download-file';
 import type { FileMetadata } from '@models/file-metadata';
 
 export default function MediaPage() {
