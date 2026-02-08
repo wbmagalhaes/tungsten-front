@@ -62,7 +62,7 @@ export default function LoginPage() {
                   placeholder='Enter your password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className='w-full flex-1 p-3 bg-transparent border-none text-gray-200 placeholder-gray-500 focus:outline-none'
+                  className='w-full flex-1 p-3 bg-transparent border-none text-gray-200 placeholder-gray-500 focus:outline-none rounded-l-lg'
                   required
                 />
                 <button
