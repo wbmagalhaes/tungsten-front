@@ -20,16 +20,9 @@ export default function AuthenticatedLayout() {
     <div
       className={cn(
         'min-h-screen flex flex-col',
-        isSudo && 'relative border-4 border-red-500',
+        isSudo && 'border-4 border-red-500',
       )}
     >
-      {isSudo && (
-        <div className='absolute flex w-full'>
-          <div className='bg-red-500 text-white text-center pb-1 px-2 rounded-b-sm mx-auto font-bold text-xs uppercase tracking-wide'>
-            Sudo Mode
-          </div>
-        </div>
-      )}
       <Header />
       <div className='flex flex-1'>
         <Sidebar />
@@ -37,6 +30,14 @@ export default function AuthenticatedLayout() {
           <Outlet />
         </main>
       </div>
+
+      {isSudo && (
+        <div className='fixed inset-0 border-4 border-red-500 flex z-9999 pointer-events-none'>
+          <div className='bg-red-500 text-white text-center pb-1 px-2 rounded-b-sm mx-auto mb-auto font-bold text-xs uppercase tracking-wide'>
+            Sudo Mode
+          </div>
+        </div>
+      )}
     </div>
   );
 }

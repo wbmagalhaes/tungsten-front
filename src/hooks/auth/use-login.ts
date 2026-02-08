@@ -15,5 +15,6 @@ export const useLogin = () => {
       return tokens;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
+    retry: 0,
   });
 };
