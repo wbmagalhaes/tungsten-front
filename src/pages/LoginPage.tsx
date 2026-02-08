@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { LogIn, User, Lock, AlertCircle, EyeOff, Eye } from 'lucide-react';
+import { LogIn, User, Lock, AlertCircle, EyeOff, Eye, Dot } from 'lucide-react';
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -55,20 +55,20 @@ export default function LoginPage() {
                 <Lock className='w-4 h-4' />
                 Password
               </label>
-              <div className='flex'>
+              <div className='flex items-center bg-gray-900 border border-gray-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-600'>
                 <input
                   id='password'
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter your password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className='flex-1 p-3 bg-gray-900 border border-gray-700 rounded-l-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600'
+                  className='w-full flex-1 p-3 bg-transparent border-none text-gray-200 placeholder-gray-500 focus:outline-none'
                   required
                 />
                 <button
                   type='button'
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className='flex items-center justify-center p-3 bg-gray-900 hover:bg-gray-800 border border-l-0 border-gray-700 rounded-r-lg text-gray-200 hover:text-white transition-colors'
+                  className='flex items-center justify-center p-3 text-gray-200 hover:text-white hover:bg-gray-800 transition-colors rounded-r-lg border-l border-gray-700'
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -111,8 +111,10 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className='text-center text-sm text-gray-500'>
-          Tungsten Server • Personal Self-Hosted
+        <p className='text-sm text-gray-500 flex gap-1 justify-center'>
+          <span>Tungsten Server</span>
+          <Dot />
+          <span>Personal Self-Hosted</span>
         </p>
       </div>
     </div>
