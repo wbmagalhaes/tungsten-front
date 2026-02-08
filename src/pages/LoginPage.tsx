@@ -22,19 +22,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen flex justify-center p-4 mt-4 md:mt-12'>
+    <div className='min-h-screen flex justify-center p-4 mt-8 md:mt-32'>
       <div className='w-full max-w-md space-y-6'>
-        <div className='text-center'>
-          <div className='relative inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg mb-4'>
-            <span className='text-white font-bold text-3xl'>W</span>
-            <span className='absolute top-0.5 right-1 text-white text-sm font-mono font-bold'>
-              74
-            </span>
-          </div>
-          <h1 className='text-3xl font-bold text-white mb-2'>Tungsten</h1>
-          <p className='text-gray-400'>Sign in to your account</p>
-        </div>
-
         <div className='bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-6'>
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div>
