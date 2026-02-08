@@ -74,7 +74,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className='flex flex-col gap-2 justify-center'>
+            <div className='flex flex-col gap-4 justify-center'>
               <Turnstile
                 as='aside'
                 siteKey={SITE_KEY}
