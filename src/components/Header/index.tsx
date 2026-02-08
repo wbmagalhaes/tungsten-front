@@ -8,25 +8,27 @@ import { Link } from 'react-router-dom';
 export default function Header() {
   const { toggle } = useSidebarStore();
   return (
-    <header className='h-12 flex items-center gap-2 md:gap-3 pl-2 pr-1 md:px-4 border-b border-gray-700 bg-gray-800'>
-      <button
-        onClick={toggle}
-        className='block md:hidden p-2 rounded-md hover:bg-gray-700'
-      >
-        <Menu className='h-5 w-5 text-gray-200' />
-      </button>
+    <header className='fixed top-0 inset-x-0'>
+      <div className='h-12 flex items-center gap-2 md:gap-3 pl-2 pr-1 md:px-4 border-b border-gray-700 bg-gray-800'>
+        <button
+          onClick={toggle}
+          className='block md:hidden p-2 rounded-md hover:bg-gray-700'
+        >
+          <Menu className='h-5 w-5 text-gray-200' />
+        </button>
 
-      <div className='shrink-0 md:mr-4'>
-        <MiniLogo />
-      </div>
+        <div className='shrink-0 md:mr-4'>
+          <MiniLogo />
+        </div>
 
-      <div className='flex-1 overflow-hidden mr-1 md:mr-4'>
-        <HeaderBreadcrumbs />
-      </div>
+        <div className='flex-1 overflow-hidden mr-1 md:mr-4'>
+          <HeaderBreadcrumbs />
+        </div>
 
-      <div className='ml-auto shrink-0 flex gap-1 md:gap-2'>
-        <HeaderCommands />
-        <HeaderAlerts />
+        <div className='ml-auto shrink-0 flex gap-1 md:gap-2'>
+          <HeaderCommands />
+          <HeaderAlerts />
+        </div>
       </div>
     </header>
   );

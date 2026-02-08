@@ -24,7 +24,7 @@ export default function AuthenticatedLayout() {
       )}
     >
       <Header />
-      <div className='flex flex-1'>
+      <div className='flex flex-1 mt-12'>
         <Sidebar />
         <main className='flex-1 p-4'>
           <Outlet />
