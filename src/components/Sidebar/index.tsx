@@ -10,7 +10,7 @@ import {
 import { cn } from '@utils/cn';
 import { sidebarItems } from './items';
 import { useSidebarStore } from '@stores/useSidebarStore';
-import React, { useCallback, useEffect, type ReactNode } from 'react';
+import React, { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -31,11 +31,17 @@ import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Button } from '@components/base/button';
 import { useIsDesktop } from '@hooks/use-is-desktop';
+import { filterItemsByPermission } from '@utils/hasPermission';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
 
   const { open, close } = useSidebarStore();
+
+  const visibleItems = useMemo(() => {
+    const userScopes = user?.scope ?? [];
+    return filterItemsByPermission(sidebarItems, userScopes);
+  }, [user]);
 
   const openHandlers = useSwipeable({
     onSwipedRight: () => open(),
@@ -55,7 +61,7 @@ export default function Sidebar() {
         <SidebarHeader />
 
         <SidebarMenu>
-          {sidebarItems.map(({ label, to, icon }) => (
+          {visibleItems.map(({ label, to, icon }) => (
             <SidebarMenuLink key={to} to={to} label={label} icon={icon} />
           ))}
         </SidebarMenu>

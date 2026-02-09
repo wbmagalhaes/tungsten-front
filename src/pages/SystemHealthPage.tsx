@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Cpu,
   HardDrive,
@@ -10,6 +11,9 @@ import {
   RefreshCw,
   RotateCcw,
   Power,
+  Loader2,
+  AlertTriangle,
+  Clock,
 } from 'lucide-react';
 import {
   Card,
@@ -19,6 +23,7 @@ import {
   CardContent,
 } from '@components/base/card';
 import { Button } from '@components/base/button';
+import { Badge } from '@components/base/badge';
 import useHealthCheck from '@hooks/system/use-health-check';
 import useCheckUpdates from '@hooks/system/use-check-updates';
 import useApplyUpdates from '@hooks/system/use-apply-updates';
@@ -27,9 +32,14 @@ import useShutdownSystem from '@hooks/system/use-shutdown-system';
 import formatBytes from '@utils/formatBytes';
 import formatTime from '@utils/formatTime';
 import ProtectedComponent from '@components/ProtectedComponent';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import { RefetchingIndicator } from '@components/RefetchingIndicator';
+import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import { InformationDialog } from '@components/InformationDialog';
 
 export default function SystemHealthPage() {
-  const { data, isLoading, error } = useHealthCheck();
+  const { data, isLoading, error, isRefetching } = useHealthCheck();
 
   const updates = useCheckUpdates();
   const applyUpdates = useApplyUpdates();
@@ -37,24 +47,90 @@ export default function SystemHealthPage() {
   const reboot = useRebootSystem();
   const shutdown = useShutdownSystem();
 
+  const [showShutdownConfirm, setShowShutdownConfirm] = useState(false);
+  const [showRebootConfirm, setShowRebootConfirm] = useState(false);
+  const [showShutdownSuccess, setShowShutdownSuccess] = useState(false);
+  const [showRebootSuccess, setShowRebootSuccess] = useState(false);
+
+  const handleShutdown = () => {
+    shutdown.mutate(undefined, {
+      onSuccess: () => {
+        setShowShutdownConfirm(false);
+        setShowShutdownSuccess(true);
+      },
+    });
+  };
+
+  const handleReboot = () => {
+    reboot.mutate(undefined, {
+      onSuccess: () => {
+        setShowRebootConfirm(false);
+        setShowRebootSuccess(true);
+      },
+    });
+  };
+
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-muted-foreground'>Loading system data...</div>
-      </div>
-    );
+    return <LoadingState message='Loading system data...' />;
   }
 
   if (error || !data) {
     return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-red-400'>Error loading system data</div>
-      </div>
+      <ErrorState
+        title='Error Loading System Data'
+        message={error?.message || 'Unable to fetch system health information'}
+      />
     );
   }
 
   return (
     <div className='space-y-4'>
+      {isRefetching && <RefetchingIndicator />}
+
+      <ConfirmationDialog
+        open={showShutdownConfirm}
+        onOpenChange={setShowShutdownConfirm}
+        title='Confirm Shutdown'
+        description='The system will shutdown in 5 minutes. You will need to manually power it back on.'
+        icon={<AlertTriangle className='w-5 h-5 text-destructive' />}
+        confirmText='Confirm Shutdown'
+        confirmVariant='destructive'
+        onConfirm={handleShutdown}
+        isLoading={shutdown.isPending}
+        loadingText='Shutting down...'
+      />
+
+      <ConfirmationDialog
+        open={showRebootConfirm}
+        onOpenChange={setShowRebootConfirm}
+        title='Confirm Reboot'
+        description='The system will reboot in 5 minutes. The server will be temporarily unavailable during the restart.'
+        icon={<AlertTriangle className='w-5 h-5 text-warning' />}
+        confirmText='Confirm Reboot'
+        confirmVariant='secondary'
+        onConfirm={handleReboot}
+        isLoading={reboot.isPending}
+        loadingText='Rebooting...'
+      />
+
+      <InformationDialog
+        open={showShutdownSuccess}
+        onOpenChange={setShowShutdownSuccess}
+        title='Shutdown Scheduled'
+        description='The system will shutdown in 5 minutes. You will need to manually power it back on. Make sure to save any ongoing work.'
+        icon={<Clock className='w-5 h-5 text-destructive' />}
+        buttonText='I Understand'
+      />
+
+      <InformationDialog
+        open={showRebootSuccess}
+        onOpenChange={setShowRebootSuccess}
+        title='Reboot Scheduled'
+        description='The system will reboot in 5 minutes. The server will be back online shortly after the restart completes.'
+        icon={<Clock className='w-5 h-5 text-primary' />}
+        buttonText='I Understand'
+      />
+
       <ProtectedComponent requireScope='system:Write'>
         <SystemCard
           title='System Actions'
@@ -68,8 +144,12 @@ export default function SystemHealthPage() {
               onClick={() => updates.refetch()}
               disabled={updates.isFetching}
             >
-              <RefreshCw className='w-4 h-4' />
-              Check Updates
+              {updates.isFetching ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <RefreshCw className='w-4 h-4' />
+              )}
+              {updates.isFetching ? 'Checking...' : 'Check Updates'}
             </Button>
 
             <Button
@@ -77,43 +157,55 @@ export default function SystemHealthPage() {
               onClick={() => applyUpdates.mutate({})}
               disabled={applyUpdates.isPending}
             >
-              Apply Updates
+              {applyUpdates.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : null}
+              {applyUpdates.isPending ? 'Updating...' : 'Apply Updates'}
             </Button>
 
             <Button
               size='sm'
               variant='secondary'
-              onClick={() => reboot.mutate()}
+              onClick={() => setShowRebootConfirm(true)}
               disabled={reboot.isPending}
             >
-              <RotateCcw className='w-4 h-4' />
+              {reboot.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <RotateCcw className='w-4 h-4' />
+              )}
               Reboot
             </Button>
 
             <Button
               size='sm'
               variant='destructive'
-              onClick={() => shutdown.mutate()}
+              onClick={() => setShowShutdownConfirm(true)}
               disabled={shutdown.isPending}
             >
-              <Power className='w-4 h-4' />
+              {shutdown.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <Power className='w-4 h-4' />
+              )}
               Shutdown
             </Button>
           </div>
 
           {updates.data?.available && (
-            <div className='text-sm text-yellow-400 mt-2'>
+            <Badge variant='warning' className='mt-3'>
               Updates available: {updates.data.available}
-            </div>
+            </Badge>
           )}
         </SystemCard>
       </ProtectedComponent>
+
       <SystemCard
         title='System'
         icon={<Server className='w-5 h-5' />}
         className='col-span-full'
       >
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:divide-x divide-secondary'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:divide-x divide-border'>
           <div className='md:pr-4'>
             <InfoItem label='Hostname' value={data.hostname} />
           </div>

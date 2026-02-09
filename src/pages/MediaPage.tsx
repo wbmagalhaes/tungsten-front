@@ -228,6 +228,7 @@ function FileCard({ file }: FileCardProps) {
 
         {file.canonical_uri && (
           <Button
+            nativeButton={false}
             render={(props) => (
               <a
                 {...props}
