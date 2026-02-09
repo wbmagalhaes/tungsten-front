@@ -93,18 +93,23 @@ export default function HomePage() {
           </Card>
         </div>
 
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto'>
           {isAuthenticated ? (
             <>
-              <ButtonLink to='/root' size='lg'>
+              <ButtonLink to='/root' size='lg' className='w-full sm:w-auto'>
                 Access Console
               </ButtonLink>
-              <ButtonLink to='/system-health' variant='outline' size='lg'>
+              <ButtonLink
+                to='/system-health'
+                variant='outline'
+                size='lg'
+                className='w-full sm:w-auto'
+              >
                 View System Status
               </ButtonLink>
             </>
           ) : (
-            <ButtonLink to='/login' size='lg'>
+            <ButtonLink to='/login' size='lg' className='w-full sm:w-auto'>
               Login
             </ButtonLink>
           )}
