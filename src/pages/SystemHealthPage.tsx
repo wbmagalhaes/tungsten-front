@@ -26,6 +26,7 @@ import useRebootSystem from '@hooks/system/use-reboot-system';
 import useShutdownSystem from '@hooks/system/use-shutdown-system';
 import formatBytes from '@utils/formatBytes';
 import formatTime from '@utils/formatTime';
+import ProtectedComponent from '@components/ProtectedComponent';
 
 export default function SystemHealthPage() {
   const { data, isLoading, error } = useHealthCheck();
@@ -54,57 +55,59 @@ export default function SystemHealthPage() {
 
   return (
     <div className='space-y-4'>
-      <SystemCard
-        title='System Actions'
-        icon={<Wrench className='w-5 h-5' />}
-        className='col-span-full'
-      >
-        <div className='flex flex-wrap gap-2'>
-          <Button
-            size='sm'
-            variant='secondary'
-            onClick={() => updates.refetch()}
-            disabled={updates.isFetching}
-          >
-            <RefreshCw className='w-4 h-4' />
-            Check Updates
-          </Button>
+      <ProtectedComponent requireScope='system:Write'>
+        <SystemCard
+          title='System Actions'
+          icon={<Wrench className='w-5 h-5' />}
+          className='col-span-full'
+        >
+          <div className='flex flex-wrap gap-2'>
+            <Button
+              size='sm'
+              variant='secondary'
+              onClick={() => updates.refetch()}
+              disabled={updates.isFetching}
+            >
+              <RefreshCw className='w-4 h-4' />
+              Check Updates
+            </Button>
 
-          <Button
-            size='sm'
-            onClick={() => applyUpdates.mutate({})}
-            disabled={applyUpdates.isPending}
-          >
-            Apply Updates
-          </Button>
+            <Button
+              size='sm'
+              onClick={() => applyUpdates.mutate({})}
+              disabled={applyUpdates.isPending}
+            >
+              Apply Updates
+            </Button>
 
-          <Button
-            size='sm'
-            variant='secondary'
-            onClick={() => reboot.mutate()}
-            disabled={reboot.isPending}
-          >
-            <RotateCcw className='w-4 h-4' />
-            Reboot
-          </Button>
+            <Button
+              size='sm'
+              variant='secondary'
+              onClick={() => reboot.mutate()}
+              disabled={reboot.isPending}
+            >
+              <RotateCcw className='w-4 h-4' />
+              Reboot
+            </Button>
 
-          <Button
-            size='sm'
-            variant='destructive'
-            onClick={() => shutdown.mutate()}
-            disabled={shutdown.isPending}
-          >
-            <Power className='w-4 h-4' />
-            Shutdown
-          </Button>
-        </div>
-
-        {updates.data?.available && (
-          <div className='text-sm text-yellow-400 mt-2'>
-            Updates available: {updates.data.available}
+            <Button
+              size='sm'
+              variant='destructive'
+              onClick={() => shutdown.mutate()}
+              disabled={shutdown.isPending}
+            >
+              <Power className='w-4 h-4' />
+              Shutdown
+            </Button>
           </div>
-        )}
-      </SystemCard>
+
+          {updates.data?.available && (
+            <div className='text-sm text-yellow-400 mt-2'>
+              Updates available: {updates.data.available}
+            </div>
+          )}
+        </SystemCard>
+      </ProtectedComponent>
       <SystemCard
         title='System'
         icon={<Server className='w-5 h-5' />}

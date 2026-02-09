@@ -259,7 +259,7 @@ export default function SingleUserPage() {
 const ALL_SCOPES = [
   'system:*',
   'system:Read',
-  'system:Edit',
+  'system:Write',
   'users:*',
   'users:List',
   'users:Get',
