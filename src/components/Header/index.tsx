@@ -9,12 +9,12 @@ export default function Header() {
   const { toggle } = useSidebarStore();
   return (
     <header className='fixed top-0 inset-x-0'>
-      <div className='h-12 flex items-center gap-2 md:gap-3 pl-2 pr-1 md:px-4 border-b border-gray-700 bg-gray-800'>
+      <div className='h-12 flex items-center gap-2 md:gap-3 pl-2 pr-1 md:px-4 border-b border-border bg-background'>
         <button
           onClick={toggle}
-          className='block md:hidden p-2 rounded-md hover:bg-gray-700'
+          className='block md:hidden p-2 rounded-md hover:bg-secondary'
         >
-          <Menu className='h-5 w-5 text-gray-200' />
+          <Menu className='h-5 w-5 text-foreground' />
         </button>
 
         <div className='shrink-0 md:mr-4'>
@@ -38,7 +38,7 @@ function MiniLogo() {
   return (
     <Link to='/'>
       <div className='flex items-center justify-center h-8 w-8  bg-linear-to-br from-blue-600 to-purple-600 rounded-sm'>
-        <span className='text-white font-bold text-sm mt-0.5'>W</span>
+        <span className='text-foreground font-bold text-sm mt-0.5'>W</span>
       </div>
     </Link>
   );

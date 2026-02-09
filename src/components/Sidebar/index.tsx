@@ -112,7 +112,7 @@ function SidebarContent({
     <aside
       style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-gray-900 border-r border-gray-700 rounded-r-lg md:rounded-none shadow-lg',
+        'z-50 bg-gray-900 border-r border-border rounded-r-sm md:rounded-none shadow-lg',
         'flex flex-col fixed inset-y-0 left-0 w-64',
         'transition-all md:static',
         !desktop && 'duration-200 ease-in-out',
@@ -132,7 +132,7 @@ function SidebarHeader() {
   const { close } = useSidebarStore();
 
   return (
-    <div className='flex items-center border-b border-gray-700 p-2 md:hidden'>
+    <div className='flex items-center border-b border-border p-2 md:hidden'>
       <Button onClick={close} variant='ghost' size='icon'>
         <ChevronLeft className='h-5 w-5' />
       </Button>
@@ -159,13 +159,15 @@ function SidebarMenuItem({
 }: SidebarMenuItemProps) {
   const { width } = useSidebarStore();
 
-  const baseClasses =
-    'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300';
-  const activeClasses = active ? 'bg-gray-800 font-medium' : '';
-
   if (!tooltip) {
     return (
-      <div className={cn(baseClasses, activeClasses, className)}>
+      <div
+        className={cn(
+          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-accent/50 text-foreground',
+          active && 'bg-accent/50 font-medium',
+          className,
+        )}
+      >
         {children}
       </div>
     );
@@ -177,16 +179,20 @@ function SidebarMenuItem({
     <Tooltip disabled={disabled}>
       <TooltipTrigger
         render={(props) => (
-          <div {...props} className={cn(baseClasses, activeClasses, className)}>
+          <div
+            {...props}
+            className={cn(
+              'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-accent/50 text-foreground',
+              active && 'bg-accent/50 font-medium',
+              className,
+            )}
+          >
             {children}
           </div>
         )}
       />
-      <TooltipContent
-        side='right'
-        sideOffset={20}
-        className='bg-gray-950 text-white'
-      >
+
+      <TooltipContent side='right' sideOffset={20}>
         {tooltip}
       </TooltipContent>
     </Tooltip>
@@ -242,10 +248,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           disabled={loading}
         >
           <Avatar
-            className={cn(
-              'after:border-0 bg-gray-950',
-              isSudo && 'bg-red-500 ring-2 ring-red-500',
-            )}
+            className={cn(isSudo && 'bg-destructive ring-2 ring-destructive')}
             loading={loading}
           >
             <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
@@ -259,19 +262,13 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           <ChevronUp className='h-4 w-4' />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          side='top'
-          sideOffset={20}
-          className='bg-gray-800 rounded-sm shadow-md'
-        >
+        <DropdownMenuContent side='top' sideOffset={20}>
           <DropdownMenuItem
-            className='cursor-pointer hover:bg-gray-700 text-gray-200'
             render={<Link to='/profile'>Profile</Link>}
             onClick={close}
           />
           {canBeSudo && (
             <DropdownMenuItem
-              className='cursor-pointer hover:bg-gray-700 text-gray-200'
               onClick={() => {
                 switchSudo.mutate();
                 close();
@@ -279,14 +276,14 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
             >
               Sudo Mode
               {isSudo && (
-                <span className='text-red-400 text-xs font-bold ml-auto'>
+                <span className='text-destructive text-xs font-bold ml-auto'>
                   <CheckCircle />
                 </span>
               )}
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
-            className='cursor-pointer hover:bg-gray-700 text-red-400'
+            variant='destructive'
             render={<Link to='/logout'>Logout</Link>}
             onClick={close}
           />

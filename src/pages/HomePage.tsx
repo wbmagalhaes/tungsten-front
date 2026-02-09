@@ -36,7 +36,7 @@ export default function HomePage() {
           )}
 
           {isAuthenticated && (
-            <span className='text-sm text-gray-400'>
+            <span className='text-sm text-muted-foreground'>
               Want to login with another account?{' '}
               <ButtonLink variant='link' className='p-0' to='/login'>
                 Click here
@@ -47,17 +47,17 @@ export default function HomePage() {
 
         {!isLoading && isAuthenticated && updateAvailable && (
           <div
-            className='fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-2 rounded shadow-lg cursor-pointer'
+            className='fixed bottom-4 right-4 bg-emerald-600 text-foreground px-4 py-2 rounded shadow-lg cursor-pointer'
             onClick={update}
           >
             New version available - Click to update
           </div>
         )}
 
-        <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
+        <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
           Tungsten
         </h1>
-        <p className='text-xl text-gray-400 mb-10 max-w-2xl mx-auto'>
+        <p className='text-xl text-muted-foreground mb-10 max-w-2xl mx-auto'>
           Personal self-hosted server running useful tools.
         </p>
         <div className='max-w-3xl mx-auto mb-12'>
@@ -128,7 +128,7 @@ export default function HomePage() {
             )}
 
             {needsInstructions && (
-              <div className='text-sm text-gray-400 text-center'>
+              <div className='text-sm text-muted-foreground text-center'>
                 iOS: Share → Add to Home Screen
                 <br />
                 Firefox: Browser menu → Add to Home Screen
@@ -190,13 +190,13 @@ function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
       <CardContent>
         <div className='flex items-start gap-4'>
           <div
-            className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border ${colorClasses[color as keyof typeof colorClasses]}`}
+            className={`w-12 h-12 rounded-sm flex items-center justify-center shrink-0 border ${colorClasses[color as keyof typeof colorClasses]}`}
           >
             {icon}
           </div>
           <div>
-            <h3 className='font-semibold text-white mb-1'>{title}</h3>
-            <p className='text-gray-400 text-sm'>{description}</p>
+            <h3 className='font-semibold text-foreground mb-1'>{title}</h3>
+            <p className='text-muted-foreground text-sm'>{description}</p>
           </div>
         </div>
       </CardContent>
@@ -227,7 +227,7 @@ function StackItem({ icon, name, label, color }: StackItemProps) {
       <div className={cn('font-mono font-bold text-lg', colorClasses[color])}>
         {name}
       </div>
-      <div className='text-sm text-gray-400'>{label}</div>
+      <div className='text-sm text-muted-foreground'>{label}</div>
     </div>
   );
 }

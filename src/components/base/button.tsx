@@ -4,18 +4,18 @@ import { cn } from '@utils/cn';
 import { Link } from 'react-router-dom';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none outline-none cursor-pointer',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-600 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none outline-none cursor-pointer',
   {
     variants: {
       variant: {
         default:
-          'bg-linear-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg',
+          'bg-linear-to-r from-blue-600 to-purple-600 text-foreground hover:shadow-lg',
         outline:
-          'border border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700',
-        secondary: 'bg-gray-700 text-white hover:bg-gray-600',
-        ghost: 'hover:bg-gray-700 text-gray-200',
+          'border border-border bg-background text-foreground hover:bg-secondary',
+        secondary: 'bg-secondary text-foreground hover:bg-secondary/80',
+        ghost: 'hover:bg-accent text-secondary-foreground',
         destructive:
-          'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-600/30',
+          'bg-destructive/20 text-red-400 hover:bg-destructive/30 border border-destructive/30',
         link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
       },
       size: {

@@ -63,7 +63,7 @@ export default function MediaPage() {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-64'>
-        <div className='text-gray-400'>Loading files...</div>
+        <div className='text-muted-foreground'>Loading files...</div>
       </div>
     );
   }
@@ -106,9 +106,9 @@ export default function MediaPage() {
       />
 
       {data.results.length === 0 ? (
-        <div className='bg-gray-800 border border-gray-700 rounded-lg p-12 text-center'>
-          <Archive className='w-16 h-16 text-gray-600 mx-auto mb-4' />
-          <p className='text-gray-400'>No files uploaded yet</p>
+        <div className='bg-background border border-border rounded-sm p-12 text-center'>
+          <Archive className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
+          <p className='text-muted-foreground'>No files uploaded yet</p>
         </div>
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
@@ -188,29 +188,29 @@ function FileCard({ file }: FileCardProps) {
 
       <CardContent className='space-y-2 text-sm'>
         <div className='flex justify-between'>
-          <span className='text-gray-400'>Type:</span>
+          <span className='text-muted-foreground'>Type:</span>
           <span
-            className='text-gray-200 truncate ml-2'
+            className='text-foreground truncate ml-2'
             title={file.mime || 'Unknown'}
           >
             {file.mime || 'Unknown'}
           </span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-gray-400'>Size:</span>
-          <span className='text-gray-200 text-nowrap'>
+          <span className='text-muted-foreground'>Size:</span>
+          <span className='text-foreground text-nowrap'>
             {formatBytes(file.size)}
           </span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-gray-400'>Visibility:</span>
+          <span className='text-muted-foreground'>Visibility:</span>
           <Badge variant={file.visibility === 'public' ? 'success' : 'warning'}>
             {file.visibility}
           </Badge>
         </div>
         <div className='flex justify-between'>
-          <span className='text-gray-400'>Created:</span>
-          <span className='text-gray-200 text-nowrap'>
+          <span className='text-muted-foreground'>Created:</span>
+          <span className='text-foreground text-nowrap'>
             {new Date(file.created_at).toLocaleString('pt-BR')}
           </span>
         </div>

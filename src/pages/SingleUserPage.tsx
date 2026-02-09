@@ -47,7 +47,7 @@ export default function SingleUserPage() {
   if (isLoading || !user) {
     return (
       <div className='flex items-center justify-center h-64'>
-        <div className='text-gray-400'>Loading user...</div>
+        <div className='text-muted-foreground'>Loading user...</div>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function SingleUserPage() {
                   className='w-full h-full object-cover'
                 />
               ) : (
-                <User className='w-6 h-6 text-white' />
+                <User className='w-6 h-6 text-foreground' />
               )}
             </div>
           </CardIcon>
@@ -192,7 +192,7 @@ export default function SingleUserPage() {
           </div>
 
           {hasChanges && (
-            <div className='mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-lg text-yellow-400 text-sm flex gap-2'>
+            <div className='mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-sm text-yellow-400 text-sm flex gap-2'>
               <AlertTriangle className='w-4 h-4 shrink-0' />
               <span>
                 You have unsaved changes. Click "Save" to apply or "Cancel" to

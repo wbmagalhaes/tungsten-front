@@ -30,7 +30,7 @@ export default function UsersPage() {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-64'>
-        <div className='text-gray-400'>Loading users...</div>
+        <div className='text-muted-foreground'>Loading users...</div>
       </div>
     );
   }
@@ -53,29 +53,29 @@ export default function UsersPage() {
       {!data?.results.length ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Users className='w-16 h-16 text-gray-600 mx-auto mb-4' />
-            <p className='text-gray-400'>No users found</p>
+            <Users className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
+            <p className='text-muted-foreground'>No users found</p>
           </CardContent>
         </Card>
       ) : (
         <>
           <Card className='hidden md:block overflow-hidden'>
             <table className='w-full text-sm'>
-              <thead className='bg-gray-900 border-b border-gray-700'>
+              <thead className='bg-muted border-b border-border'>
                 <tr>
-                  <th className='p-3 text-left text-gray-300 font-semibold'>
+                  <th className='p-3 text-left text-foreground font-semibold'>
                     Username
                   </th>
-                  <th className='p-3 text-left text-gray-300 font-semibold'>
+                  <th className='p-3 text-left text-foreground font-semibold'>
                     Full Name
                   </th>
-                  <th className='p-3 text-left text-gray-300 font-semibold'>
+                  <th className='p-3 text-left text-foreground font-semibold'>
                     Email
                   </th>
-                  <th className='p-3 text-left text-gray-300 font-semibold'>
+                  <th className='p-3 text-left text-foreground font-semibold'>
                     Sudo
                   </th>
-                  <th className='p-3 text-right text-gray-300 font-semibold'>
+                  <th className='p-3 text-right text-foreground font-semibold'>
                     Actions
                   </th>
                 </tr>
@@ -84,11 +84,11 @@ export default function UsersPage() {
                 {data.results.map((u) => (
                   <tr
                     key={u.id}
-                    className='border-b border-gray-700 last:border-b-0 hover:bg-gray-900/50 transition-colors'
+                    className='border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors'
                   >
-                    <td className='p-3 text-gray-200'>{u.username}</td>
-                    <td className='p-3 text-gray-200'>{u.fullname || '-'}</td>
-                    <td className='p-3 text-gray-200'>{u.email || '-'}</td>
+                    <td className='p-3 text-foreground'>{u.username}</td>
+                    <td className='p-3 text-foreground'>{u.fullname || '-'}</td>
+                    <td className='p-3 text-foreground'>{u.email || '-'}</td>
                     <td className='p-3'>
                       {u.is_sudo ? (
                         <Badge variant='purple'>
@@ -125,27 +125,27 @@ export default function UsersPage() {
                 <CardContent>
                   <div className='flex items-start justify-between mb-3'>
                     <div className='flex-1 min-w-0'>
-                      <h3 className='font-semibold text-white text-lg mb-2'>
+                      <h3 className='font-semibold text-foreground text-lg mb-2'>
                         {u.username}
                       </h3>
                       <div className='space-y-1'>
                         <div>
-                          <span className='text-xs text-gray-400'>
+                          <span className='text-xs text-muted-foreground'>
                             Fullname:
                           </span>
-                          <p className='text-sm text-gray-200'>
+                          <p className='text-sm text-foreground'>
                             {u.fullname || (
-                              <span className='text-gray-500 italic'>
+                              <span className='text-muted-foreground italic'>
                                 not informed
                               </span>
                             )}
                           </p>
                         </div>
                         <div>
-                          <span className='text-xs text-gray-400'>Email:</span>
-                          <p className='text-sm text-gray-200'>
+                          <span className='text-xs text-muted-foreground'>Email:</span>
+                          <p className='text-sm text-foreground'>
                             {u.email || (
-                              <span className='text-gray-500 italic'>
+                              <span className='text-muted-foreground italic'>
                                 not informed
                               </span>
                             )}
@@ -181,7 +181,7 @@ export default function UsersPage() {
       {data && data.results.length > 0 && (
         <Card>
           <CardContent className='flex items-center justify-between'>
-            <div className='text-sm text-gray-400'>
+            <div className='text-sm text-muted-foreground'>
               Page {page} • {data.results.length} users
             </div>
             <div className='flex gap-2'>

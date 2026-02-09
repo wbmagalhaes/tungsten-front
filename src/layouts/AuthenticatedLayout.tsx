@@ -20,7 +20,7 @@ export default function AuthenticatedLayout() {
     <div
       className={cn(
         'min-h-screen flex flex-col',
-        isSudo && 'border-4 border-red-500 rounded-xl',
+        isSudo && 'border-4 border-destructive rounded-xl',
       )}
     >
       <Header />
@@ -36,30 +36,30 @@ export default function AuthenticatedLayout() {
           <span
             className={cn(
               'fixed top-0 left-0 w-0 h-0 border-solid border-6 z-9999',
-              'border-t-red-500 border-l-red-500 border-r-transparent border-b-transparent',
+              'border-t-destructive border-l-destructive border-r-transparent border-b-transparent',
             )}
           />
           <span
             className={cn(
               'fixed top-0 right-0 w-0 h-0 border-solid border-6 z-9999',
-              'border-t-red-500 border-r-red-500 border-l-transparent border-b-transparent',
+              'border-t-destructive border-r-destructive border-l-transparent border-b-transparent',
             )}
           />
           <span
             className={cn(
               'fixed bottom-0 left-0 w-0 h-0 border-solid border-6 z-9999',
-              'border-b-red-500 border-l-red-500 border-t-transparent border-r-transparent',
+              'border-b-destructive border-l-destructive border-t-transparent border-r-transparent',
             )}
           />
           <span
             className={cn(
               'fixed bottom-0 right-0 w-0 h-0 border-solid border-6 z-9999',
-              'border-b-red-500 border-r-red-500 border-t-transparent border-l-transparent',
+              'border-b-destructive border-r-destructive border-t-transparent border-l-transparent',
             )}
           />
 
-          <div className='fixed inset-0 border-4 border-red-500 flex z-9999 rounded-xl pointer-events-none'>
-            <div className='bg-red-500 text-white text-center pb-1 px-2 rounded-b-sm mx-auto mb-auto font-bold text-xs uppercase tracking-wide'>
+          <div className='fixed inset-0 border-4 border-destructive flex z-9999 rounded-xl pointer-events-none'>
+            <div className='bg-destructive text-foreground text-center pb-1 px-2 rounded-b-sm mx-auto mb-auto font-bold text-xs uppercase tracking-wide'>
               Sudo Mode
             </div>
           </div>

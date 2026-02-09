@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-
 import { cn } from '@utils/cn';
 import { MoreHorizontalIcon } from 'lucide-react';
 
@@ -49,7 +48,7 @@ function BreadcrumbLink({
     props: mergeProps<'a'>(
       {
         className: cn(
-          'hover:text-foreground transition-colors truncate max-w-full',
+          'text-muted-foreground hover:text-foreground transition-colors truncate max-w-full',
           className,
         ),
       },
@@ -86,7 +85,7 @@ function BreadcrumbSeparator({
       data-slot='breadcrumb-separator'
       role='presentation'
       aria-hidden='true'
-      className={cn('[&>svg]:size-3.5 select-none', className)}
+      className={cn('[&>svg]:size-3.5 select-none text-muted-foreground', className)}
       {...props}
     >
       {children ?? '/'}
@@ -104,7 +103,7 @@ function BreadcrumbEllipsis({
       role='presentation'
       aria-hidden='true'
       className={cn(
-        'size-5 [&>svg]:size-4 flex items-center justify-center',
+        'size-5 [&>svg]:size-4 flex items-center justify-center text-muted-foreground',
         className,
       )}
       {...props}

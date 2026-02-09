@@ -24,7 +24,7 @@ export default function SystemHealthPage() {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-64'>
-        <div className='text-gray-400'>Loading system data...</div>
+        <div className='text-muted-foreground'>Loading system data...</div>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export default function SystemHealthPage() {
         icon={<Server className='w-5 h-5' />}
         className='col-span-full'
       >
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:divide-x divide-gray-700'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:divide-x divide-secondary'>
           <div className='md:pr-4'>
             <InfoItem label='Hostname' value={data.hostname} />
           </div>
@@ -71,16 +71,16 @@ export default function SystemHealthPage() {
           <div className='space-y-3'>
             <div>
               <div className='flex justify-between items-center mb-1'>
-                <span className='text-sm text-gray-400'>Usage</span>
-                <span className='text-lg font-bold text-white text-nowrap'>
+                <span className='text-sm text-muted-foreground'>Usage</span>
+                <span className='text-lg font-bold text-foreground text-nowrap'>
                   {data.cpu_usage.toFixed(1)}%
                 </span>
               </div>
               <ProgressBar value={data.cpu_usage} />
             </div>
 
-            <div className='pt-2 border-t border-gray-700'>
-              <h4 className='text-sm font-semibold text-gray-300 mb-2'>
+            <div className='pt-2 border-t border-border'>
+              <h4 className='text-sm font-semibold text-foreground mb-2'>
                 Temperatures
               </h4>
               <div className='space-y-1.5'>
@@ -88,8 +88,8 @@ export default function SystemHealthPage() {
                   .sort((a, b) => a.label.localeCompare(b.label))
                   .map((c) => (
                     <div key={c.label} className='flex justify-between text-sm'>
-                      <span className='text-gray-400'>{c.label}</span>
-                      <span className='text-gray-200 text-nowrap'>
+                      <span className='text-muted-foreground'>{c.label}</span>
+                      <span className='text-foreground text-nowrap'>
                         {c.temperature.toFixed(1)} °C
                       </span>
                     </div>
@@ -106,8 +106,8 @@ export default function SystemHealthPage() {
           <div className='space-y-3'>
             <div>
               <div className='flex justify-between items-center mb-1'>
-                <span className='text-sm text-gray-400'>Usage</span>
-                <span className='text-lg font-bold text-white text-nowrap'>
+                <span className='text-sm text-muted-foreground'>Usage</span>
+                <span className='text-lg font-bold text-foreground text-nowrap'>
                   {data.gpu_usage}%
                 </span>
               </div>
@@ -125,8 +125,8 @@ export default function SystemHealthPage() {
           <div className='space-y-3'>
             <div>
               <div className='flex justify-between items-center mb-1'>
-                <span className='text-sm text-gray-400'>RAM</span>
-                <span className='text-sm text-gray-200 text-nowrap'>
+                <span className='text-sm text-muted-foreground'>RAM</span>
+                <span className='text-sm text-foreground text-nowrap'>
                   {(data.mem_used / 1024 ** 3).toFixed(2)} GB /{' '}
                   {(data.mem_total / 1024 ** 3).toFixed(2)} GB
                 </span>
@@ -139,8 +139,8 @@ export default function SystemHealthPage() {
 
             <div>
               <div className='flex justify-between items-center mb-1'>
-                <span className='text-sm text-gray-400'>Swap</span>
-                <span className='text-sm text-gray-200 text-nowrap'>
+                <span className='text-sm text-muted-foreground'>Swap</span>
+                <span className='text-sm text-foreground text-nowrap'>
                   {(data.swap_used / 1024 ** 3).toFixed(2)} GB /{' '}
                   {(data.swap_total / 1024 ** 3).toFixed(2)} GB
                 </span>
@@ -156,8 +156,8 @@ export default function SystemHealthPage() {
         <SystemCard title='Disk' icon={<HardDrive className='w-5 h-5' />}>
           <div>
             <div className='flex justify-between items-center mb-1'>
-              <span className='text-sm text-gray-400'>Storage</span>
-              <span className='text-sm text-gray-200 text-nowrap'>
+              <span className='text-sm text-muted-foreground'>Storage</span>
+              <span className='text-sm text-foreground text-nowrap'>
                 {(data.disk_used / 1024 ** 3).toFixed(2)} GB /{' '}
                 {(data.disk_total / 1024 ** 3).toFixed(2)} GB
               </span>
@@ -180,10 +180,10 @@ export default function SystemHealthPage() {
           <div className='space-y-3'>
             <div>
               <div className='flex justify-between items-center mb-1'>
-                <span className='text-sm text-gray-400 capitalize'>
+                <span className='text-sm text-muted-foreground capitalize'>
                   {data.battery_status}
                 </span>
-                <span className='text-lg font-bold text-white text-nowrap'>
+                <span className='text-lg font-bold text-foreground text-nowrap'>
                   {data.battery_percent.toFixed(0)}%
                 </span>
               </div>
@@ -191,7 +191,7 @@ export default function SystemHealthPage() {
             </div>
 
             {data.battery_hours_left >= 0 && data.battery_status !== 'full' && (
-              <div className='text-sm text-gray-400 text-nowrap'>
+              <div className='text-sm text-muted-foreground text-nowrap'>
                 {data.battery_status === 'charging'
                   ? `Time to 100%: ${data.battery_hours_left.toFixed(1)}h`
                   : `Time remaining: ${data.battery_hours_left.toFixed(1)}h`}
@@ -231,8 +231,8 @@ interface InfoItemProps {
 function InfoItem({ label, value }: InfoItemProps) {
   return (
     <div className='flex justify-between items-center'>
-      <span className='text-sm text-gray-400'>{label}:</span>
-      <span className='text-sm text-gray-200 font-medium text-nowrap'>
+      <span className='text-sm text-muted-foreground'>{label}:</span>
+      <span className='text-sm text-foreground font-medium text-nowrap'>
         {value}
       </span>
     </div>
@@ -254,7 +254,7 @@ function ProgressBar({ value, color = 'default' }: ProgressBarProps) {
   };
 
   return (
-    <div className='w-full bg-gray-700 rounded-full h-2 overflow-hidden'>
+    <div className='w-full bg-secondary rounded-full h-2 overflow-hidden'>
       <div
         className={`h-full ${colors[color]} transition-all duration-300`}
         style={{ width: `${Math.min(value, 100)}%` }}

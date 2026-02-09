@@ -19,7 +19,7 @@ export function HeaderBreadcrumbs() {
   const visibleCrumbs = isMobile ? collapseCrumbs(crumbs) : crumbs;
 
   return (
-    <Breadcrumb className='text-gray-300 max-w-full'>
+    <Breadcrumb className='max-w-full'>
       <BreadcrumbList>
         {visibleCrumbs.map((c, i) => {
           const isFirst = i === 0;
@@ -35,7 +35,7 @@ export function HeaderBreadcrumbs() {
                     {c.label}
                   </BreadcrumbPage>
                 ) : isCollapsed ? (
-                  <span className='text-white select-none'>...</span>
+                  <span className='text-foreground select-none'>...</span>
                 ) : (
                   <BreadcrumbLink
                     className={cn(isFirst && 'font-bold')}

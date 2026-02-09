@@ -53,7 +53,7 @@ export default function LoginPage() {
               />
 
               {isError && (
-                <div className='p-3 bg-red-900/30 border border-red-700 rounded-lg text-red-400 text-sm flex items-start gap-2'>
+                <div className='p-3 bg-destructive/30 border border-destructive rounded-sm text-destructive text-sm flex items-start gap-2'>
                   <AlertCircle className='w-4 h-4 mt-0.5 shrink-0' />
                   <span>{error.message}</span>
                 </div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <p className='text-sm text-gray-500 flex gap-1 justify-center'>
+        <p className='text-sm text-muted-foreground flex gap-1 justify-center'>
           <span>Tungsten Server</span>
           <Dot />
           <span>Personal Self-Hosted</span>

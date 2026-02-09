@@ -51,7 +51,7 @@ function ContextMenuContent({
         <ContextMenuPrimitive.Popup
           data-slot='context-menu-content'
           className={cn(
-            'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground min-w-36 rounded-lg p-1 shadow-md ring-1 duration-100 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 z-50 max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none',
+            'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-background text-popover-foreground min-w-36 rounded-sm p-1 shadow-md ring-1 duration-100 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 z-50 max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none',
             className,
           )}
           {...props}
@@ -79,7 +79,7 @@ function ContextMenuLabel({
       data-slot='context-menu-label'
       data-inset={inset}
       className={cn(
-        'text-muted-foreground px-1.5 py-1 text-xs font-medium data-inset:pl-8',
+        'text-accent-foreground px-1.5 py-1 text-xs font-medium data-inset:pl-8',
         className,
       )}
       {...props}
@@ -235,7 +235,7 @@ function ContextMenuShortcut({
     <span
       data-slot='context-menu-shortcut'
       className={cn(
-        'text-muted-foreground group-focus/context-menu-item:text-accent-foreground ml-auto text-xs tracking-widest',
+        'text-accent-foreground group-focus/context-menu-item:text-accent-foreground ml-auto text-xs tracking-widest',
         className,
       )}
       {...props}

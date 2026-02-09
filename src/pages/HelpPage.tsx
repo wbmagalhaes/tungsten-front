@@ -45,10 +45,10 @@ export default function HelpPage() {
   return (
     <div className='container mx-auto px-4 pt-8 md:pt-16'>
       <div className='max-w-4xl mx-auto text-center'>
-        <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
+        <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
           Help Center
         </h1>
-        <p className='text-xl text-gray-300 mb-10 max-w-2xl mx-auto'>
+        <p className='text-xl text-muted-foreground mb-10 max-w-2xl mx-auto'>
           Find guides and information to help you use Tungsten efficiently.
         </p>
 
@@ -59,17 +59,17 @@ export default function HelpPage() {
                 <div className='flex items-start gap-4'>
                   <div
                     className={cn(
-                      'w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border',
+                      'w-12 h-12 rounded-sm flex items-center justify-center shrink-0 border',
                       colorClasses[topic.color],
                     )}
                   >
                     {topic.icon}
                   </div>
                   <div className='text-left'>
-                    <h3 className='font-semibold text-white mb-1'>
+                    <h3 className='font-semibold text-foreground mb-1'>
                       {topic.title}
                     </h3>
-                    <p className='text-gray-400 text-sm'>{topic.description}</p>
+                    <p className='text-muted-foreground text-sm'>{topic.description}</p>
                   </div>
                 </div>
               </CardContent>

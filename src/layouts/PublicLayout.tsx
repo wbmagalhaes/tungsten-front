@@ -33,8 +33,8 @@ function PublicHeader() {
 
 function PublicFooter() {
   return (
-    <footer className='container mx-auto px-4 py-4 mt-20 border-t border-gray-700'>
-      <div className='text-start text-gray-400'>
+    <footer className='container mx-auto px-4 py-4 mt-20 border-t border-border'>
+      <div className='text-start text-muted-foreground'>
         <p>&copy; 2026 tungsten</p>
       </div>
     </footer>
@@ -45,12 +45,12 @@ function Logo() {
   return (
     <div className='flex items-center gap-3 cursor-pointer'>
       <div className='relative w-12 h-12 bg-linear-to-br from-blue-600 to-purple-600 rounded-sm flex items-center justify-center'>
-        <span className='text-white font-bold text-2xl'>W</span>
-        <span className='absolute top-0.5 right-1 text-white text-[10px] font-bold font-mono'>
+        <span className='text-foreground font-bold text-2xl'>W</span>
+        <span className='absolute top-0.5 right-1 text-foreground text-[10px] font-bold font-mono'>
           74
         </span>
       </div>
-      <span className='text-2xl font-bold text-white'>Tungsten</span>
+      <span className='text-2xl font-bold text-foreground'>Tungsten</span>
     </div>
   );
 }

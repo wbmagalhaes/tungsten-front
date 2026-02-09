@@ -11,10 +11,10 @@ import {
   CommandShortcut,
 } from '@components/base/command';
 import { useState } from 'react';
-import { Button } from '@components/base/button';
 import { Kbd, KbdGroup } from '@components/base/kbd';
 import { useHotkeys } from '@hooks/use-hotkeys';
 import { useIsMobile } from '@hooks/use-mobile';
+import { Button } from '@components/base/button';
 
 export function HeaderCommands() {
   const [open, setOpen] = useState(false);
@@ -23,31 +23,27 @@ export function HeaderCommands() {
   useHotkeys('ctrl+k', () => setOpen(true));
 
   return (
-    <div className='text-gray-200 flex items-center'>
-      <Button
-        variant='outline'
-        size='sm'
-        className='bg-gray-900/70'
-        onClick={() => setOpen(true)}
-      >
-        <SearchIcon className='h-4 w-4' />
-        {!isMobile && (
-          <>
-            <span>Search or type a command...</span>
+    <>
+      <div className='flex gap-2 bg-input hover:bg-background border border-border rounded-sm'>
+        <Button
+          variant='ghost'
+          size='sm'
+          className='bg-transparent hover:bg-transparent'
+          onClick={() => setOpen(true)}
+        >
+          <SearchIcon className='size-4' />
+          {!isMobile && <>Search or type a command...</>}
+          {!isMobile && (
             <KbdGroup>
               <Kbd>Ctrl</Kbd>
               <span>+</span>
               <Kbd>K</Kbd>
             </KbdGroup>
-          </>
-        )}
-      </Button>
+          )}
+        </Button>
+      </div>
 
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        className='bg-gray-900 text-gray-200'
-      >
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder='Type a command or search...' />
           <CommandList>
@@ -71,6 +67,6 @@ export function HeaderCommands() {
           </CommandList>
         </Command>
       </CommandDialog>
-    </div>
+    </>
   );
 }
