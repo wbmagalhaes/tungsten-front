@@ -1,4 +1,6 @@
 import useHealthCheck from '@hooks/system/use-health-check';
+import formatBytes from '@utils/formatBytes';
+import formatTime from '@utils/formatTime';
 import {
   Cpu,
   HardDrive,
@@ -8,6 +10,13 @@ import {
   Monitor,
   Server,
 } from 'lucide-react';
+import {
+  Card,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardContent,
+} from '@components/base/card';
 
 export default function SystemDashboardPage() {
   const { data, isLoading, error } = useHealthCheck();
@@ -46,7 +55,7 @@ export default function SystemDashboardPage() {
             <InfoItem label='Kernel' value={data.kernel_version} />
           </div>
           <div className='md:pr-4'>
-            <InfoItem label='Uptime' value={formatUptime(data.uptime)} />
+            <InfoItem label='Uptime' value={formatTime(data.uptime)} />
           </div>
           <div className='md:pr-4'>
             <InfoItem
@@ -204,15 +213,13 @@ interface SystemCardProps {
 
 function SystemCard({ title, icon, children, className }: SystemCardProps) {
   return (
-    <div
-      className={`bg-gray-900 border border-gray-700 rounded-sm p-5 shadow ${className || ''}`}
-    >
-      <div className='flex items-center gap-2 mb-4'>
-        <div className='text-blue-400'>{icon}</div>
-        <h2 className='font-semibold text-lg text-white'>{title}</h2>
-      </div>
-      {children}
-    </div>
+    <Card className={className}>
+      <CardHeader>
+        <CardIcon>{icon}</CardIcon>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
   );
 }
 
@@ -254,28 +261,4 @@ function ProgressBar({ value, color = 'default' }: ProgressBarProps) {
       />
     </div>
   );
-}
-
-function formatUptime(seconds: number) {
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  const parts = [];
-  if (days) parts.push(`${days}d`);
-  if (hours) parts.push(`${hours}h`);
-  if (minutes) parts.push(`${minutes}m`);
-
-  return parts.join(' ') || '0m';
-}
-
-function formatBytes(bytes: number) {
-  const KB = 1024;
-  const MB = KB * 1024;
-  const GB = MB * 1024;
-
-  if (bytes < KB) return `${bytes} B`;
-  if (bytes < MB) return `${(bytes / KB).toFixed(2)} KB`;
-  if (bytes < GB) return `${(bytes / MB).toFixed(2)} MB`;
-  return `${(bytes / GB).toFixed(2)} GB`;
 }

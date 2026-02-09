@@ -29,7 +29,11 @@ export function HeaderAlerts() {
           render={
             <TooltipTrigger
               render={
-                <Button onClick={() => setOpen(true)}>
+                <Button
+                  onClick={() => setOpen(true)}
+                  variant='ghost'
+                  size='icon-sm'
+                >
                   <BellIcon />
                 </Button>
               }

@@ -1,5 +1,6 @@
+import { ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 export default function PublicLayout() {
   return (
@@ -15,38 +16,15 @@ export default function PublicLayout() {
 
 function PublicHeader() {
   const { isAuthenticated } = useAuthStore();
-  const navigate = useNavigate();
 
   return (
     <header className='fixed top-0 inset-x-0 bg-gray-900/80 z-50'>
       <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
-        <div
-          className='flex items-center gap-3 cursor-pointer'
-          onClick={() => navigate('/')}
-        >
-          <div className='relative w-12 h-12 bg-linear-to-br from-blue-600 to-purple-600 rounded-sm flex items-center justify-center'>
-            <span className='text-white font-bold text-2xl'>W</span>
-            <span className='absolute top-0.5 right-1 text-white text-[10px] font-bold font-mono'>
-              74
-            </span>
-          </div>
-          <span className='text-2xl font-bold text-white'>Tungsten</span>
-        </div>
-
+        <ButtonLink to='/' render={<Logo />} />
         {isAuthenticated ? (
-          <button
-            onClick={() => navigate('/root')}
-            className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold'
-          >
-            Dashboard
-          </button>
+          <ButtonLink to='/root'>Dashboard</ButtonLink>
         ) : (
-          <button
-            onClick={() => navigate('/login')}
-            className='px-6 py-2 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold'
-          >
-            Login
-          </button>
+          <ButtonLink to='/login'>Login</ButtonLink>
         )}
       </div>
     </header>
@@ -60,5 +38,19 @@ function PublicFooter() {
         <p>&copy; 2026 tungsten</p>
       </div>
     </footer>
+  );
+}
+
+function Logo() {
+  return (
+    <div className='flex items-center gap-3 cursor-pointer'>
+      <div className='relative w-12 h-12 bg-linear-to-br from-blue-600 to-purple-600 rounded-sm flex items-center justify-center'>
+        <span className='text-white font-bold text-2xl'>W</span>
+        <span className='absolute top-0.5 right-1 text-white text-[10px] font-bold font-mono'>
+          74
+        </span>
+      </div>
+      <span className='text-2xl font-bold text-white'>Tungsten</span>
+    </div>
   );
 }

@@ -23,9 +23,11 @@ export function HeaderCommands() {
   useHotkeys('ctrl+k', () => setOpen(true));
 
   return (
-    <div className='text-gray-200'>
+    <div className='text-gray-200 flex items-center'>
       <Button
-        className='md:border md:border-gray-500 bg-gray-900/70'
+        variant='outline'
+        size='sm'
+        className='bg-gray-900/70'
         onClick={() => setOpen(true)}
       >
         <SearchIcon className='h-4 w-4' />

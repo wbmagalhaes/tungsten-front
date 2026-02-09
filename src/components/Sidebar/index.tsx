@@ -28,6 +28,7 @@ import type { User } from '@models/user';
 import { getInitials } from '@models/user';
 import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
 import { useAuthStore } from '@stores/useAuthStore';
+import { Button } from '@components/base/button';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
@@ -96,18 +97,15 @@ function SidebarHeader() {
 
   return (
     <div className='flex items-center border-b border-gray-700 p-2 md:hidden'>
-      <button
-        onClick={close}
-        className='rounded-md p-2 hover:bg-gray-800 text-gray-200'
-      >
+      <Button onClick={close} variant='ghost' size='icon'>
         <ChevronLeft className='h-5 w-5' />
-      </button>
+      </Button>
     </div>
   );
 }
 
 function SidebarMenu({ children }: { children: React.ReactNode }) {
-  return <nav className='flex flex-col gap-1 p-2 text-sm'>{children}</nav>;
+  return <nav className='flex flex-col gap-1.5 p-2 text-sm'>{children}</nav>;
 }
 
 type SidebarMenuItemProps = {

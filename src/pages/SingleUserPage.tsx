@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { UpdateUserRequest } from '@services/users.service';
 import { useUpdateSudo } from '@hooks/users/use-update-sudo';
@@ -9,7 +9,7 @@ import ProtectedComponent from '@components/ProtectedComponent';
 import {
   ArrowLeft,
   User,
-  Shield,
+  ShieldCheck,
   Save,
   Mail,
   ImageIcon,
@@ -18,12 +18,23 @@ import {
   X,
   AlertTriangle,
   LockKeyholeOpen,
+  Shield,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@components/base/card';
+import { Button, ButtonLink } from '@components/base/button';
+import { Badge } from '@components/base/badge';
+import { TextField } from '@components/base/text-field';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
-  const navigate = useNavigate();
   const { data: user, isLoading } = useGetUser(id);
   const updateUser = useUpdateUser(id);
   const updatePerms = useUpdatePermissions(id);
@@ -77,180 +88,170 @@ export default function SingleUserPage() {
 
   return (
     <div className='space-y-4 max-w-3xl mx-auto'>
-      <button
-        onClick={() => navigate('/users')}
-        className='flex items-center gap-2 text-gray-400 hover:text-white transition-colors'
-      >
+      <ButtonLink to='/users' variant='link' className='p-0' size='sm'>
         <ArrowLeft className='w-4 h-4' />
         Back to users
-      </button>
+      </ButtonLink>
 
-      <div className='bg-gray-800 border border-gray-700 p-6 rounded-sm shadow-lg'>
-        <div className='flex items-center gap-4'>
-          <div className='w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden'>
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.username}
-                className='w-full h-full object-cover'
-              />
-            ) : (
-              <User className='w-6 h-6 text-white' />
-            )}
-          </div>
+      <Card>
+        <CardHeader className='gap-3'>
+          <CardIcon>
+            <div className='w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden'>
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.username}
+                  className='w-full h-full object-cover'
+                />
+              ) : (
+                <User className='w-6 h-6 text-white' />
+              )}
+            </div>
+          </CardIcon>
           <div>
-            <h1 className='text-2xl font-semibold text-white'>
-              {user.username}
-            </h1>
-            <p className='text-sm text-gray-400'>User Profile</p>
+            <CardTitle>{user.username}</CardTitle>
+            <CardDescription>User Profile</CardDescription>
           </div>
-        </div>
-      </div>
+        </CardHeader>
+      </Card>
 
-      <div className='bg-gray-800 border border-gray-700 p-6 rounded-sm shadow-lg'>
-        <h2 className='text-lg font-semibold text-white mb-4 flex items-center gap-2'>
-          <UserCircle className='w-5 h-5' />
-          Profile Information
-        </h2>
-        <form
-          className='space-y-4'
-          onSubmit={form.handleSubmit((v) => updateUser.mutate(v))}
-        >
-          <div>
-            <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
-              <User className='w-4 h-4' />
-              Full Name
-            </label>
-            <input
-              className='w-full p-3 bg-gray-900 border border-gray-700 rounded-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600'
+      <Card>
+        <CardHeader>
+          <CardIcon>
+            <UserCircle className='w-5 h-5' />
+          </CardIcon>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            className='space-y-4'
+            onSubmit={form.handleSubmit((v) => updateUser.mutate(v))}
+          >
+            <TextField
+              label='Full Name'
+              icon={<User className='w-4 h-4' />}
               placeholder='Enter full name'
               {...form.register('fullname')}
             />
-          </div>
 
-          <div>
-            <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
-              <Mail className='w-4 h-4' />
-              Email
-            </label>
-            <input
+            <TextField
+              label='Email'
+              icon={<Mail className='w-4 h-4' />}
               type='email'
-              className='w-full p-3 bg-gray-900 border border-gray-700 rounded-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600'
-              placeholder='Enter email address'
+              placeholder='Enter email'
               {...form.register('email')}
+              error={form.formState.errors.email?.message}
             />
-          </div>
 
-          <div>
-            <label className='text-sm text-gray-400 mb-2 flex items-center gap-2'>
-              <ImageIcon className='w-4 h-4' />
-              Avatar URL
-            </label>
-            <input
-              className='w-full p-3 bg-gray-900 border border-gray-700 rounded-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600'
+            <TextField
+              label='Avatar URL'
+              icon={<ImageIcon className='w-4 h-4' />}
               placeholder='Enter avatar URL'
+              description='URL of your profile picture'
               {...form.register('avatar')}
             />
-          </div>
 
-          <ProtectedComponent requireScope='users:Edit'>
-            <button
-              type='submit'
-              className='w-full px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium'
-            >
-              <Save className='w-4 h-4' />
-              Save Profile
-            </button>
-          </ProtectedComponent>
-        </form>
-      </div>
+            <ProtectedComponent requireScope='users:Edit'>
+              <Button type='submit' className='w-full'>
+                <Save className='w-4 h-4' />
+                Save Profile
+              </Button>
+            </ProtectedComponent>
+          </form>
+        </CardContent>
+      </Card>
 
-      <div className='bg-gray-800 border border-gray-700 p-6 rounded-sm shadow-lg'>
-        <div className='flex items-center justify-between mb-4'>
-          <h2 className='text-lg font-semibold text-white flex items-center gap-2'>
+      <Card>
+        <CardHeader>
+          <CardIcon>
             <LockKeyholeOpen className='w-5 h-5' />
-            Permissions
-          </h2>
-        </div>
+          </CardIcon>
+          <CardTitle>Permissions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex flex-wrap gap-2'>
+            {ALL_SCOPES.map((scope) => {
+              const active = displayScopes.includes(scope);
+              return (
+                <Badge
+                  key={scope}
+                  render={(props) => (
+                    <button
+                      {...props}
+                      onClick={() => toggleScope(scope)}
+                      disabled={updatePerms.isPending}
+                    />
+                  )}
+                  variant={active ? 'default' : 'outline'}
+                  className='cursor-pointer hover:opacity-80 disabled:opacity-50'
+                >
+                  {scope}
+                </Badge>
+              );
+            })}
+          </div>
 
-        <div className='flex flex-wrap gap-2'>
-          {ALL_SCOPES.map((scope) => {
-            const active = displayScopes.includes(scope);
-            return (
-              <button
-                key={scope}
-                onClick={() => toggleScope(scope)}
+          {hasChanges && (
+            <div className='mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-lg text-yellow-400 text-sm flex gap-2'>
+              <AlertTriangle className='w-4 h-4 shrink-0' />
+              <span>
+                You have unsaved changes. Click "Save" to apply or "Cancel" to
+                discard.
+              </span>
+            </div>
+          )}
+
+          {hasChanges && (
+            <div className='flex gap-2 justify-end mt-4'>
+              <Button
+                onClick={savePermissions}
                 disabled={updatePerms.isPending}
-                className={`px-3 py-1.5 rounded-sm text-sm font-medium border transition-all disabled:opacity-50 ${
-                  active
-                    ? 'bg-blue-600 border-blue-500 text-white'
-                    : 'bg-gray-900 border-gray-700 text-gray-300 hover:bg-gray-700'
-                }`}
+                variant='secondary'
+                size='sm'
+                className='bg-green-600 hover:bg-green-700'
               >
-                {scope}
-              </button>
-            );
-          })}
-        </div>
+                <Check className='w-4 h-4' />
+                Save
+              </Button>
+              <Button
+                onClick={cancelPermissions}
+                disabled={updatePerms.isPending}
+                variant='secondary'
+                size='sm'
+              >
+                <X className='w-4 h-4' />
+                Cancel
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        {hasChanges && (
-          <div className='my-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-sm text-yellow-400 text-sm flex gap-2'>
-            <AlertTriangle />
-            <span>
-              You have unsaved changes. Click "Save" to apply or "Cancel" to
-              discard.
-            </span>
+      <Card>
+        <CardHeader>
+          <CardIcon>
+            <Shield className='w-5 h-5' />
+          </CardIcon>
+          <CardTitle>Sudo Access</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex flex-col items-start gap-3'>
+            <Badge variant={user.is_sudo ? 'purple' : 'outline'}>
+              <ShieldCheck className='w-3 h-3' />
+              {user.is_sudo ? 'Enabled' : 'Disabled'}
+            </Badge>
+            <ProtectedComponent requireScope='scope:GiveSudo'>
+              <Button
+                onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
+                variant='secondary'
+                size='sm'
+              >
+                Toggle Sudo
+              </Button>
+            </ProtectedComponent>
           </div>
-        )}
-
-        {hasChanges && (
-          <div className='flex gap-2 justify-end'>
-            <button
-              onClick={savePermissions}
-              disabled={updatePerms.isPending}
-              className='px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-sm text-sm font-medium transition-colors flex items-center gap-1 disabled:opacity-50'
-            >
-              <Check className='w-4 h-4' />
-              Save
-            </button>
-            <button
-              onClick={cancelPermissions}
-              disabled={updatePerms.isPending}
-              className='px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-sm text-sm font-medium transition-colors flex items-center gap-1 disabled:opacity-50'
-            >
-              <X className='w-4 h-4' />
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className='bg-gray-800 border border-gray-700 p-6 rounded-sm shadow-lg'>
-        <h2 className='text-lg font-semibold text-white mb-4 flex items-center gap-2'>
-          <Shield className='w-5 h-5' />
-          Sudo Access
-        </h2>
-        <div className='flex items-center gap-3'>
-          <div
-            className={`px-4 py-2 rounded-sm text-sm font-medium flex items-center gap-2 ${
-              user.is_sudo
-                ? 'bg-green-900/50 text-green-400 border border-green-700'
-                : 'bg-gray-900 text-gray-400 border border-gray-700'
-            }`}
-          >
-            <Shield className='w-4 h-4' />
-            {user.is_sudo ? 'Enabled' : 'Disabled'}
-          </div>
-          <ProtectedComponent requireScope='scope:GiveSudo'>
-            <button
-              onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
-              className='px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-sm transition-colors font-medium'
-            >
-              Toggle Sudo
-            </button>
-          </ProtectedComponent>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

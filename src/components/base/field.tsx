@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-
 import { cn } from '@utils/cn';
 import { Label } from '@components/base/label';
 import { Separator } from '@components/base/separator';
@@ -9,28 +8,17 @@ function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
     <fieldset
       data-slot='field-set'
-      className={cn(
-        'gap-4 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3 flex flex-col',
-        className,
-      )}
+      className={cn('flex flex-col gap-4', className)}
       {...props}
     />
   );
 }
 
-function FieldLegend({
-  className,
-  variant = 'legend',
-  ...props
-}: React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }) {
+function FieldLegend({ className, ...props }: React.ComponentProps<'legend'>) {
   return (
     <legend
       data-slot='field-legend'
-      data-variant={variant}
-      className={cn(
-        'mb-1.5 font-medium data-[variant=label]:text-sm data-[variant=legend]:text-base',
-        className,
-      )}
+      className={cn('mb-2 text-base font-semibold text-white', className)}
       {...props}
     />
   );
@@ -40,32 +28,23 @@ function FieldGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='field-group'
-      className={cn(
-        'gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4 group/field-group @container/field-group flex w-full flex-col',
-        className,
-      )}
+      className={cn('flex flex-col gap-4 w-full', className)}
       {...props}
     />
   );
 }
 
-const fieldVariants = cva(
-  'data-[invalid=true]:text-destructive gap-2 group/field flex w-full',
-  {
-    variants: {
-      orientation: {
-        vertical: 'flex-col [&>*]:w-full [&>.sr-only]:w-auto',
-        horizontal:
-          'flex-row items-center [&>[data-slot=field-label]]:flex-auto has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-        responsive:
-          'flex-col [&>*]:w-full [&>.sr-only]:w-auto @md/field-group:flex-row @md/field-group:items-center @md/field-group:[&>*]:w-auto @md/field-group:[&>[data-slot=field-label]]:flex-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-      },
-    },
-    defaultVariants: {
-      orientation: 'vertical',
+const fieldVariants = cva('flex w-full gap-0.5 group/field', {
+  variants: {
+    orientation: {
+      vertical: 'flex-col',
+      horizontal: 'flex-row items-center',
     },
   },
-);
+  defaultVariants: {
+    orientation: 'vertical',
+  },
+});
 
 function Field({
   className,
@@ -87,10 +66,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='field-content'
-      className={cn(
-        'gap-0.5 group/field-content flex flex-1 flex-col leading-snug',
-        className,
-      )}
+      className={cn('flex flex-1 flex-col gap-1', className)}
       {...props}
     />
   );
@@ -103,11 +79,7 @@ function FieldLabel({
   return (
     <Label
       data-slot='field-label'
-      className={cn(
-        'has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-2 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border *:data-[slot=field]:p-2.5 group/field-label peer/field-label flex w-fit leading-snug',
-        'has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col',
-        className,
-      )}
+      className={cn('mb-1', className)}
       {...props}
     />
   );
@@ -116,11 +88,8 @@ function FieldLabel({
 function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot='field-label'
-      className={cn(
-        'gap-2 text-sm font-medium group-data-[disabled=true]/field:opacity-50 flex w-fit items-center leading-snug',
-        className,
-      )}
+      data-slot='field-title'
+      className={cn('text-sm font-medium text-gray-400', className)}
       {...props}
     />
   );
@@ -131,9 +100,8 @@ function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot='field-description'
       className={cn(
-        'text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5 leading-normal font-normal group-has-data-[orientation=horizontal]/field:text-balance',
-        'last:mt-0 nth-last-2:-mt-1',
-        '[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
+        'text-sm text-gray-500 leading-normal',
+        '[&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-blue-300',
         className,
       )}
       {...props}
@@ -151,17 +119,13 @@ function FieldSeparator({
   return (
     <div
       data-slot='field-separator'
-      data-content={!!children}
-      className={cn(
-        '-my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2 relative',
-        className,
-      )}
+      className={cn('relative h-5 -my-2', className)}
       {...props}
     >
       <Separator className='absolute inset-0 top-1/2' />
       {children && (
         <span
-          className='text-muted-foreground px-2 bg-background relative mx-auto block w-fit'
+          className='relative mx-auto block w-fit px-2 bg-gray-800 text-sm text-gray-400'
           data-slot='field-separator-content'
         >
           {children}
@@ -192,7 +156,7 @@ function FieldError({
       ...new Map(errors.map((error) => [error?.message, error])).values(),
     ];
 
-    if (uniqueErrors?.length == 1) {
+    if (uniqueErrors?.length === 1) {
       return uniqueErrors[0]?.message;
     }
 
@@ -214,7 +178,7 @@ function FieldError({
     <div
       role='alert'
       data-slot='field-error'
-      className={cn('text-destructive text-sm font-normal', className)}
+      className={cn('text-sm text-red-400 font-normal', className)}
       {...props}
     >
       {content}

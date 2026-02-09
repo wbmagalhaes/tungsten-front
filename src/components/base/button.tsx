@@ -1,35 +1,30 @@
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@utils/cn';
+import { Link } from 'react-router-dom';
 
 const buttonVariants = cva(
-  "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none",
+  'inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none outline-none cursor-pointer',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
+        default:
+          'bg-linear-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg',
         outline:
-          'border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground',
-        secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
-        ghost:
-          'hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground',
+          'border border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700',
+        secondary: 'bg-gray-700 text-white hover:bg-gray-600',
+        ghost: 'hover:bg-gray-700 text-gray-200',
         destructive:
-          'bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-600/30',
+        link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
       },
       size: {
-        default:
-          'h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: 'h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3',
-        icon: 'size-8',
-        'icon-xs':
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        'icon-sm':
-          'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
-        'icon-lg': 'size-9',
+        default: 'h-10 px-4 py-2 gap-2 [&_svg:not([class*="size-"])]:size-4',
+        sm: 'h-8 px-3 py-1.5 gap-1.5 text-xs [&_svg:not([class*="size-"])]:size-3.5',
+        lg: 'h-12 px-6 py-3 gap-2.5 text-base [&_svg:not([class*="size-"])]:size-5',
+        icon: 'size-10 p-0 [&_svg:not([class*="size-"])]:size-4',
+        'icon-sm': 'size-8 p-0 [&_svg:not([class*="size-"])]:size-3.5',
+        'icon-lg': 'size-12 p-0 [&_svg:not([class*="size-"])]:size-5',
       },
     },
     defaultVariants: {
@@ -41,17 +36,57 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  variant = 'default',
-  size = 'default',
+  variant,
+  size,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (
     <ButtonPrimitive
       data-slot='button'
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   );
 }
 
-export { Button };
+interface ButtonLinkProps
+  extends
+    Omit<ButtonPrimitive.Props, 'nativeButton'>,
+    VariantProps<typeof buttonVariants> {
+  to: string;
+}
+
+function ButtonLink({
+  to,
+  children,
+  variant,
+  size,
+  className,
+  render,
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <Button
+      className={className}
+      variant={variant}
+      size={size}
+      nativeButton={false}
+      render={(buttonProps, state) => {
+        if (render) {
+          return typeof render === 'function' ? (
+            <Link to={to}>{render(buttonProps, state)}</Link>
+          ) : (
+            <Link to={to}>{render}</Link>
+          );
+        }
+
+        return <Link {...buttonProps} {...state} to={to} />;
+      }}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+}
+
+export { Button, ButtonLink };

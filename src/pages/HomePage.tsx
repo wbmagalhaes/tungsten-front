@@ -1,6 +1,5 @@
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import { useAuthStore } from '@stores/useAuthStore';
-import { useNavigate } from 'react-router-dom';
 import {
   StickyNote,
   BotMessageSquare,
@@ -10,35 +9,41 @@ import {
 import { usePwaInstall } from '@hooks/use-pwa-install';
 import { cn } from '@utils/cn';
 import { usePwaUpdate } from '@hooks/use-pwa-update';
+import { Button, ButtonLink } from '@components/base/button';
+import { Card, CardContent } from '@components/base/card';
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
   const { data: user, isLoading } = useGetProfile();
-  const navigate = useNavigate();
 
   const { canInstall, install, needsInstructions } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
 
   return (
-    <div className='container mx-auto px-4 pt-8 md:pt-20'>
+    <div className='container mx-auto px-4 pt-8 md:pt-16'>
       <div className='max-w-4xl mx-auto text-center'>
-        {!isLoading && isAuthenticated && (
-          <div className='flex flex-col items-center gap-2 mb-12'>
-            <div className='inline-block px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full'>
-              Welcome back, {user?.fullname || user?.username || 'User'}!
+        <div className='flex flex-col items-center gap-2 mb-12'>
+          {isAuthenticated && (
+            <div className='px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full min-w-[200px] flex justify-center items-center gap-2'>
+              {isLoading ? (
+                <>
+                  <div className='my-1 h-4 w-4 border-2 border-t-green-300 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
+                </>
+              ) : (
+                <>Welcome back, {user?.fullname || user?.username || 'User'}!</>
+              )}
             </div>
+          )}
 
+          {isAuthenticated && (
             <span className='text-sm text-gray-400'>
               Want to login with another account?{' '}
-              <button
-                onClick={() => navigate('/login')}
-                className='cursor-pointer text-blue-400 hover:text-blue-300 underline transition-colors'
-              >
+              <ButtonLink variant='link' className='p-0' to='/login'>
                 Click here
-              </button>
+              </ButtonLink>
             </span>
-          </div>
-        )}
+          )}
+        </div>
 
         {!isLoading && isAuthenticated && updateAvailable && (
           <div
@@ -56,71 +61,65 @@ export default function HomePage() {
           Personal self-hosted server running useful tools.
         </p>
         <div className='max-w-3xl mx-auto mb-12'>
-          <div className='bg-gray-900/70 rounded-xl shadow-sm border border-gray-700 p-6'>
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center'>
-              <StackItem
-                icon={<ReactIcon />}
-                name='React'
-                label='Frontend'
-                color='blue'
-              />
-              <StackItem
-                icon={<NginxIcon />}
-                name='Nginx'
-                label='Proxy'
-                color='green'
-              />
-              <StackItem
-                icon={<RustIcon />}
-                name='Rust'
-                label='Backend'
-                color='orange'
-              />
-              <StackItem
-                icon={<CloudflareIcon />}
-                name='Cloudflare'
-                label='Tunnel'
-                color='purple'
-              />
-            </div>
-          </div>
+          <Card>
+            <CardContent className='p-6'>
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center'>
+                <StackItem
+                  icon={<ReactIcon />}
+                  name='React'
+                  label='Frontend'
+                  color='blue'
+                />
+                <StackItem
+                  icon={<NginxIcon />}
+                  name='Nginx'
+                  label='Proxy'
+                  color='green'
+                />
+                <StackItem
+                  icon={<RustIcon />}
+                  name='Rust'
+                  label='Backend'
+                  color='orange'
+                />
+                <StackItem
+                  icon={<CloudflareIcon />}
+                  name='Cloudflare'
+                  label='Tunnel'
+                  color='purple'
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
           {isAuthenticated ? (
             <>
-              <button
-                onClick={() => navigate('/root')}
-                className='px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all text-lg'
-              >
+              <ButtonLink to='/root' size='lg'>
                 Access Dashboard
-              </button>
-              <button
-                onClick={() => navigate('/system-health')}
-                className='px-8 py-4 bg-gray-800 text-gray-200 border border-gray-700 rounded-sm font-semibold hover:bg-gray-700 transition-all text-lg'
-              >
+              </ButtonLink>
+              <ButtonLink to='/system-health' variant='outline' size='lg'>
                 View System Status
-              </button>
+              </ButtonLink>
             </>
           ) : (
-            <button
-              onClick={() => navigate('/login')}
-              className='px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-sm font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all text-lg'
-            >
+            <ButtonLink to='/login' size='lg'>
               Login
-            </button>
+            </ButtonLink>
           )}
         </div>
 
         {isAuthenticated && (
           <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mt-6'>
             {canInstall && (
-              <button
+              <Button
                 onClick={install}
-                className='px-6 py-3 bg-emerald-600 text-white rounded-sm font-semibold hover:bg-emerald-500 transition-all'
+                variant='secondary'
+                className='bg-emerald-600 hover:bg-emerald-500'
               >
                 Install App
-              </button>
+              </Button>
             )}
 
             {needsInstructions && (
@@ -182,19 +181,21 @@ function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
   };
 
   return (
-    <div className='bg-gray-900/70 p-6 rounded-xl shadow-sm hover:shadow-md hover:shadow-gray-900/50 transition-shadow border border-gray-700'>
-      <div className='flex items-start gap-4'>
-        <div
-          className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border ${colorClasses[color as keyof typeof colorClasses]}`}
-        >
-          {icon}
+    <Card>
+      <CardContent>
+        <div className='flex items-start gap-4'>
+          <div
+            className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border ${colorClasses[color as keyof typeof colorClasses]}`}
+          >
+            {icon}
+          </div>
+          <div>
+            <h3 className='font-semibold text-white mb-1'>{title}</h3>
+            <p className='text-gray-400 text-sm'>{description}</p>
+          </div>
         </div>
-        <div>
-          <h3 className='font-semibold text-white mb-1'>{title}</h3>
-          <p className='text-gray-400 text-sm'>{description}</p>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
