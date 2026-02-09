@@ -9,7 +9,7 @@ import {
 import { cn } from '@utils/cn';
 import { sidebarItems } from './items';
 import { useSidebarStore } from '@stores/useSidebarStore';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +29,7 @@ import { getInitials } from '@models/user';
 import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Button } from '@components/base/button';
+import { isDesktop } from '@utils/isDesktop';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
@@ -75,16 +76,21 @@ function SidebarBackdrop() {
 }
 
 function SidebarContent({ children }: { children: React.ReactNode }) {
-  const { isOpen } = useSidebarStore();
+  const { isOpen, width } = useSidebarStore();
+  const desktop = isDesktop();
+
   return (
     <aside
+      style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-gray-900 border-r border-gray-700',
-        'transition-all duration-300 ease-in-out',
+        'z-50 bg-gray-900 border-r border-gray-700 rounded-sm shadow-lg',
         'flex flex-col fixed inset-y-0 left-0 w-64',
-        'md:static md:translate-x-0 md:w-auto',
-        isOpen ? 'translate-x-0' : '-translate-x-full',
-        isOpen ? 'md:w-56' : 'md:w-16',
+        'transition-all md:static',
+        !desktop && 'duration-200 ease-in-out',
+        desktop && 'duration-100',
+        !desktop && (isOpen ? 'translate-x-0' : '-translate-x-full'),
+        desktop && 'translate-x-0',
+        desktop ? '' : 'w-64',
       )}
     >
       {children}
@@ -121,39 +127,31 @@ function SidebarMenuItem({
   tooltip,
   active,
 }: SidebarMenuItemProps) {
-  const { isOpen } = useSidebarStore();
+  const { width } = useSidebarStore();
+
+  const baseClasses =
+    'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300';
+  const activeClasses = active ? 'bg-gray-800 font-medium' : '';
 
   if (!tooltip) {
     return (
-      <div
-        className={cn(
-          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300',
-          active && 'bg-gray-800 font-medium',
-          className,
-        )}
-      >
+      <div className={cn(baseClasses, activeClasses, className)}>
         {children}
       </div>
     );
   }
 
+  const disabled = width > 128;
+
   return (
-    <Tooltip disabled={isOpen}>
+    <Tooltip disabled={disabled}>
       <TooltipTrigger
         render={(props) => (
-          <div
-            {...props}
-            className={cn(
-              'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-gray-800 text-gray-300',
-              active && 'bg-gray-800 font-medium',
-              className,
-            )}
-          >
+          <div {...props} className={cn(baseClasses, activeClasses, className)}>
             {children}
           </div>
         )}
       />
-
       <TooltipContent
         side='right'
         sideOffset={20}
@@ -231,7 +229,11 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           <ChevronUp className='h-4 w-4' />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side='top' sideOffset={20} className='bg-gray-800'>
+        <DropdownMenuContent
+          side='top'
+          sideOffset={20}
+          className='bg-gray-800 rounded-sm shadow-md'
+        >
           <DropdownMenuItem
             className='cursor-pointer hover:bg-gray-700 text-gray-200'
             render={<Link to='/profile'>Profile</Link>}
@@ -239,7 +241,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
           />
           {canBeSudo && (
             <DropdownMenuItem
-              className={'cursor-pointer hover:bg-gray-700 text-gray-200'}
+              className='cursor-pointer hover:bg-gray-700 text-gray-200'
               onClick={() => {
                 switchSudo.mutate();
                 close();
@@ -269,16 +271,61 @@ function SidebarFooter({ children }: { children: React.ReactNode }) {
 }
 
 function SidebarRail() {
-  const { toggle } = useSidebarStore();
+  const { width, setWidth } = useSidebarStore();
+  const [dragging, setDragging] = React.useState(false);
+
+  const minWidth = 64;
+  const maxWidth = 280;
+
+  const startDrag = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const stopDrag = () => setDragging(false);
+
+  const onDrag = useCallback(
+    (e: MouseEvent) => {
+      if (!dragging) return;
+
+      const newWidth = e.clientX;
+
+      if (newWidth > 240) {
+        setWidth(maxWidth);
+      } else if (newWidth < 100) {
+        setWidth(minWidth);
+      } else if (newWidth >= minWidth && newWidth <= maxWidth) {
+        setWidth(newWidth);
+      }
+    },
+    [dragging, setWidth],
+  );
+
+  const handleClick = () => {
+    const midpoint = (minWidth + maxWidth) / 2;
+    if (width >= midpoint) {
+      setWidth(minWidth);
+    } else {
+      setWidth(maxWidth);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+    return () => {
+      window.removeEventListener('mousemove', onDrag);
+      window.removeEventListener('mouseup', stopDrag);
+    };
+  }, [dragging, onDrag]);
 
   return (
     <div
-      onClick={toggle}
+      onMouseDown={startDrag}
+      onClick={handleClick}
       className={cn(
-        'hidden md:block',
-        'absolute top-0 right-0 h-full w-1',
-        'cursor-col-resize',
-        'hover:bg-gray-200/40',
+        'hidden md:block absolute top-0 right-0 h-full w-1 cursor-col-resize',
+        'hover:bg-gray-200/40 transition-colors',
       )}
     />
   );
