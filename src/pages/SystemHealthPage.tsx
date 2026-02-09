@@ -18,7 +18,7 @@ import {
   CardContent,
 } from '@components/base/card';
 
-export default function SystemDashboardPage() {
+export default function SystemHealthPage() {
   const { data, isLoading, error } = useHealthCheck();
 
   if (isLoading) {

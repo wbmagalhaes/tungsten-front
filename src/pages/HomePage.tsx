@@ -57,7 +57,7 @@ export default function HomePage() {
         <h1 className='text-5xl md:text-6xl font-bold text-white mb-4'>
           Tungsten
         </h1>
-        <p className='text-xl text-gray-300 mb-10 max-w-2xl mx-auto'>
+        <p className='text-xl text-gray-400 mb-10 max-w-2xl mx-auto'>
           Personal self-hosted server running useful tools.
         </p>
         <div className='max-w-3xl mx-auto mb-12'>
@@ -97,7 +97,7 @@ export default function HomePage() {
           {isAuthenticated ? (
             <>
               <ButtonLink to='/root' size='lg'>
-                Access Dashboard
+                Access Console
               </ButtonLink>
               <ButtonLink to='/system-health' variant='outline' size='lg'>
                 View System Status

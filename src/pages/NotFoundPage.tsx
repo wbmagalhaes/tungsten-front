@@ -23,7 +23,7 @@ export default function NotFoundPage({ isAuthenticated }: NotFoundProps) {
               {isAuthenticated ? (
                 <ButtonLink to='/root' variant='secondary'>
                   <Home className='h-4 w-4' />
-                  Back to Dashboard
+                  Back to Root
                 </ButtonLink>
               ) : (
                 <>

@@ -22,7 +22,7 @@ function PublicHeader() {
       <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
         <ButtonLink to='/' render={<Logo />} />
         {isAuthenticated ? (
-          <ButtonLink to='/root'>Dashboard</ButtonLink>
+          <ButtonLink to='/root'>Console</ButtonLink>
         ) : (
           <ButtonLink to='/login'>Login</ButtonLink>
         )}

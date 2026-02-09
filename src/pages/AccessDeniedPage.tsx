@@ -20,7 +20,7 @@ export default function AccessDeniedPage() {
             <div className='flex gap-3 justify-center flex-wrap'>
               <ButtonLink to='/root' variant='secondary'>
                 <Home className='h-4 w-4' />
-                Back to Dashboard
+                Back to Root
               </ButtonLink>
               <ButtonLink to='/profile' variant='secondary'>
                 <User2 className='h-4 w-4' />
