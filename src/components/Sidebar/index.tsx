@@ -83,14 +83,14 @@ function SidebarContent({ children }: { children: React.ReactNode }) {
     <aside
       style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-gray-900 border-r border-gray-700 rounded-sm shadow-lg',
+        'z-50 bg-gray-900 border-r border-gray-700 rounded-lg md:rounded-none shadow-lg',
         'flex flex-col fixed inset-y-0 left-0 w-64',
         'transition-all md:static',
         !desktop && 'duration-200 ease-in-out',
         desktop && 'duration-100',
         !desktop && (isOpen ? 'translate-x-0' : '-translate-x-full'),
         desktop && 'translate-x-0',
-        desktop ? '' : 'w-64',
+        desktop ? '' : 'w-72 max-w-full',
       )}
     >
       {children}

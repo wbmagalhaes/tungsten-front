@@ -1,11 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { LogIn, User, Lock, AlertCircle, EyeOff, Eye, Dot } from 'lucide-react';
+import { LogIn, User, Lock, AlertCircle, Dot } from 'lucide-react';
 import { Card, CardContent } from '@components/base/card';
 import { Button } from '@components/base/button';
 import { TextField } from '@components/base/text-field';
+import { PasswordField } from '@components/base/password-field';
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -16,20 +17,12 @@ export default function LoginPage() {
   const [token, setToken] = useState('');
   const { mutateAsync, isPending, error, isError } = useLogin();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await mutateAsync({ username, password, token });
     const params = new URLSearchParams(location.search);
     const cbUrl = params.get('cb_url');
     navigate(cbUrl || '/root', { replace: true });
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
-    inputRef.current?.focus();
   };
 
   return (
@@ -49,39 +42,15 @@ export default function LoginPage() {
                 required
               />
 
-              <div>
-                <label
-                  className='text-sm text-gray-400 mb-2 flex items-center gap-2'
-                  htmlFor='password'
-                >
-                  <Lock className='w-4 h-4' />
-                  Password
-                </label>
-                <div className='flex items-center bg-gray-900 border border-gray-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-600'>
-                  <input
-                    id='password'
-                    ref={inputRef}
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder='Enter your password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className='w-full flex-1 p-3 bg-transparent border-none text-gray-200 placeholder-gray-500 focus:outline-none rounded-l-lg'
-                    required
-                  />
-                  <button
-                    type='button'
-                    onClick={toggleShowPassword}
-                    className='flex items-center justify-center p-3 text-gray-200 hover:text-white hover:bg-gray-800 transition-colors rounded-r-lg border-l border-gray-700'
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className='w-6 h-6' />
-                    ) : (
-                      <Eye className='w-6 h-6' />
-                    )}
-                  </button>
-                </div>
-              </div>
+              <PasswordField
+                id='password'
+                label='Password'
+                icon={<Lock className='w-4 h-4' />}
+                placeholder='Enter your password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
 
               {isError && (
                 <div className='p-3 bg-red-900/30 border border-red-700 rounded-lg text-red-400 text-sm flex items-start gap-2'>
