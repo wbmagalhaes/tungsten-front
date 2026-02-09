@@ -36,12 +36,14 @@ import { filterItemsByPermission } from '@utils/hasPermission';
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
 
-  const { open, close } = useSidebarStore();
+  const { userScope } = useAuthStore();
 
-  const visibleItems = useMemo(() => {
-    const userScopes = user?.scope ?? [];
-    return filterItemsByPermission(sidebarItems, userScopes);
-  }, [user]);
+  const visibleItems = useMemo(
+    () => filterItemsByPermission(sidebarItems, userScope ?? []),
+    [userScope],
+  );
+
+  const { open, close } = useSidebarStore();
 
   const openHandlers = useSwipeable({
     onSwipedRight: () => open(),
