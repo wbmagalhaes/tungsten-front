@@ -96,20 +96,20 @@ export default function HomePage() {
         <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto'>
           {isAuthenticated ? (
             <>
-              <ButtonLink to='/root' size='lg' className='w-full sm:w-auto'>
+              <ButtonLink to='/root' size='lg' className='w-full sm:w-48'>
                 Access Console
               </ButtonLink>
               <ButtonLink
                 to='/system-health'
                 variant='outline'
                 size='lg'
-                className='w-full sm:w-auto'
+                className='w-full sm:w-48'
               >
                 View System Status
               </ButtonLink>
             </>
           ) : (
-            <ButtonLink to='/login' size='lg' className='w-full sm:w-auto'>
+            <ButtonLink to='/login' size='lg' className='w-full sm:w-48'>
               Login
             </ButtonLink>
           )}
