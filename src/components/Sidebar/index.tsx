@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
 import {
   CheckCircle,
   ChevronLeft,
@@ -29,15 +30,22 @@ import { getInitials } from '@models/user';
 import { useSwitchSudo } from '@hooks/auth/use-switch-sudo';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Button } from '@components/base/button';
-import { isDesktop } from '@utils/isDesktop';
+import { useIsDesktop } from '@hooks/use-is-desktop';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
 
+  const { open, close } = useSidebarStore();
+  const handlers = useSwipeable({
+    onSwipedLeft: () => close(),
+    onSwipedRight: () => open(),
+    delta: 50,
+  });
+
   return (
     <>
       <SidebarBackdrop />
-      <SidebarContent>
+      <SidebarContent {...handlers}>
         <SidebarHeader />
 
         <SidebarMenu>
@@ -77,7 +85,7 @@ function SidebarBackdrop() {
 
 function SidebarContent({ children }: { children: React.ReactNode }) {
   const { isOpen, width } = useSidebarStore();
-  const desktop = isDesktop();
+  const desktop = useIsDesktop();
 
   return (
     <aside

@@ -21,17 +21,25 @@ export default function NotFoundPage({ isAuthenticated }: NotFoundProps) {
             </p>
             <div className='flex gap-3 justify-center flex-wrap'>
               {isAuthenticated ? (
-                <ButtonLink to='/root' variant='secondary'>
+                <ButtonLink
+                  to='/root'
+                  variant='secondary'
+                  className='w-full max-w-40 sm:w-auto'
+                >
                   <Home className='h-4 w-4' />
                   Back to Root
                 </ButtonLink>
               ) : (
                 <>
-                  <ButtonLink to='/' variant='secondary'>
+                  <ButtonLink
+                    to='/'
+                    variant='secondary'
+                    className='w-full max-w-40 sm:w-auto'
+                  >
                     <Home className='h-4 w-4' />
                     Home
                   </ButtonLink>
-                  <ButtonLink to='/login'>
+                  <ButtonLink to='/login' className='w-full max-w-40 sm:w-auto'>
                     <LogIn className='h-4 w-4' />
                     Login
                   </ButtonLink>

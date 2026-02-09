@@ -18,11 +18,19 @@ export default function AccessDeniedPage() {
               You do not have permission to access this page.
             </p>
             <div className='flex gap-3 justify-center flex-wrap'>
-              <ButtonLink to='/root' variant='secondary'>
+              <ButtonLink
+                to='/root'
+                variant='secondary'
+                className='w-full max-w-40 sm:w-auto'
+              >
                 <Home className='h-4 w-4' />
                 Back to Root
               </ButtonLink>
-              <ButtonLink to='/profile' variant='secondary'>
+              <ButtonLink
+                to='/profile'
+                variant='secondary'
+                className='w-full max-w-40 sm:w-auto'
+              >
                 <User2 className='h-4 w-4' />
                 Your profile
               </ButtonLink>
