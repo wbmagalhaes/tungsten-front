@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useSwipeable } from 'react-swipeable';
+import { useSwipeable, type SwipeableHandlers } from 'react-swipeable';
 import {
   CheckCircle,
   ChevronLeft,
@@ -10,7 +10,7 @@ import {
 import { cn } from '@utils/cn';
 import { sidebarItems } from './items';
 import { useSidebarStore } from '@stores/useSidebarStore';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, type ReactNode } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -36,16 +36,22 @@ export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
 
   const { open, close } = useSidebarStore();
-  const handlers = useSwipeable({
-    onSwipedLeft: () => close(),
+
+  const openHandlers = useSwipeable({
     onSwipedRight: () => open(),
+    delta: 50,
+  });
+
+  const closeHandlers = useSwipeable({
+    onSwipedLeft: () => close(),
     delta: 50,
   });
 
   return (
     <>
       <SidebarBackdrop />
-      <SidebarContent {...handlers}>
+      <SidebarSwipeZone handlers={openHandlers} />
+      <SidebarContent handlers={closeHandlers}>
         <SidebarHeader />
 
         <SidebarMenu>
@@ -83,7 +89,22 @@ function SidebarBackdrop() {
   );
 }
 
-function SidebarContent({ children }: { children: React.ReactNode }) {
+function SidebarSwipeZone({ handlers }: { handlers: SwipeableHandlers }) {
+  return (
+    <div
+      className='fixed top-12 left-0 h-full w-6 z-50 touch-action-pan-y md:hidden '
+      {...handlers}
+    />
+  );
+}
+
+function SidebarContent({
+  children,
+  handlers,
+}: {
+  children: ReactNode;
+  handlers: SwipeableHandlers;
+}) {
   const { isOpen, width } = useSidebarStore();
   const desktop = useIsDesktop();
 
@@ -91,7 +112,7 @@ function SidebarContent({ children }: { children: React.ReactNode }) {
     <aside
       style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-gray-900 border-r border-gray-700 rounded-lg md:rounded-none shadow-lg',
+        'z-50 bg-gray-900 border-r border-gray-700 rounded-r-lg md:rounded-none shadow-lg',
         'flex flex-col fixed inset-y-0 left-0 w-64',
         'transition-all md:static',
         !desktop && 'duration-200 ease-in-out',
@@ -100,6 +121,7 @@ function SidebarContent({ children }: { children: React.ReactNode }) {
         desktop && 'translate-x-0',
         desktop ? '' : 'w-72 max-w-full',
       )}
+      {...handlers}
     >
       {children}
     </aside>
