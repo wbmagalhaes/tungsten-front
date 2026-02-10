@@ -85,9 +85,10 @@ export default function Sidebar() {
 
 function SidebarBackdrop() {
   const { isOpen, close } = useSidebarStore();
+  const desktop = useIsDesktop();
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !desktop) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -96,7 +97,7 @@ function SidebarBackdrop() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen, desktop]);
 
   return (
     <div
@@ -132,9 +133,8 @@ function SidebarContent({
     <aside
       style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-background border-r border-border rounded-r-sm md:rounded-none shadow-lg',
-        'flex flex-col fixed inset-y-0 left-0 w-64',
-        'transition-all md:static',
+        'z-50 bg-background border-r border-border rounded-r-sm md:rounded-none shadow-lg transition-all',
+        'flex flex-col fixed max-h-screen top-12 bottom-0 left-0',
         !desktop && 'duration-200 ease-in-out',
         desktop && 'duration-100',
         !desktop && (isOpen ? 'translate-x-0' : '-translate-x-full'),
@@ -184,7 +184,8 @@ function SidebarMenuItem({
       <div
         className={cn(
           'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-primary/20 border-l-3 border-transparent text-foreground',
-          active && 'bg-primary/20 hover:bg-primary/20 font-medium border-primary',
+          active &&
+            'bg-primary/20 hover:bg-primary/20 font-medium border-primary',
           className,
         )}
       >

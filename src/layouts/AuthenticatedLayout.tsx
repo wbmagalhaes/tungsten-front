@@ -3,9 +3,14 @@ import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import { useAuthStore } from '@stores/useAuthStore';
 import { cn } from '@utils/cn';
+import { useSidebarStore } from '@stores/useSidebarStore';
+import { useIsDesktop } from '@hooks/use-is-desktop';
 
 export default function AuthenticatedLayout() {
   const { isAuthenticated, isSudo } = useAuthStore();
+  const { width } = useSidebarStore();
+  const desktop = useIsDesktop();
+
   const location = useLocation();
 
   if (!isAuthenticated) {
@@ -24,7 +29,10 @@ export default function AuthenticatedLayout() {
       )}
     >
       <Header />
-      <div className='flex flex-1 mt-12'>
+      <div
+        className='flex flex-1 mt-12 transition-transform duration-100'
+        style={{ marginLeft: desktop ? width : undefined }}
+      >
         <Sidebar />
         <main className='flex-1 p-4'>
           <Outlet />

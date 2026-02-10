@@ -1,14 +1,18 @@
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   StickyNote,
   HardDrive,
   UsersRound,
-  Server,
   Clock,
-  TrendingUp,
-  FileText,
+  Cpu,
+  MemoryStick,
+  Network,
   ArrowRight,
+  TerminalIcon,
+  ChevronRight,
+  ServerCog,
 } from 'lucide-react';
 import {
   Card,
@@ -18,8 +22,7 @@ import {
   CardContent,
   CardFooter,
 } from '@components/base/card';
-import { Button } from '@components/base/button';
-import { Badge } from '@components/base/badge';
+import { Button, ButtonLink } from '@components/base/button';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import useHealthCheck from '@hooks/system/use-health-check';
 import { Avatar, AvatarImage, AvatarFallback } from '@components/base/avatar';
@@ -27,17 +30,120 @@ import { getInitials } from '@models/user';
 import formatBytes from '@utils/formatBytes';
 import { LoadingState } from '@components/LoadingState';
 
+const HELP_COMMANDS = {
+  help: 'Available commands: help, clear, status, users, notes, media, chat, jobs',
+  clear: 'Clears the terminal',
+  status: 'Shows system health status',
+  users: 'Navigate to users page',
+  notes: 'Navigate to notes page',
+  media: 'Navigate to media page',
+  chat: 'Navigate to chat page',
+  jobs: 'Navigate to background jobs page',
+};
+
+interface TerminalLine {
+  type: 'command' | 'output' | 'error';
+  content: string;
+}
+
 export default function RootPage() {
   const { data: user, isLoading: userLoading } = useGetProfile();
-  const { data: health, isLoading: healthLoading } = useHealthCheck();
+  const { data: health } = useHealthCheck();
   const navigate = useNavigate();
 
-  if (userLoading || healthLoading) {
-    return <LoadingState message='Loading content...' />;
+  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([
+    { type: 'output', content: 'Tungsten Terminal v1.0.0' },
+    { type: 'output', content: 'Type "help" for available commands' },
+  ]);
+  const [currentCommand, setCurrentCommand] = useState('');
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [terminalLines]);
+
+  if (userLoading) {
+    return <LoadingState message='Loading dashboard...' />;
   }
 
   const displayName = user?.fullname || user?.username || 'User';
   const greeting = getGreeting();
+
+  const handleCommand = (cmd: string) => {
+    const trimmedCmd = cmd.trim().toLowerCase();
+
+    setTerminalLines((prev) => [
+      ...prev,
+      { type: 'command', content: `$ ${cmd}` },
+    ]);
+
+    if (!trimmedCmd) return;
+
+    if (trimmedCmd === 'clear') {
+      setTerminalLines([]);
+      return;
+    }
+
+    if (trimmedCmd === 'help') {
+      Object.entries(HELP_COMMANDS).forEach(([cmd, desc]) => {
+        setTerminalLines((prev) => [
+          ...prev,
+          { type: 'output', content: `  ${cmd.padEnd(10)} - ${desc}` },
+        ]);
+      });
+      return;
+    }
+
+    if (trimmedCmd === 'status') {
+      if (health) {
+        setTerminalLines((prev) => [
+          ...prev,
+          { type: 'output', content: `CPU: ${health.cpu_usage.toFixed(1)}%` },
+          {
+            type: 'output',
+            content: `Memory: ${((health.mem_used / health.mem_total) * 100).toFixed(1)}%`,
+          },
+          {
+            type: 'output',
+            content: `Disk: ${((health.disk_used / health.disk_total) * 100).toFixed(1)}%`,
+          },
+        ]);
+      }
+      return;
+    }
+
+    const navigationCommands: Record<string, string> = {
+      users: '/users',
+      notes: '/notes',
+      media: '/media',
+      chat: '/chat',
+      jobs: '/background-jobs',
+    };
+
+    if (trimmedCmd in navigationCommands) {
+      setTerminalLines((prev) => [
+        ...prev,
+        { type: 'output', content: `Navigating to ${trimmedCmd}...` },
+      ]);
+      setTimeout(() => navigate(navigationCommands[trimmedCmd]), 500);
+      return;
+    }
+
+    setTerminalLines((prev) => [
+      ...prev,
+      {
+        type: 'error',
+        content: `Command not found: ${trimmedCmd}. Type "help" for available commands.`,
+      },
+    ]);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleCommand(currentCommand);
+      setCurrentCommand('');
+    }
+  };
 
   return (
     <div className='space-y-6'>
@@ -48,115 +154,156 @@ export default function RootPage() {
             <AvatarFallback>{getInitials(user)}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className='text-2xl font-bold text-foreground'>
-              {greeting}, {displayName}!
+            <h1 className='text-2xl font-bold text-foreground flex flex-wrap gap-x-2'>
+              <span>{greeting},</span>
+              <span>{displayName}!</span>
             </h1>
             <p className='text-sm text-muted-foreground'>
               Welcome back to Tungsten
             </p>
           </div>
         </div>
-        <Badge variant='default' className='gap-2'>
-          <Clock className='w-3 h-3' />
-          {new Date().toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-          })}
-        </Badge>
       </div>
 
-      {health && (
+      <Card className='bg-muted/20 border-primary/30'>
+        <CardHeader>
+          <CardIcon className='text-primary'>
+            <TerminalIcon className='w-5 h-5' />
+          </CardIcon>
+          <CardTitle>Terminal</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='bg-background/50 rounded-sm p-4 font-mono text-sm h-64 overflow-y-auto'>
+            <div className=' flex flex-col justify-end min-h-full'>
+              {terminalLines.map((line, i) => (
+                <div
+                  key={i}
+                  className={
+                    line.type === 'command'
+                      ? 'text-primary'
+                      : line.type === 'error'
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                  }
+                >
+                  {line.content}
+                </div>
+              ))}
+              <div className='flex items-center gap-2 mt-2'>
+                <ChevronRight className='w-4 h-4 text-accent' />
+                <input
+                  type='text'
+                  value={currentCommand}
+                  onChange={(e) => setCurrentCommand(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className='flex-1 bg-transparent outline-none text-foreground'
+                  placeholder='Type a command...'
+                  autoFocus
+                />
+              </div>
+              <div ref={terminalEndRef} />
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className='flex gap-3 py-0.5 px-4'>
+          {health && (
+            <>
+              <div className='flex gap-6 w-full'>
+                <SystemMetric
+                  icon={<Clock className='w-4 h-4' />}
+                  label='Time'
+                  value={new Date(health.current_time).toLocaleString('pt-BR')}
+                />
+                <SystemMetric
+                  icon={<Cpu className='w-4 h-4' />}
+                  label='CPU'
+                  value={`${health.cpu_usage.toFixed(1)}%`}
+                  status={health.cpu_usage > 80 ? 'warning' : 'normal'}
+                />
+                <SystemMetric
+                  icon={<MemoryStick className='w-4 h-4' />}
+                  label='Memory'
+                  value={`${((health.mem_used / health.mem_total) * 100).toFixed(1)}%`}
+                  status={
+                    (health.mem_used / health.mem_total) * 100 > 90
+                      ? 'warning'
+                      : 'normal'
+                  }
+                />
+                <SystemMetric
+                  icon={<HardDrive className='w-4 h-4' />}
+                  label='Disk'
+                  value={`${((health.disk_used / health.disk_total) * 100).toFixed(1)}%`}
+                  status={
+                    (health.disk_used / health.disk_total) * 100 > 90
+                      ? 'warning'
+                      : 'normal'
+                  }
+                />
+                <SystemMetric
+                  icon={<Network className='w-4 h-4' />}
+                  label='Network'
+                  value={formatBytes(health.net_in + health.net_out)}
+                />
+              </div>
+
+              <ButtonLink
+                variant='ghost'
+                size='sm'
+                className='ml-auto'
+                to='/system-health'
+              >
+                View Details
+                <ArrowRight className='w-4 h-4' />
+              </ButtonLink>
+            </>
+          )}
+        </CardFooter>
+      </Card>
+
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
         <Card>
           <CardHeader>
             <CardIcon>
-              <Server className='w-5 h-5' />
+              <Activity className='w-5 h-5' />
             </CardIcon>
-            <CardTitle>System Status</CardTitle>
-            <Badge variant='success' className='ml-auto'>
-              Online
-            </Badge>
+            <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-              <SystemMetric
-                label='CPU Usage'
-                value={`${health.cpu_usage.toFixed(1)}%`}
-                status={health.cpu_usage > 80 ? 'warning' : 'normal'}
-              />
-              <SystemMetric
-                label='Memory'
-                value={`${((health.mem_used / health.mem_total) * 100).toFixed(1)}%`}
-                status={
-                  (health.mem_used / health.mem_total) * 100 > 90
-                    ? 'warning'
-                    : 'normal'
-                }
-              />
-              <SystemMetric
-                label='Disk'
-                value={`${((health.disk_used / health.disk_total) * 100).toFixed(1)}%`}
-                status={
-                  (health.disk_used / health.disk_total) * 100 > 90
-                    ? 'warning'
-                    : 'normal'
-                }
-              />
-              <SystemMetric
-                label='Network'
-                value={formatBytes(health.net_in + health.net_out)}
-                status='normal'
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='ml-auto'
+
+          <CardContent className='space-y-3'>
+            <QuickActionCard
+              icon={<StickyNote className='w-5 h-5' />}
+              title='Notes'
+              description='Create and manage notes'
+              onClick={() => navigate('/notes')}
+            />
+            <QuickActionCard
+              icon={<HardDrive className='w-5 h-5' />}
+              title='Media'
+              description='Upload and manage files'
+              onClick={() => navigate('/media')}
+            />
+            <QuickActionCard
+              icon={<UsersRound className='w-5 h-5' />}
+              title='Users'
+              description='Manage user accounts'
+              onClick={() => navigate('/users')}
+            />
+            <QuickActionCard
+              icon={<Activity className='w-5 h-5' />}
+              title='System Health'
+              description='Monitor system status'
               onClick={() => navigate('/system-health')}
-            >
-              View Details
-              <ArrowRight className='w-4 h-4' />
-            </Button>
-          </CardFooter>
+            />
+            <QuickActionCard
+              icon={<ServerCog className='w-5 h-5' />}
+              title='Background Jobs'
+              description='Manage long running jobs'
+              onClick={() => navigate('/background-jobs')}
+            />
+          </CardContent>
         </Card>
-      )}
 
-      <div>
-        <h2 className='text-lg font-semibold text-foreground mb-3'>
-          Quick Actions
-        </h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          <QuickActionCard
-            icon={<StickyNote className='w-6 h-6' />}
-            title='Notes'
-            description='Create and manage notes'
-            onClick={() => navigate('/notes')}
-          />
-          <QuickActionCard
-            icon={<HardDrive className='w-6 h-6' />}
-            title='Media'
-            description='Upload and manage files'
-            onClick={() => navigate('/media')}
-          />
-          <QuickActionCard
-            icon={<UsersRound className='w-6 h-6' />}
-            title='Users'
-            description='Manage user accounts'
-            onClick={() => navigate('/users')}
-          />
-          <QuickActionCard
-            icon={<Activity className='w-6 h-6' />}
-            title='System Health'
-            description='Monitor system status'
-            onClick={() => navigate('/system-health')}
-          />
-        </div>
-      </div>
-
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-        <RecentActivityCard />
         <RecentNotesCard />
       </div>
     </div>
@@ -171,17 +318,24 @@ function getGreeting() {
 }
 
 interface SystemMetricProps {
+  icon: React.ReactNode;
   label: string;
   value: string;
-  status: 'normal' | 'warning';
+  status?: 'normal' | 'warning';
 }
 
-function SystemMetric({ label, value, status }: SystemMetricProps) {
+function SystemMetric({
+  icon,
+  label,
+  value,
+  status = 'normal',
+}: SystemMetricProps) {
   return (
-    <div>
-      <p className='text-xs text-muted-foreground mb-1'>{label}</p>
+    <div className='flex items-center gap-1'>
+      <div className='text-primary'>{icon}</div>
+      <p className='text-xs text-muted-foreground mr-1'>{label}</p>
       <p
-        className={`text-lg font-bold ${
+        className={`text-sm font-bold ${
           status === 'warning' ? 'text-warning' : 'text-foreground'
         }`}
       >
@@ -209,77 +363,15 @@ function QuickActionCard({
       className='cursor-pointer hover:bg-muted/50 transition-colors'
       onClick={onClick}
     >
-      <CardContent className='flex items-start gap-3 p-4'>
+      <CardContent className='flex items-center gap-3 p-3'>
         <div className='p-2 bg-primary/10 rounded-sm text-primary'>{icon}</div>
-        <div className='flex-1'>
-          <h3 className='font-semibold text-foreground mb-1'>{title}</h3>
-          <p className='text-sm text-muted-foreground'>{description}</p>
+        <div className='flex-1 min-w-0'>
+          <h3 className='font-semibold text-foreground text-sm'>{title}</h3>
+          <p className='text-xs text-muted-foreground truncate'>
+            {description}
+          </p>
         </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function RecentActivityCard() {
-  // TODO: Implement endpoint GET /api/activity/recent
-  const activities = [
-    {
-      id: 1,
-      type: 'user',
-      message: 'New user registered: johndoe',
-      time: '2 hours ago',
-      icon: <UsersRound className='w-4 h-4' />,
-    },
-    {
-      id: 2,
-      type: 'file',
-      message: 'File uploaded: presentation.pdf',
-      time: '5 hours ago',
-      icon: <FileText className='w-4 h-4' />,
-    },
-    {
-      id: 3,
-      type: 'system',
-      message: 'System updates applied',
-      time: '1 day ago',
-      icon: <Activity className='w-4 h-4' />,
-    },
-    {
-      id: 4,
-      type: 'note',
-      message: 'Note created: Meeting notes',
-      time: '2 days ago',
-      icon: <StickyNote className='w-4 h-4' />,
-    },
-  ];
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardIcon>
-          <TrendingUp className='w-5 h-5' />
-        </CardIcon>
-        <CardTitle>Recent Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className='space-y-3'>
-          {activities.map((activity) => (
-            <div
-              key={activity.id}
-              className='flex items-start gap-3 p-2 rounded-sm hover:bg-muted/30 transition-colors'
-            >
-              <div className='p-1.5 text-primary mt-0.5'>
-                {activity.icon}
-              </div>
-              <div className='flex-1 min-w-0'>
-                <p className='text-sm text-foreground'>{activity.message}</p>
-                <p className='text-xs text-muted-foreground mt-0.5'>
-                  {activity.time}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ArrowRight className='w-4 h-4 text-muted-foreground shrink-0' />
       </CardContent>
     </Card>
   );
