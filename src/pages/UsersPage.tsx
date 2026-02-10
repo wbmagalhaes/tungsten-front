@@ -143,7 +143,7 @@ export default function UsersPage() {
                           </span>
                           <p className='text-sm text-foreground'>
                             {u.fullname || (
-                              <span className='text-muted-foreground/80 italic'>
+                              <span className='text-muted-foreground/60 italic'>
                                 not informed
                               </span>
                             )}
@@ -155,7 +155,7 @@ export default function UsersPage() {
                           </span>
                           <p className='text-sm text-foreground'>
                             {u.email || (
-                              <span className='text-muted-foreground/80 italic'>
+                              <span className='text-muted-foreground/60 italic'>
                                 not informed
                               </span>
                             )}

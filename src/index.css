@@ -4,23 +4,23 @@
   --color-background: #0b0f1a;
   --color-foreground: #e6f1ff;
 
-  --color-card: ;
+  --color-card: #111827;
   --color-card-foreground: #e6f1ff;
 
   --color-popover: #0f172a;
   --color-popover-foreground: #f0f9ff;
 
   --color-primary: #8e33e3;
-  --color-primary-foreground: #140a14;
+  --color-primary-foreground: #ffffff;
 
   --color-secondary: #162e63;
   --color-secondary-foreground: #f5e9ff;
 
   --color-muted: #1d2a41;
-  --color-muted-foreground: #7dd3fc;
+  --color-muted-foreground: #8ac7e3;
 
   --color-accent: #ff2bd6;
-  --color-accent-foreground: #001418;
+  --color-accent-foreground: #ffffff;
 
   --color-destructive: #ff1744;
   --color-destructive-foreground: #ffffff;
@@ -47,6 +47,14 @@
 
 .bg-main-gradient {
   background: linear-gradient(60deg, #dc199e, #b214c6, #4338ca);
+}
+
+.bg-gradient-neon {
+  @apply bg-linear-to-r from-info via-primary to-accent;
+}
+
+.text-gradient-neon {
+  @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-accent;
 }
 
 @keyframes loading-bar {
