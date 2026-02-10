@@ -23,6 +23,8 @@ export const breadcrumbMap: Record<string, { label: string; parent?: string }> =
     '/sandbox': { label: 'sandbox', parent: '/' },
     '/sandbox/:id': { label: 'run', parent: '/sandbox' },
 
+    '/chat': { label: 'chat', parent: '/' },
+
     '/chat-bot': { label: 'chat-bot', parent: '/' },
     '/chat-bot/:id': { label: 'conversation', parent: '/chat-bot' },
 
