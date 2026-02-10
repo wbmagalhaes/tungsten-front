@@ -76,12 +76,12 @@ export default function ImageGenerationPage() {
 
   return (
     <div className='space-y-4'>
-      <Card className='border-accent/50 bg-linear-to-br from-accent/10 to-transparent'>
+      <Card className='container-neon'>
         <CardHeader>
-          <CardIcon className='text-accent'>
+          <CardIcon className='text-neon'>
             <Sparkles className='w-5 h-5' />
           </CardIcon>
-          <CardTitle className='text-accent'>Generate New Image</CardTitle>
+          <CardTitle className='text-neon'>Generate New Image</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           <Textarea

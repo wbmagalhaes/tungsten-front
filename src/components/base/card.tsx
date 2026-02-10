@@ -51,7 +51,7 @@ function CardIcon({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='card-icon'
-      className={cn('text-primary shrink-0', className)}
+      className={cn('p-2 bg-primary/10 rounded-sm text-primary shrink-0', className)}
       {...props}
     />
   );

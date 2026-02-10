@@ -10,7 +10,7 @@
   --color-popover: #0f172a;
   --color-popover-foreground: #f0f9ff;
 
-  --color-primary: #8e33e3;
+  --color-primary: #9131be;
   --color-primary-foreground: #ffffff;
 
   --color-secondary: #162e63;
@@ -49,12 +49,24 @@
   background: linear-gradient(60deg, #dc199e, #b214c6, #4338ca);
 }
 
-.bg-gradient-neon {
-  @apply bg-linear-to-r from-info via-primary to-accent;
+.container-neon {
+  @apply border shadow-lg shadow-primary/20 border-primary/50 bg-linear-to-br from-primary/10 to-transparent;
 }
 
-.text-gradient-neon {
-  @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-accent;
+.text-neon {
+  @apply bg-transparent text-primary;
+
+  text-shadow:
+    0 0 2px color-mix(in srgb, var(--color-primary) 35%, transparent),
+    0 0 8px color-mix(in srgb, var(--color-primary) 30%, transparent),
+    0 0 16px color-mix(in srgb, var(--color-primary) 25%, transparent);
+
+  & > svg {
+    filter:
+      drop-shadow(0 0 2px color-mix(in srgb, var(--color-primary) 35%, transparent))
+      drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 30%, transparent))
+      drop-shadow(0 0 16px color-mix(in srgb, var(--color-primary) 25%, transparent));
+  }
 }
 
 @keyframes loading-bar {

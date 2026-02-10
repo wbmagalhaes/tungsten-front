@@ -210,7 +210,7 @@ function QuickActionCard({
       onClick={onClick}
     >
       <CardContent className='flex items-start gap-3 p-4'>
-        <div className='p-2 bg-primary/10 rounded-lg text-primary'>{icon}</div>
+        <div className='p-2 bg-primary/10 rounded-sm text-primary'>{icon}</div>
         <div className='flex-1'>
           <h3 className='font-semibold text-foreground mb-1'>{title}</h3>
           <p className='text-sm text-muted-foreground'>{description}</p>
@@ -266,9 +266,9 @@ function RecentActivityCard() {
           {activities.map((activity) => (
             <div
               key={activity.id}
-              className='flex items-start gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors'
+              className='flex items-start gap-3 p-2 rounded-sm hover:bg-muted/30 transition-colors'
             >
-              <div className='p-1.5 bg-primary/10 rounded text-primary mt-0.5'>
+              <div className='p-1.5 text-primary mt-0.5'>
                 {activity.icon}
               </div>
               <div className='flex-1 min-w-0'>
@@ -329,7 +329,7 @@ function RecentNotesCard() {
           {notes.map((note) => (
             <div
               key={note.id}
-              className='p-3 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer'
+              className='p-3 rounded-sm hover:bg-muted/30 transition-colors cursor-pointer'
               onClick={() => navigate(`/notes/${note.id}`)}
             >
               <div className='flex items-start justify-between gap-2 mb-1'>

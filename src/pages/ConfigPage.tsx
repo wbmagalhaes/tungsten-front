@@ -9,7 +9,6 @@ import {
   CardFooter,
 } from '@components/base/card';
 import { Button } from '@components/base/button';
-import { Badge } from '@components/base/badge';
 import PageHeader from '@components/PageHeader';
 import {
   Tabs,
@@ -17,6 +16,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@components/base/tabs';
+import { cn } from '@utils/cn';
 
 export default function ConfigPage() {
   return (
@@ -69,7 +69,7 @@ function NotificationSettings() {
         <CardTitle>Notification Preferences</CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>
-        <div className='flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border'>
+        <div className='flex items-center justify-between p-4 rounded-sm bg-muted/30 border border-border'>
           <div>
             <h4 className='font-medium text-foreground'>Email Notifications</h4>
             <p className='text-sm text-muted-foreground'>
@@ -77,6 +77,7 @@ function NotificationSettings() {
             </p>
           </div>
           <Button
+            className='min-w-20'
             variant={emailNotifs ? 'default' : 'outline'}
             size='sm'
             onClick={() => setEmailNotifs(!emailNotifs)}
@@ -85,7 +86,7 @@ function NotificationSettings() {
           </Button>
         </div>
 
-        <div className='flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border'>
+        <div className='flex items-center justify-between p-4 rounded-sm bg-muted/30 border border-border'>
           <div>
             <h4 className='font-medium text-foreground'>Push Notifications</h4>
             <p className='text-sm text-muted-foreground'>
@@ -93,6 +94,7 @@ function NotificationSettings() {
             </p>
           </div>
           <Button
+            className='min-w-20'
             variant={pushNotifs ? 'default' : 'outline'}
             size='sm'
             onClick={() => setPushNotifs(!pushNotifs)}
@@ -139,25 +141,25 @@ function AppearanceSettings() {
               <button
                 key={theme}
                 onClick={() => setSelectedTheme(theme)}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  selectedTheme === theme
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border hover:border-muted-foreground'
-                }`}
+                className={cn(
+                  'p-4 rounded-sm border-2 transition-all border-border hover:border-muted-foreground',
+                  selectedTheme === theme && 'border-primary bg-primary/10',
+                )}
               >
                 <Sparkles
-                  className={`w-6 h-6 mx-auto mb-2 ${
-                    selectedTheme === theme
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
-                  }`}
+                  className={cn(
+                    'w-6 h-6 mx-auto mb-2 text-muted-foreground',
+                    selectedTheme === theme && 'text-primary',
+                  )}
                 />
-                <p className='text-sm font-medium text-foreground'>{theme}</p>
-                {selectedTheme === theme && (
-                  <Badge variant='default' className='mt-2 w-full'>
-                    Active
-                  </Badge>
-                )}
+                <p
+                  className={cn(
+                    'text-sm font-medium text-foreground',
+                    selectedTheme === theme && 'text-primary font-bold',
+                  )}
+                >
+                  {theme}
+                </p>
               </button>
             ))}
           </div>

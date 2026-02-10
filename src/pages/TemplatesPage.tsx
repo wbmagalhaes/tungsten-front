@@ -274,7 +274,7 @@ export default function TemplatesPage() {
                             [field.name]: e.target.value,
                           })
                         }
-                        className='w-full min-h-24 px-3 py-2 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring'
+                        className='w-full min-h-24 px-3 py-2 bg-input border border-border rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring'
                         required={field.required}
                       />
                     </div>
@@ -326,7 +326,7 @@ function TemplateCard({
     <Card className='hover:border-primary/30 transition-all group'>
       <CardHeader>
         <div className='flex items-start gap-3'>
-          <div className='p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/20 transition-colors'>
+          <div className='p-3 bg-primary/10 rounded-sm text-primary group-hover:bg-primary/20 transition-colors'>
             {template.icon}
           </div>
           <div className='flex-1 min-w-0'>

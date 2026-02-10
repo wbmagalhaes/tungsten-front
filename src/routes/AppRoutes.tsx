@@ -4,6 +4,7 @@ import PublicLayout from '@layouts/PublicLayout';
 import AuthenticatedLayout from '@layouts/AuthenticatedLayout';
 import ProtectedPage from '@components/ProtectedPage';
 
+import { useAuthStore } from '@stores/useAuthStore';
 import HomePage from '@pages/HomePage';
 import MediaPage from '@pages/MediaPage';
 import NotesPage from '@pages/NotesPage';
@@ -23,7 +24,7 @@ import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
 import SingleUserPage from '@pages/SingleUserPage';
-import { useAuthStore } from '@stores/useAuthStore';
+import ChatPage from '@pages/ChatPage';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -128,6 +129,15 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+          <Route
+            path='chat'
+            element={
+              <ProtectedPage>
+                <ChatPage />
+              </ProtectedPage>
+            }
+          />
+
           <Route
             path='config'
             element={

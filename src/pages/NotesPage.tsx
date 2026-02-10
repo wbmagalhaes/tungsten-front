@@ -182,7 +182,7 @@ function NoteCard({ note }: { note: Note }) {
     <Card
       className={`bg-linear-to-br ${note.color} to-transparent border-2 hover:scale-[1.02] transition-transform cursor-pointer group relative overflow-hidden`}
     >
-      <div className='absolute inset-0 bg-linear-to-br from-transparent via-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity' />
+      <div className='absolute inset-0 bg-linear-to-br from-transparent via-primary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity' />
 
       <CardHeader className='relative'>
         <div className='flex w-full items-center justify-between gap-2'>

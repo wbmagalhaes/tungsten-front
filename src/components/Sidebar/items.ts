@@ -1,5 +1,4 @@
 import {
-  Home,
   Activity,
   StickyNote,
   HardDrive,
@@ -9,6 +8,8 @@ import {
   ServerCog,
   LucideBookDashed,
   BotMessageSquare,
+  MessageCircleMore,
+  Terminal,
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -19,30 +20,12 @@ export interface SidebarItem {
 }
 
 export const sidebarItems: SidebarItem[] = [
-  { label: 'Root', to: '/root', icon: Home },
-  {
-    label: 'System Health',
-    to: '/system-health',
-    icon: Activity,
-    scope: 'system:*',
-  },
-  {
-    label: 'Users',
-    to: '/users',
-    icon: UsersRound,
-    scope: 'users:List',
-  },
+  { label: 'Root', to: '/root', icon: Terminal },
   {
     label: 'Notes',
     to: '/notes',
     icon: StickyNote,
     scope: 'notes:List',
-  },
-  {
-    label: 'Media',
-    to: '/media',
-    icon: HardDrive,
-    scope: 'files:List',
   },
   {
     label: 'Templates',
@@ -51,10 +34,16 @@ export const sidebarItems: SidebarItem[] = [
     scope: 'templates:List',
   },
   {
-    label: 'Sandbox',
-    to: '/sandbox',
-    icon: FlaskConical,
-    scope: 'sandbox:List',
+    label: 'Chat',
+    to: '/chat',
+    icon: MessageCircleMore,
+    // scope: 'chat:List',
+  },
+  {
+    label: 'Media',
+    to: '/media',
+    icon: HardDrive,
+    scope: 'files:List',
   },
   {
     label: 'ChatBot',
@@ -69,9 +58,27 @@ export const sidebarItems: SidebarItem[] = [
     scope: 'img-gen:List',
   },
   {
+    label: 'Sandbox',
+    to: '/sandbox',
+    icon: FlaskConical,
+    scope: 'sandbox:List',
+  },
+  {
     label: 'Background Jobs',
     to: '/background-jobs',
     icon: ServerCog,
     scope: 'bg-jobs:List',
+  },
+  {
+    label: 'System Health',
+    to: '/system-health',
+    icon: Activity,
+    scope: 'system:*',
+  },
+  {
+    label: 'Users',
+    to: '/users',
+    icon: UsersRound,
+    scope: 'users:List',
   },
 ];

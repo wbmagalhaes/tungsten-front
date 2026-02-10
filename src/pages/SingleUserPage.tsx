@@ -102,7 +102,7 @@ export default function SingleUserPage() {
 
       <Card>
         <CardHeader className='gap-3'>
-          <CardIcon>
+          <CardIcon className='bg-transparent'>
             <div className='w-12 h-12 bg-primary rounded-full flex items-center justify-center overflow-hidden'>
               {user.avatar ? (
                 <img

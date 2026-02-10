@@ -10,7 +10,7 @@ import {
 import { Button } from '@components/base/button';
 import { TextField } from '@components/base/text-field';
 
-export default function ChatBotPage() {
+export default function ChatPage() {
   const [newPrompt, setNewPrompt] = useState('');
 
   // TODO: Implement endpoint GET /api/chatbot/conversations
@@ -54,12 +54,12 @@ export default function ChatBotPage() {
 
   return (
     <div className='space-y-4'>
-      <Card className='container-neon'>
+      <Card className='border-primary/50 bg-linear-to-br from-primary/10 to-transparent'>
         <CardHeader>
-          <CardIcon className='text-neon'>
+          <CardIcon className='text-primary'>
             <BotMessageSquare className='w-5 h-5' />
           </CardIcon>
-          <CardTitle className='text-neon'>Start New Conversation</CardTitle>
+          <CardTitle className='text-primary'>ChatBot</CardTitle>
         </CardHeader>
         <CardContent className='flex gap-4'>
           <TextField
