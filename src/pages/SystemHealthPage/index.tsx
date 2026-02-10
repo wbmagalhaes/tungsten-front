@@ -164,7 +164,7 @@ export default function SystemHealthPage() {
           <div className='space-y-3'>
             <div className='flex flex-col gap-1'>
               <InfoItem
-                label={data.battery_status}
+                label={<span className='capitalize'>data.battery_status</span>}
                 value={`${data.battery_percent.toFixed(0)}%`}
               />
               <ProgressBar value={data.battery_percent} color='green' />

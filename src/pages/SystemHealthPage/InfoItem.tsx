@@ -1,6 +1,6 @@
 interface Props {
-  label: string;
-  value: string;
+  label: React.ReactNode;
+  value: React.ReactNode;
 }
 
 export default function InfoItem({ label, value }: Props) {
