@@ -28,7 +28,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      registerType: 'prompt',
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
