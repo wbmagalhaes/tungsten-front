@@ -86,6 +86,18 @@ export default function Sidebar() {
 function SidebarBackdrop() {
   const { isOpen, close } = useSidebarStore();
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   return (
     <div
       className={cn(

@@ -21,9 +21,11 @@ import {
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import { useUpdateProfile } from '@hooks/profile/use-edit-profile';
 import type { UpdateProfileRequest } from '@services/profile.service';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
 
 export default function ProfilePage() {
-  const { data: me, isLoading } = useGetProfile();
+  const { data: me, isLoading, error } = useGetProfile();
   const updateMe = useUpdateProfile();
 
   const form = useForm<UpdateProfileRequest>({
@@ -36,11 +38,16 @@ export default function ProfilePage() {
       : undefined,
   });
 
-  if (isLoading || !me) {
+  if (isLoading) {
+    return <LoadingState message='Loading profile...' />;
+  }
+
+  if (error || !me) {
     return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-muted-foreground'>Loading profile...</div>
-      </div>
+      <ErrorState
+        title='Error loading profile'
+        message={error?.message || 'Unable to fetch your profile'}
+      />
     );
   }
 

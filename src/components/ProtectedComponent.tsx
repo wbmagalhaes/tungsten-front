@@ -48,7 +48,7 @@ interface RequiredScopeProps {
 
 function RequiredScope({ requireScope }: RequiredScopeProps) {
   return (
-    <div className='border border-red-700 bg-red-200 text-red-700 rounded-sm p-2'>
+    <div className='border border-destructive bg-destructive/20 text-destructive rounded-sm p-2'>
       Missing Permission: {requireScope.join(', ')}
     </div>
   );

@@ -6,10 +6,10 @@ export default function AccessDeniedPage() {
   return (
     <div className='flex flex-1 items-center justify-center p-6 mt-12'>
       <div className='max-w-xl w-full'>
-        <Card className='backdrop-blur'>
+        <Card>
           <CardContent className='p-8 text-center'>
             <div className='flex justify-center mb-4'>
-              <ShieldBan className='h-14 w-14 text-red-400' />
+              <ShieldBan className='h-14 w-14 text-destructive' />
             </div>
             <h1 className='text-3xl font-bold mb-2 text-foreground'>
               403 - Access denied

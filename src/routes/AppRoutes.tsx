@@ -22,8 +22,8 @@ import RootPage from '@pages/RootPage';
 import LoginPage from '@pages/LoginPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
-import { useAuthStore } from '@stores/useAuthStore';
 import SingleUserPage from '@pages/SingleUserPage';
+import { useAuthStore } from '@stores/useAuthStore';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();

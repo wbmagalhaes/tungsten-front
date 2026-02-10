@@ -32,10 +32,12 @@ import {
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
-  const { data: user, isLoading } = useGetUser(id);
+  const { data: user, isLoading, error } = useGetUser(id);
   const updateUser = useUpdateUser(id);
   const updatePerms = useUpdatePermissions(id);
   const updateSudo = useUpdateSudo(id);
@@ -44,11 +46,16 @@ export default function SingleUserPage() {
   const [pendingScopes, setPendingScopes] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  if (isLoading || !user) {
+  if (isLoading) {
+    return <LoadingState message='Loading user data...' />;
+  }
+
+  if (error || !user) {
     return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-muted-foreground'>Loading user...</div>
-      </div>
+      <ErrorState
+        title='Error loading user data'
+        message={error?.message || 'Unable to fetch user information'}
+      />
     );
   }
 

@@ -29,6 +29,8 @@ import formatBytes from '@utils/formatBytes';
 import PageHeader from '@components/PageHeader';
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
 
 export default function MediaPage() {
   const { data, isLoading, error } = useListFiles({});
@@ -61,18 +63,15 @@ export default function MediaPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-muted-foreground'>Loading files...</div>
-      </div>
-    );
+    return <LoadingState message='Loading files...' />;
   }
 
   if (error || !data) {
     return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-red-400'>Error loading files</div>
-      </div>
+      <ErrorState
+        title='Error loading files'
+        message={error?.message || 'Unable to fetch files information'}
+      />
     );
   }
 

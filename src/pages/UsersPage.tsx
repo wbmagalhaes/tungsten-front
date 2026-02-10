@@ -9,15 +9,18 @@ import {
   ChevronRight,
   Shield,
   ShieldCheck,
+  Dot,
 } from 'lucide-react';
 import PageHeader from '@components/PageHeader';
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { Card, CardContent } from '@components/base/card';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useListUsers({ page, page_size: 25 });
+  const { data, isLoading, error } = useListUsers({ page, page_size: 25 });
   const createUser = useCreateUser();
 
   function handleAddUser() {
@@ -28,10 +31,15 @@ export default function UsersPage() {
   }
 
   if (isLoading) {
+    return <LoadingState message='Loading users...' />;
+  }
+
+  if (error || !data) {
     return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='text-muted-foreground'>Loading users...</div>
-      </div>
+      <ErrorState
+        title='Error loading users'
+        message={error?.message || 'Unable to fetch users information'}
+      />
     );
   }
 
@@ -142,7 +150,9 @@ export default function UsersPage() {
                           </p>
                         </div>
                         <div>
-                          <span className='text-xs text-muted-foreground'>Email:</span>
+                          <span className='text-xs text-muted-foreground'>
+                            Email:
+                          </span>
                           <p className='text-sm text-foreground'>
                             {u.email || (
                               <span className='text-muted-foreground italic'>
@@ -180,9 +190,11 @@ export default function UsersPage() {
 
       {data && data.results.length > 0 && (
         <Card>
-          <CardContent className='flex items-center justify-between'>
-            <div className='text-sm text-muted-foreground'>
-              Page {page} • {data.results.length} users
+          <CardContent className='flex items-center justify-between p-2'>
+            <div className='text-sm text-muted-foreground flex gap-1 items-center'>
+              <span>Page {page}</span>
+              <Dot />
+              <span>{data.results.length} users</span>
             </div>
             <div className='flex gap-2'>
               <Button

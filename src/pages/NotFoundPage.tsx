@@ -10,7 +10,7 @@ export default function NotFoundPage({ isAuthenticated }: NotFoundProps) {
   return (
     <div className='flex flex-1 items-center justify-center p-6 mt-12'>
       <div className='max-w-xl w-full'>
-        <Card className='backdrop-blur'>
+        <Card>
           <CardContent className='p-8 text-center'>
             <h1 className='text-5xl font-extrabold mb-3 text-foreground'>404</h1>
             <p className='text-xl font-semibold mb-2 text-foreground'>
