@@ -187,7 +187,7 @@ function FileCard({ file }: FileCardProps) {
 
       <CardContent className='space-y-2 text-sm'>
         <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Type:</span>
+          <span className='text-muted-foreground'>Type</span>
           <span
             className='text-foreground truncate ml-2'
             title={file.mime || 'Unknown'}
@@ -196,19 +196,22 @@ function FileCard({ file }: FileCardProps) {
           </span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Size:</span>
+          <span className='text-muted-foreground'>Size</span>
           <span className='text-foreground text-nowrap'>
             {formatBytes(file.size)}
           </span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Visibility:</span>
-          <Badge variant={file.visibility === 'public' ? 'success' : 'warning'}>
+          <span className='text-muted-foreground'>Visibility</span>
+          <Badge
+            variant={file.visibility === 'public' ? 'success' : 'warning'}
+            className='py-0'
+          >
             {file.visibility}
           </Badge>
         </div>
         <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Created:</span>
+          <span className='text-muted-foreground'>Created</span>
           <span className='text-foreground text-nowrap'>
             {new Date(file.created_at).toLocaleString('pt-BR')}
           </span>

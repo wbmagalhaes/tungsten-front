@@ -37,7 +37,7 @@ export default function Header() {
 function MiniLogo() {
   return (
     <Link to='/'>
-      <div className='flex items-center justify-center h-8 w-8  bg-linear-to-br from-blue-600 to-purple-600 rounded-sm'>
+      <div className='flex items-center justify-center h-8 w-8  bg-main-gradient rounded-sm'>
         <span className='text-foreground font-bold text-sm mt-0.5'>W</span>
       </div>
     </Link>

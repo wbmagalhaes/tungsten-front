@@ -1,14 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark bg-main">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>tungsten</title>
+  <style>
+    .bg-main {
+      background: linear-gradient(to bottom right,
+          #111827,
+          var(--color-background),
+          #111827);
+    }
+
+    .text-foreground {
+      color: #e6f1ff;
+    }
+  </style>
 </head>
 
-<body class="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-foreground">
+<body class="bg-main text-foreground">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

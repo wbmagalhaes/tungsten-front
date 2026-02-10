@@ -5,11 +5,11 @@ interface Props {
 
 export default function ProgressBar({ value, color = 'default' }: Props) {
   const colors = {
-    default: 'bg-linear-to-r from-blue-600 to-purple-600',
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
-    purple: 'bg-purple-500',
+    default: 'bg-main-gradient',
+    blue: 'bg-info',
+    green: 'bg-success',
+    yellow: 'bg-warning',
+    purple: 'bg-primary',
   };
 
   return (

@@ -132,7 +132,7 @@ function SidebarContent({
     <aside
       style={{ width: desktop ? width : undefined }}
       className={cn(
-        'z-50 bg-gray-900 border-r border-border rounded-r-sm md:rounded-none shadow-lg',
+        'z-50 bg-background border-r border-border rounded-r-sm md:rounded-none shadow-lg',
         'flex flex-col fixed inset-y-0 left-0 w-64',
         'transition-all md:static',
         !desktop && 'duration-200 ease-in-out',
@@ -183,12 +183,14 @@ function SidebarMenuItem({
     return (
       <div
         className={cn(
-          'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-accent/50 text-foreground',
-          active && 'bg-accent/50 font-medium',
+          'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-accent/20 border-l-3 border-transparent text-foreground',
+          active && 'bg-accent/20 hover:bg-accent/20 font-medium border-accent',
           className,
         )}
       >
-        {children}
+        <div className='flex items-center w-full gap-3 -ml-[3px]'>
+          {children}
+        </div>
       </div>
     );
   }
@@ -202,12 +204,15 @@ function SidebarMenuItem({
           <div
             {...props}
             className={cn(
-              'flex items-center w-full gap-3 rounded-md px-3 py-2 transition-colors hover:bg-accent/50 text-foreground',
-              active && 'bg-accent/50 font-medium',
+              'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-accent/20 border-l-3 border-transparent text-foreground',
+              active &&
+                'bg-accent/20 hover:bg-accent/20 font-medium border-accent',
               className,
             )}
           >
-            {children}
+            <div className='flex items-center w-full gap-3 -ml-[3px]'>
+              {children}
+            </div>
           </div>
         )}
       />

@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-linear-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg',
+          'bg-main-gradient text-white hover:shadow-lg',
         outline:
           'border border-border bg-background text-foreground hover:bg-secondary',
         secondary: 'bg-secondary text-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent text-secondary-foreground',
+        ghost: 'hover:bg-muted text-secondary-foreground',
         destructive:
           'bg-destructive/20 text-red-400 hover:bg-destructive/30 border border-destructive/30',
         link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
