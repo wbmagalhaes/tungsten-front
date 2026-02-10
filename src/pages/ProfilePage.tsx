@@ -68,7 +68,7 @@ export default function ProfilePage() {
               )}
             </div>
           </CardIcon>
-          <div>
+          <div className='flex flex-col items-start gap-1'>
             <CardTitle>{me.username}</CardTitle>
             <CardDescription>Your account profile</CardDescription>
           </div>
@@ -96,8 +96,10 @@ export default function ProfilePage() {
           <CardIcon>
             <UserCircle className='w-5 h-5' />
           </CardIcon>
-          <CardTitle>Edit Profile</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
+          <div className='flex flex-wrap items-center gap-2'>
+            <CardTitle>Edit Profile</CardTitle>
+            <CardDescription>Update your personal information</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form

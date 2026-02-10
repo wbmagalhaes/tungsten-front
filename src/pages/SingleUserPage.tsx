@@ -115,7 +115,7 @@ export default function SingleUserPage() {
               )}
             </div>
           </CardIcon>
-          <div>
+          <div className='flex flex-col items-start gap-1'>
             <CardTitle>{user.username}</CardTitle>
             <CardDescription>User Profile</CardDescription>
           </div>
