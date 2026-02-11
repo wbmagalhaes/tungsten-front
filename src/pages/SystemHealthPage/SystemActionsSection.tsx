@@ -55,7 +55,7 @@ export default function SystemActionsSection() {
         icon={<Wrench className='w-5 h-5' />}
         className='col-span-full'
       >
-        <div className='flex flex-wrap gap-2'>
+        <div className='flex flex-wrap gap-2 mb-3'>
           <Button
             size='sm'
             variant='secondary'
@@ -111,8 +111,13 @@ export default function SystemActionsSection() {
         </div>
 
         {updates.data?.available && (
-          <Badge variant='warning' className='mt-3'>
-            Updates available: {updates.data.available}
+          <Badge
+            variant='warning'
+            className='wrap-break-words whitespace-pre-line px-3 py-2'
+          >
+            Updates available:
+            <br />
+            {updates.data.available}
           </Badge>
         )}
       </SystemCard>

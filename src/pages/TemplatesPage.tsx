@@ -5,7 +5,6 @@ import {
   Code,
   File,
   Download,
-  Sparkles,
   Plus,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardFooter } from '@components/base/card';
@@ -44,6 +43,7 @@ export default function TemplatesPage() {
     null,
   );
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [activeCategory, setActiveCategory] = useState<string>('ALL');
 
   // TODO: Implement endpoint GET /api/templates
   const templates: Template[] = [
@@ -197,9 +197,15 @@ export default function TemplatesPage() {
     setFormData({});
   };
 
+  const categories = Array.from(new Set(templates.map((t) => t.category)));
+
+  const filteredTemplates =
+    activeCategory === 'ALL'
+      ? templates
+      : templates.filter((t) => t.category === activeCategory);
+
   const handleGenerate = () => {
     if (!selectedTemplate) return;
-    // TODO: Implement endpoint POST /api/templates/:id/generate
     console.log('Generating file from template:', {
       templateId: selectedTemplate.id,
       data: formData,
@@ -208,8 +214,6 @@ export default function TemplatesPage() {
     setFormData({});
   };
 
-  const categories = Array.from(new Set(templates.map((t) => t.category)));
-
   return (
     <div className='space-y-4'>
       <PageHeader
@@ -217,26 +221,36 @@ export default function TemplatesPage() {
         icon={<LucideBookDashed className='w-5 h-5' />}
       />
 
-      {categories.map((category) => (
-        <div key={category}>
-          <h2 className='text-lg font-semibold text-foreground mb-3 flex items-center gap-2'>
-            <Sparkles className='w-5 h-5 text-primary' />
-            {category}
-          </h2>
+      <div className='flex flex-wrap gap-2'>
+        <Badge
+          className='cursor-pointer'
+          variant={activeCategory === 'ALL' ? 'default' : 'secondary'}
+          onClick={() => setActiveCategory('ALL')}
+        >
+          All
+        </Badge>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6'>
-            {templates
-              .filter((t) => t.category === category)
-              .map((template) => (
-                <TemplateCard
-                  key={template.id}
-                  template={template}
-                  onGenerate={() => handleOpenTemplate(template)}
-                />
-              ))}
-          </div>
-        </div>
-      ))}
+        {categories.map((category) => (
+          <Badge
+            key={category}
+            className='cursor-pointer'
+            variant={activeCategory === category ? 'default' : 'secondary'}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
+          </Badge>
+        ))}
+      </div>
+
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+        {filteredTemplates.map((template) => (
+          <TemplateCard
+            key={template.id}
+            template={template}
+            onGenerate={() => handleOpenTemplate(template)}
+          />
+        ))}
+      </div>
 
       {selectedTemplate && (
         <Dialog
@@ -314,7 +328,6 @@ export default function TemplatesPage() {
     </div>
   );
 }
-
 function TemplateCard({
   template,
   onGenerate,

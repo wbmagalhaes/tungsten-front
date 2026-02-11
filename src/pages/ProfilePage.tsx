@@ -55,7 +55,7 @@ export default function ProfilePage() {
     <div className='space-y-4 max-w-3xl mx-auto'>
       <Card>
         <CardHeader className='gap-3'>
-          <CardIcon>
+          <CardIcon className='bg-transparent'>
             <div className='w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden'>
               {me.avatar ? (
                 <img
