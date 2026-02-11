@@ -9,5 +9,7 @@ export default function matchesScope(
     return requiredPerm.startsWith(prefix + ':');
   }
 
+  // TODO: check if requiredPerm ends with wildcard
+
   return false;
 }

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@hooks/auth/use-login';
-import { Turnstile } from '@marsidev/react-turnstile';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { LogIn, User, Lock, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@components/base/card';
 import { Button } from '@components/base/button';
@@ -15,7 +15,10 @@ export default function LoginForm() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [token, setToken] = useState('');
+
   const { mutateAsync, isPending, error, isError } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,10 +63,19 @@ export default function LoginForm() {
 
           <div className='flex flex-col gap-4 justify-center'>
             <Turnstile
+              ref={turnstileRef}
               as='aside'
               className='max-w-full w-full'
               siteKey={SITE_KEY}
               onSuccess={(t) => setToken(t)}
+              onExpire={() => {
+                setToken('');
+                turnstileRef.current?.reset();
+              }}
+              onError={() => {
+                setToken('');
+                turnstileRef.current?.reset();
+              }}
               options={{
                 theme: 'dark',
                 language: 'en',
