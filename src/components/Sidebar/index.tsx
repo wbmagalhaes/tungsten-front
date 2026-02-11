@@ -102,7 +102,7 @@ function SidebarBackdrop() {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-40 bg-black/50 md:hidden transition-opacity',
+        'fixed inset-0 z-50 bg-black/50 md:hidden transition-opacity',
         isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       onClick={close}
@@ -113,7 +113,7 @@ function SidebarBackdrop() {
 function SidebarSwipeZone({ handlers }: { handlers: SwipeableHandlers }) {
   return (
     <div
-      className='fixed top-12 left-0 h-full w-6 z-50 touch-action-pan-y md:hidden '
+      className='fixed top-12 left-0 h-full w-6 z-55 touch-action-pan-y md:hidden '
       {...handlers}
     />
   );
@@ -161,7 +161,7 @@ function SidebarHeader() {
 }
 
 function SidebarMenu({ children }: { children: React.ReactNode }) {
-  return <nav className='flex flex-col gap-1.5 p-2 text-sm'>{children}</nav>;
+  return <nav className='flex flex-col gap-1.5 p-2 flex-1'>{children}</nav>;
 }
 
 type SidebarMenuItemProps = {

@@ -57,9 +57,13 @@ export default function RootPage() {
   ]);
   const [currentCommand, setCurrentCommand] = useState('');
   const terminalEndRef = useRef<HTMLDivElement>(null);
+  const terminalScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (terminalScrollRef.current) {
+      terminalScrollRef.current.scrollTop =
+        terminalScrollRef.current.scrollHeight;
+    }
   }, [terminalLines]);
 
   if (userLoading) {
@@ -173,46 +177,49 @@ export default function RootPage() {
           <CardTitle>Terminal</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='bg-background/50 rounded-sm p-4 font-mono text-sm h-64 overflow-y-auto'>
-            <div className=' flex flex-col justify-end min-h-full'>
-              {terminalLines.map((line, i) => (
-                <div
-                  key={i}
-                  className={
-                    line.type === 'command'
-                      ? 'text-primary'
-                      : line.type === 'error'
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
-                  }
-                >
-                  {line.content}
-                </div>
-              ))}
-              <div className='flex items-center gap-2 mt-2'>
-                <ChevronRight className='w-4 h-4 text-accent' />
-                <input
-                  type='text'
-                  value={currentCommand}
-                  onChange={(e) => setCurrentCommand(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className='flex-1 bg-transparent outline-none text-foreground'
-                  placeholder='Type a command...'
-                  autoFocus
-                />
+          <div
+            ref={terminalScrollRef}
+            className='bg-background/50 rounded-sm p-4 font-mono text-sm h-64 overflow-y-auto'
+          >
+            {terminalLines.map((line, i) => (
+              <div
+                key={i}
+                className={
+                  line.type === 'command'
+                    ? 'text-primary'
+                    : line.type === 'error'
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                }
+              >
+                {line.content}
               </div>
-              <div ref={terminalEndRef} />
+            ))}
+            <div className='flex items-center gap-2 mt-2'>
+              <ChevronRight className='w-4 h-4 text-accent' />
+              <input
+                type='text'
+                value={currentCommand}
+                onChange={(e) => setCurrentCommand(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className='flex-1 bg-transparent outline-none text-foreground'
+                placeholder='Type a command...'
+                autoFocus
+              />
             </div>
+            <div ref={terminalEndRef} />
           </div>
         </CardContent>
-        <CardFooter className='flex gap-3 py-0.5 px-4'>
+        <CardFooter className='flex-col sm:flex-row gap-3 py-3 px-4'>
           {health && (
             <>
-              <div className='flex gap-6 w-full'>
+              <div className='flex flex-wrap gap-x-4 gap-y-2 w-full overflow-x-auto'>
                 <SystemMetric
                   icon={<Clock className='w-4 h-4' />}
                   label='Time'
-                  value={new Date(health.current_time).toLocaleString('pt-BR')}
+                  value={new Date(health.current_time).toLocaleTimeString(
+                    'pt-BR',
+                  )}
                 />
                 <SystemMetric
                   icon={<Cpu className='w-4 h-4' />}
@@ -250,7 +257,7 @@ export default function RootPage() {
               <ButtonLink
                 variant='ghost'
                 size='sm'
-                className='ml-auto'
+                className='ml-auto shrink-0'
                 to='/system-health'
               >
                 View Details
@@ -270,7 +277,7 @@ export default function RootPage() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
 
-          <CardContent className='space-y-3'>
+          <CardContent className='space-y-2'>
             <QuickActionCard
               icon={<StickyNote className='w-5 h-5' />}
               title='Notes'
@@ -331,11 +338,11 @@ function SystemMetric({
   status = 'normal',
 }: SystemMetricProps) {
   return (
-    <div className='flex items-center gap-1'>
+    <div className='flex items-center gap-1 shrink-0'>
       <div className='text-primary'>{icon}</div>
       <p className='text-xs text-muted-foreground mr-1'>{label}</p>
       <p
-        className={`text-sm font-bold ${
+        className={`text-sm font-bold whitespace-nowrap ${
           status === 'warning' ? 'text-warning' : 'text-foreground'
         }`}
       >
@@ -359,21 +366,19 @@ function QuickActionCard({
   onClick,
 }: QuickActionCardProps) {
   return (
-    <Card
-      className='cursor-pointer hover:bg-muted/50 transition-colors'
+    <div
+      className='flex items-center gap-3 p-3 rounded-sm hover:bg-muted/50 transition-colors cursor-pointer border border-transparent hover:border-primary/30'
       onClick={onClick}
     >
-      <CardContent className='flex items-center gap-3 p-3'>
-        <div className='p-2 bg-primary/10 rounded-sm text-primary'>{icon}</div>
-        <div className='flex-1 min-w-0'>
-          <h3 className='font-semibold text-foreground text-sm'>{title}</h3>
-          <p className='text-xs text-muted-foreground truncate'>
-            {description}
-          </p>
-        </div>
-        <ArrowRight className='w-4 h-4 text-muted-foreground shrink-0' />
-      </CardContent>
-    </Card>
+      <div className='p-2 bg-primary/10 rounded-sm text-primary shrink-0'>
+        {icon}
+      </div>
+      <div className='flex-1 min-w-0'>
+        <h3 className='font-semibold text-foreground text-sm'>{title}</h3>
+        <p className='text-xs text-muted-foreground truncate'>{description}</p>
+      </div>
+      <ArrowRight className='w-4 h-4 text-muted-foreground shrink-0' />
+    </div>
   );
 }
 
