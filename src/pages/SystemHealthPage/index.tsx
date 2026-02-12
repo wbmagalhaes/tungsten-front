@@ -10,7 +10,6 @@ import {
 import useHealthCheck from '@hooks/system/use-health-check';
 import formatBytes from '@utils/formatBytes';
 import formatTime from '@utils/formatTime';
-import ProtectedComponent from '@components/ProtectedComponent';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import { RefetchingIndicator } from '@components/RefetchingIndicator';
@@ -39,9 +38,7 @@ export default function SystemHealthPage() {
     <div className='space-y-4'>
       {isRefetching && <RefetchingIndicator />}
 
-      <ProtectedComponent requireScope='system:Write'>
-        <SystemActionsSection />
-      </ProtectedComponent>
+      <SystemActionsSection />
 
       <SystemCard
         title='System'

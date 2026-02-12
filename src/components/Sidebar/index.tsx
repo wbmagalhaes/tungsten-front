@@ -134,7 +134,7 @@ function SidebarContent({
       style={{ width: desktop ? width : undefined }}
       className={cn(
         'z-50 bg-background border-r border-border rounded-r-sm md:rounded-none shadow-lg transition-all',
-        'flex flex-col fixed max-h-screen top-12 bottom-0 left-0',
+        'flex flex-col fixed inset-y-0 md:top-12 left-0 overflow-hidden',
         !desktop && 'duration-200 ease-in-out',
         desktop && 'duration-100',
         !desktop && (isOpen ? 'translate-x-0' : '-translate-x-full'),
@@ -152,7 +152,7 @@ function SidebarHeader() {
   const { close } = useSidebarStore();
 
   return (
-    <div className='flex items-center border-b border-border p-2 md:hidden'>
+    <div className='flex items-center border-b border-border p-2 md:hidden shrink-0'>
       <Button onClick={close} variant='ghost' size='icon'>
         <ChevronLeft className='h-5 w-5' />
       </Button>
@@ -161,7 +161,11 @@ function SidebarHeader() {
 }
 
 function SidebarMenu({ children }: { children: React.ReactNode }) {
-  return <nav className='flex flex-col gap-1.5 p-2 flex-1'>{children}</nav>;
+  return (
+    <nav className='flex flex-col gap-1.5 p-2 flex-1 overflow-y-auto min-h-0'>
+      {children}
+    </nav>
+  );
 }
 
 type SidebarMenuItemProps = {
@@ -320,7 +324,11 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
 }
 
 function SidebarFooter({ children }: { children: React.ReactNode }) {
-  return <div className='mt-auto flex flex-col gap-1 p-2'>{children}</div>;
+  return (
+    <div className='mt-auto flex flex-col gap-1 p-2 shrink-0 border-t border-border'>
+      {children}
+    </div>
+  );
 }
 
 function SidebarRail() {

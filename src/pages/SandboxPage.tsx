@@ -11,6 +11,7 @@ import {
   Loader2,
   Clock,
   Package,
+  FilePlusCorner,
 } from 'lucide-react';
 import {
   Card,
@@ -138,9 +139,8 @@ export default function SandboxPage() {
         title='Sandbox'
         icon={<FlaskConical className='w-5 h-5' />}
         action={
-          <Button onClick={() => setShowCreateDialog(true)}>
-            <Plus className='w-4 h-4' />
-            New Sandbox
+          <Button onClick={() => setShowCreateDialog(true)} size='icon'>
+            <FilePlusCorner className='w-4 h-4' />
           </Button>
         }
       />
@@ -287,7 +287,9 @@ function SandboxCard({ sandbox }: { sandbox: Sandbox }) {
     <Card className='hover:border-primary/30 transition-all'>
       <CardHeader>
         <CardIcon>{statusConfig[sandbox.status].icon}</CardIcon>
-        <CardTitle>{sandbox.name}</CardTitle>
+        <div className='flex-1 min-w-0'>
+          <CardTitle>{sandbox.name}</CardTitle>
+        </div>
         {statusConfig[sandbox.status].badge}
       </CardHeader>
 

@@ -62,10 +62,35 @@
     0 0 16px color-mix(in srgb, var(--color-primary) 25%, transparent);
 
   & > svg {
-    filter:
-      drop-shadow(0 0 2px color-mix(in srgb, var(--color-primary) 35%, transparent))
-      drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 30%, transparent))
-      drop-shadow(0 0 16px color-mix(in srgb, var(--color-primary) 25%, transparent));
+    filter: drop-shadow(
+        0 0 2px color-mix(in srgb, var(--color-primary) 35%, transparent)
+      )
+      drop-shadow(
+        0 0 8px color-mix(in srgb, var(--color-primary) 30%, transparent)
+      )
+      drop-shadow(
+        0 0 16px color-mix(in srgb, var(--color-primary) 25%, transparent)
+      );
+  }
+}
+
+.tooltip-arrow {
+  filter: drop-shadow(1px 1px 0 var(--color-border));
+
+  &[data-side='top'] {
+    transform: rotate(0deg);
+  }
+
+  &[data-side='bottom'] {
+    transform: rotate(180deg);
+  }
+
+  &[data-side='left'] {
+    transform: rotate(-90deg);
+  }
+
+  &[data-side='right'] {
+    transform: rotate(90deg);
   }
 }
 

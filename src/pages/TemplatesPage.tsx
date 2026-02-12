@@ -268,7 +268,7 @@ export default function TemplatesPage() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className='space-y-4 max-h-96 overflow-y-auto'>
+            <div className='space-y-4 max-h-96 overflow-y-auto px-1 pb-1'>
               {selectedTemplate.fields.map((field) => (
                 <div key={field.name}>
                   {field.type === 'textarea' ? (

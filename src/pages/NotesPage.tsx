@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { StickyNote, Plus, Trash2, Edit, Clock } from 'lucide-react';
+import {
+  StickyNote,
+  Plus,
+  Trash2,
+  Edit,
+  Clock,
+  PencilLine,
+} from 'lucide-react';
 import {
   Card,
   CardHeader,
@@ -94,9 +101,8 @@ export default function NotesPage() {
         title='Notes'
         icon={<StickyNote className='w-5 h-5' />}
         action={
-          <Button onClick={() => setShowCreateDialog(true)}>
-            <Plus className='w-4 h-4' />
-            New Note
+          <Button onClick={() => setShowCreateDialog(true)} size='icon'>
+            <PencilLine className='w-4 h-4' />
           </Button>
         }
       />
