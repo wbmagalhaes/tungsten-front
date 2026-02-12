@@ -6,10 +6,13 @@ export default function matchesScope(
 
   if (userPerm.endsWith(':*')) {
     const prefix = userPerm.slice(0, -2);
-    return requiredPerm.startsWith(prefix + ':');
+    if (requiredPerm.startsWith(prefix + ':')) return true;
   }
 
-  // TODO: check if requiredPerm ends with wildcard
+  if (requiredPerm.endsWith(':*')) {
+    const prefix = requiredPerm.slice(0, -2);
+    if (userPerm.startsWith(prefix + ':')) return true;
+  }
 
   return false;
 }
