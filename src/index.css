@@ -106,3 +106,28 @@
     transform: translateX(300%);
   }
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1d2a41 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1d2a41;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1d2a41;
+}
