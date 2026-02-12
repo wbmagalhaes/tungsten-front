@@ -41,6 +41,10 @@
   --animate-loading-bar: loading-bar 1.75s ease-in-out infinite;
 }
 
+.titlebar {
+  padding-top: env(titlebar-area-height);
+}
+
 .bg-main {
   @apply bg-linear-to-br from-gray-900 via-background to-gray-900;
 }

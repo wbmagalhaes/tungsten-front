@@ -58,17 +58,18 @@ export default defineConfig({
         short_name: 'tungsten',
         start_url: '/',
         display: 'standalone',
+        display_override: ['window-controls-overlay'],
         orientation: 'portrait',
         background_color: '#111827',
         theme_color: '#111827',
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: '/icons/pwa-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/icons/icon-512.png',
+            src: '/icons/pwa-512.png',
             sizes: '512x512',
             type: 'image/png',
           },
