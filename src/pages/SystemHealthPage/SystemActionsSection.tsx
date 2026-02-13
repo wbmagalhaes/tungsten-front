@@ -226,7 +226,7 @@ export default function SystemActionsSection() {
                     <Package className='w-4 h-4' />
                     Available Packages ({availablePackages.length})
                   </label>
-                  <div className='flex gap-1 mb-2'>
+                  <div className='flex flex-wrap gap-1 mb-2'>
                     {availablePackages.map((pkg) => (
                       <Badge
                         key={pkg.name}
