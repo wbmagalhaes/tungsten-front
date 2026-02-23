@@ -17,6 +17,7 @@ import SystemCard from './SystemCard';
 import InfoItem from './InfoItem';
 import ProgressBar from '@components/ProgressBar';
 import SystemActionsSection from './SystemActionsSection';
+import { Separator } from '@components/base/separator';
 
 export default function SystemHealthPage() {
   const { data, isLoading, error, isRefetching } = useHealthCheck();
@@ -152,6 +153,19 @@ export default function SystemHealthPage() {
 
         <SystemCard title='Network' icon={<Network className='w-5 h-5' />}>
           <div className='space-y-2'>
+            {data.wifi && (
+              <>
+                <InfoItem
+                  label='Wifi'
+                  value={<span className='font-mono'>{data.wifi.ssid}</span>}
+                />
+                <InfoItem
+                  label='Signal'
+                  value={<SignalBar signal={data.wifi.signal} />}
+                />
+                <Separator />
+              </>
+            )}
             <InfoItem label='Received' value={formatBytes(data.net_in)} />
             <InfoItem label='Sent' value={formatBytes(data.net_out)} />
           </div>
@@ -180,5 +194,24 @@ export default function SystemHealthPage() {
         </SystemCard>
       </div>
     </div>
+  );
+}
+
+function SignalBar({ signal }: { signal: number }) {
+  const filled = Math.round((signal / 100) * 10);
+  const empty = 10 - filled;
+  const bar = '█'.repeat(filled) + '░'.repeat(empty);
+
+  const color =
+    signal >= 70
+      ? 'text-success'
+      : signal >= 40
+        ? 'text-warning'
+        : 'text-destructive';
+
+  return (
+    <span className={`font-mono ${color}`}>
+      {signal}% {bar}
+    </span>
   );
 }

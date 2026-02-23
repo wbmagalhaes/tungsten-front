@@ -72,6 +72,7 @@ export type SystemStatus = {
   disk_used: number;
   net_in: number;
   net_out: number;
+  wifi?: { ssid: string; signal: number };
   battery_percent: number;
   battery_status: string;
   battery_hours_left: number;
