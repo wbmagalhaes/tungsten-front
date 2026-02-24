@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import { useAuthStore } from '@stores/useAuthStore';
 import matchesScope from '@utils/matchesScope';
 
-interface Props {
+interface ProtectedComponentProps {
   children: JSX.Element;
   requireScope?: string | string[];
   fallback?: JSX.Element | null;
@@ -14,7 +14,7 @@ export default function ProtectedComponent({
   requireScope,
   showError = false,
   fallback = null,
-}: Props) {
+}: ProtectedComponentProps) {
   const { isAuthenticated, userScope, isSudo } = useAuthStore();
 
   if (!isAuthenticated) {

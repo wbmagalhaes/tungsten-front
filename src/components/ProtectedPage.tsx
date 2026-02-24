@@ -3,12 +3,15 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@stores/useAuthStore';
 import matchesScope from '@utils/matchesScope';
 
-interface Props {
+interface ProtectedPageProps {
   children: JSX.Element;
   requireScope?: string | string[];
 }
 
-export default function ProtectedPage({ children, requireScope }: Props) {
+export default function ProtectedPage({
+  children,
+  requireScope,
+}: ProtectedPageProps) {
   const { isAuthenticated, userScope, isSudo } = useAuthStore();
   const location = useLocation();
 
