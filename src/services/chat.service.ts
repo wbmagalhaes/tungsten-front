@@ -31,28 +31,28 @@ export interface EditRoomRequest {
 }
 
 export const listRooms = async (params?: ListRoomsParams) => {
-  const res = await api.get<PaginatedResponse<ChatRoom>>('/chat/rooms', {
+  const res = await api.get<PaginatedResponse<ChatRoom>>('/api/chat/rooms', {
     params,
   });
   return res.data;
 };
 
 export const getRoom = async (roomId: string) => {
-  const res = await api.get<ChatRoom>(`/chat/rooms/${roomId}`);
+  const res = await api.get<ChatRoom>(`/api/chat/rooms/${roomId}`);
   return res.data;
 };
 
 export const createRoom = async (body: CreateRoomRequest) => {
-  const res = await api.post<ChatRoom>('/chat/rooms', body);
+  const res = await api.post<ChatRoom>('/api/chat/rooms', body);
   return res.data;
 };
 
 export const editRoom = async (roomId: string, body: EditRoomRequest) => {
-  const res = await api.patch<ChatRoom>(`/chat/rooms/${roomId}`, body);
+  const res = await api.patch<ChatRoom>(`/api/chat/rooms/${roomId}`, body);
   return res.data;
 };
 
 export const deleteRoom = async (roomId: string) => {
-  const res = await api.delete(`/chat/rooms/${roomId}`);
+  const res = await api.delete(`/api/chat/rooms/${roomId}`);
   return res.data;
 };
