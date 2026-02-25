@@ -6,8 +6,11 @@ import {
   Battery,
   Monitor,
   Server,
+  Clock,
 } from 'lucide-react';
 import useHealthCheck from '@hooks/system/use-health-check';
+import useRebootIsScheduled from '@hooks/system/use-reboot-is-scheduled';
+import useShutdownIsScheduled from '@hooks/system/use-shutdown-is-scheduled';
 import formatBytes from '@utils/formatBytes';
 import formatTime from '@utils/formatTime';
 import { LoadingState } from '@components/LoadingState';
@@ -21,6 +24,8 @@ import { Separator } from '@components/base/separator';
 
 export default function SystemHealthPage() {
   const { data, isLoading, error, isRefetching } = useHealthCheck();
+  const rebootScheduled = useRebootIsScheduled();
+  const shutdownScheduled = useShutdownIsScheduled();
 
   if (isLoading) {
     return <LoadingState message='Loading system data...' />;
@@ -38,6 +43,19 @@ export default function SystemHealthPage() {
   return (
     <div className='space-y-4'>
       {isRefetching && <RefetchingIndicator />}
+
+      {rebootScheduled.data?.scheduled && (
+        <ScheduleBanner
+          variant='warning'
+          message={rebootScheduled.data.detail ?? 'A reboot is scheduled.'}
+        />
+      )}
+      {shutdownScheduled.data?.scheduled && (
+        <ScheduleBanner
+          variant='destructive'
+          message={shutdownScheduled.data.detail ?? 'A shutdown is scheduled.'}
+        />
+      )}
 
       <SystemActionsSection />
 
@@ -193,6 +211,28 @@ export default function SystemHealthPage() {
           </div>
         </SystemCard>
       </div>
+    </div>
+  );
+}
+
+function ScheduleBanner({
+  variant,
+  message,
+}: {
+  variant: 'warning' | 'destructive';
+  message: string;
+}) {
+  const styles =
+    variant === 'warning'
+      ? 'bg-warning/10 border-warning/30 text-warning-foreground'
+      : 'bg-destructive/10 border-destructive/30 text-destructive-foreground';
+
+  return (
+    <div
+      className={`flex items-center gap-2 px-4 py-2.5 rounded-sm border text-sm ${styles}`}
+    >
+      <Clock className='w-4 h-4 shrink-0' />
+      {message}
     </div>
   );
 }

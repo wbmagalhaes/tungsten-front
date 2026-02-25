@@ -3,7 +3,8 @@ import Cookies from 'js-cookie';
 import { useAuthStore } from '@stores/useAuthStore';
 import { refreshToken as refreshTokenRequest } from './auth.service';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || '/';
+const baseURL =
+  import.meta.env.VITE_API_BASE_URL ?? 'https://api.tungsten.rocks';
 
 const api = axios.create({
   baseURL: new URL(baseURL).toString(),

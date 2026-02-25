@@ -9,13 +9,23 @@ import {
   Clock,
   CheckCircle,
   Package,
+  Wifi,
+  WifiOff,
+  Lock,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
+import { TextField } from '@components/base/text-field';
 import useCheckUpdates from '@hooks/system/use-check-updates';
 import useApplyUpdates from '@hooks/system/use-apply-updates';
 import useRebootSystem from '@hooks/system/use-reboot-system';
 import useShutdownSystem from '@hooks/system/use-shutdown-system';
+import useRebootIsScheduled from '@hooks/system/use-reboot-is-scheduled';
+import useShutdownIsScheduled from '@hooks/system/use-shutdown-is-scheduled';
+import useWifiScan from '@hooks/system/use-wifi-scan';
+import useWifiConnect from '@hooks/system/use-wifi-connect';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import { InformationDialog } from '@components/InformationDialog';
 import {
@@ -33,6 +43,7 @@ import {
 } from '@components/base/tooltip';
 import SystemCard from './SystemCard';
 import ProtectedComponent from '@components/ProtectedComponent';
+import type { WifiNetwork } from '@services/system.service';
 
 type PackageUpdate = {
   name: string;
@@ -44,6 +55,8 @@ export default function SystemActionsSection() {
   const applyUpdates = useApplyUpdates();
   const reboot = useRebootSystem();
   const shutdown = useShutdownSystem();
+  const rebootScheduled = useRebootIsScheduled();
+  const shutdownScheduled = useShutdownIsScheduled();
 
   const [showShutdownConfirm, setShowShutdownConfirm] = useState(false);
   const [showRebootConfirm, setShowRebootConfirm] = useState(false);
@@ -53,6 +66,16 @@ export default function SystemActionsSection() {
   const [showUpdatesDialog, setShowUpdatesDialog] = useState(false);
   const [selectedPackages, setSelectedPackages] = useState<string[]>([]);
   const [hasSeenUpdates, setHasSeenUpdates] = useState(false);
+
+  const [showWifiDialog, setShowWifiDialog] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState<WifiNetwork | null>(
+    null,
+  );
+  const [wifiPassword, setWifiPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const wifiScan = useWifiScan(showWifiDialog);
+  const wifiConnect = useWifiConnect();
 
   const availablePackages: PackageUpdate[] = useMemo(() => {
     return (
@@ -92,9 +115,7 @@ export default function SystemActionsSection() {
   const handleOpenUpdatesDialog = () => {
     setShowUpdatesDialog(true);
     setHasSeenUpdates(true);
-    if (!hasUpdates) {
-      updates.refetch();
-    }
+    if (!hasUpdates) updates.refetch();
   };
 
   const handleCloseUpdatesDialog = () => {
@@ -112,20 +133,48 @@ export default function SystemActionsSection() {
     if (selectedPackages.length === availablePackages.length) {
       setSelectedPackages([]);
     } else {
-      setSelectedPackages([...availablePackages.map((p) => p.name)]);
+      setSelectedPackages(availablePackages.map((p) => p.name));
     }
   };
 
   const handleApplyUpdates = () => {
     applyUpdates.mutate(
       { packages: selectedPackages },
-      {
-        onSuccess: () => {
-          handleCloseUpdatesDialog();
-        },
-      },
+      { onSuccess: handleCloseUpdatesDialog },
     );
   };
+
+  const handleOpenWifiDialog = () => {
+    setShowWifiDialog(true);
+    setSelectedNetwork(null);
+    setWifiPassword('');
+  };
+
+  const handleCloseWifiDialog = () => {
+    setShowWifiDialog(false);
+    setSelectedNetwork(null);
+    setWifiPassword('');
+    setShowPassword(false);
+  };
+
+  const handleSelectNetwork = (network: WifiNetwork) => {
+    setSelectedNetwork(network);
+    setWifiPassword('');
+    setShowPassword(false);
+  };
+
+  const handleWifiConnect = () => {
+    if (!selectedNetwork) return;
+    wifiConnect.mutate(
+      {
+        ssid: selectedNetwork.ssid,
+        password: selectedNetwork.secured ? wifiPassword : undefined,
+      },
+      { onSuccess: handleCloseWifiDialog },
+    );
+  };
+
+  const networks = wifiScan.data?.networks ?? [];
 
   return (
     <>
@@ -164,34 +213,82 @@ export default function SystemActionsSection() {
           </Tooltip>
 
           <ProtectedComponent requireScope='system:Write'>
-            <>
-              <Button
-                size='sm'
-                variant='secondary'
-                onClick={() => setShowRebootConfirm(true)}
-                disabled={reboot.isPending}
-              >
-                {reboot.isPending ? (
-                  <Loader2 className='w-4 h-4 animate-spin' />
-                ) : (
-                  <RotateCcw className='w-4 h-4' />
-                )}
-                Reboot
-              </Button>
+            <Button
+              size='sm'
+              variant='secondary'
+              onClick={handleOpenWifiDialog}
+            >
+              <Wifi className='w-4 h-4' />
+              Connect Wifi
+            </Button>
+          </ProtectedComponent>
 
-              <Button
-                size='sm'
-                variant='destructive'
-                onClick={() => setShowShutdownConfirm(true)}
-                disabled={shutdown.isPending}
-              >
-                {shutdown.isPending ? (
-                  <Loader2 className='w-4 h-4 animate-spin' />
-                ) : (
-                  <Power className='w-4 h-4' />
+          <ProtectedComponent requireScope='system:Write'>
+            <>
+              <Tooltip open={!!rebootScheduled.data?.scheduled}>
+                <TooltipTrigger
+                  render={(props) => (
+                    <Button
+                      {...props}
+                      size='sm'
+                      variant='secondary'
+                      onClick={() => setShowRebootConfirm(true)}
+                      disabled={reboot.isPending}
+                    >
+                      {reboot.isPending ? (
+                        <Loader2 className='w-4 h-4 animate-spin' />
+                      ) : (
+                        <RotateCcw className='w-4 h-4' />
+                      )}
+                      Reboot
+                      {rebootScheduled.data?.scheduled && (
+                        <Clock className='w-3 h-3 text-warning' />
+                      )}
+                    </Button>
+                  )}
+                />
+                {rebootScheduled.data?.scheduled && (
+                  <TooltipContent
+                    side='top'
+                    className='bg-warning text-warning-foreground max-w-xs'
+                  >
+                    {rebootScheduled.data.detail ?? 'Reboot already scheduled'}
+                  </TooltipContent>
                 )}
-                Shutdown
-              </Button>
+              </Tooltip>
+
+              <Tooltip open={!!shutdownScheduled.data?.scheduled}>
+                <TooltipTrigger
+                  render={(props) => (
+                    <Button
+                      {...props}
+                      size='sm'
+                      variant='destructive'
+                      onClick={() => setShowShutdownConfirm(true)}
+                      disabled={shutdown.isPending}
+                    >
+                      {shutdown.isPending ? (
+                        <Loader2 className='w-4 h-4 animate-spin' />
+                      ) : (
+                        <Power className='w-4 h-4' />
+                      )}
+                      Shutdown
+                      {shutdownScheduled.data?.scheduled && (
+                        <Clock className='w-3 h-3' />
+                      )}
+                    </Button>
+                  )}
+                />
+                {shutdownScheduled.data?.scheduled && (
+                  <TooltipContent
+                    side='top'
+                    className='bg-destructive text-destructive-foreground max-w-xs'
+                  >
+                    {shutdownScheduled.data.detail ??
+                      'Shutdown already scheduled'}
+                  </TooltipContent>
+                )}
+              </Tooltip>
             </>
           </ProtectedComponent>
         </div>
@@ -315,6 +412,149 @@ export default function SystemActionsSection() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={showWifiDialog} onOpenChange={handleCloseWifiDialog}>
+        <DialogContent className='max-w-md'>
+          <DialogHeader>
+            <DialogTitle className='flex items-center gap-2'>
+              <Wifi className='w-5 h-5 text-primary' />
+              Connect to WiFi
+            </DialogTitle>
+            <DialogDescription>
+              {selectedNetwork
+                ? `Enter credentials for "${selectedNetwork.ssid}"`
+                : 'Select a network to connect to.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className='space-y-3'>
+            {wifiScan.isFetching ? (
+              <div className='flex items-center justify-center py-10'>
+                <div className='text-center'>
+                  <Loader2 className='w-7 h-7 text-primary animate-spin mx-auto mb-2' />
+                  <p className='text-sm text-muted-foreground'>
+                    Scanning networks...
+                  </p>
+                </div>
+              </div>
+            ) : networks.length === 0 ? (
+              <div className='text-center py-8'>
+                <WifiOff className='w-10 h-10 text-muted-foreground mx-auto mb-2' />
+                <p className='text-sm text-muted-foreground'>
+                  No networks found
+                </p>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='mt-2'
+                  onClick={() => wifiScan.refetch()}
+                >
+                  <RefreshCw className='w-3 h-3' />
+                  Retry
+                </Button>
+              </div>
+            ) : !selectedNetwork ? (
+              <div className='space-y-1 max-h-72 overflow-y-auto'>
+                {networks
+                  .sort((a, b) => b.signal - a.signal)
+                  .map((network) => (
+                    <button
+                      key={network.ssid}
+                      onClick={() => handleSelectNetwork(network)}
+                      className='w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left'
+                    >
+                      <div className='flex items-center gap-2'>
+                        <Wifi className='w-4 h-4 text-muted-foreground' />
+                        <span className='text-sm font-medium'>
+                          {network.ssid}
+                        </span>
+                        {network.secured && (
+                          <Lock className='w-3 h-3 text-muted-foreground' />
+                        )}
+                      </div>
+                      <SignalBadge signal={network.signal} />
+                    </button>
+                  ))}
+              </div>
+            ) : (
+              <div className='space-y-4'>
+                <button
+                  onClick={() => setSelectedNetwork(null)}
+                  className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+                >
+                  ← Back to networks
+                </button>
+                <div className='flex items-center gap-3 p-3 rounded-sm bg-muted/30'>
+                  <Wifi className='w-4 h-4' />
+                  <span className='text-sm font-medium'>
+                    {selectedNetwork.ssid}
+                  </span>
+                  {selectedNetwork.secured && (
+                    <Lock className='w-3 h-3 text-muted-foreground' />
+                  )}
+                  <SignalBadge signal={selectedNetwork.signal} />
+                </div>
+                {selectedNetwork.secured && (
+                  <div className='relative'>
+                    <TextField
+                      label='Password'
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder='Network password'
+                      value={wifiPassword}
+                      onChange={(e) => setWifiPassword(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === 'Enter' && handleWifiConnect()
+                      }
+                      autoFocus
+                    />
+                    <button
+                      type='button'
+                      onClick={() => setShowPassword((v) => !v)}
+                      className='absolute right-3 top-8 text-muted-foreground hover:text-foreground transition-colors'
+                    >
+                      {showPassword ? (
+                        <EyeOff className='w-4 h-4' />
+                      ) : (
+                        <Eye className='w-4 h-4' />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {selectedNetwork && (
+            <DialogFooter>
+              <Button
+                variant='outline'
+                onClick={() => setSelectedNetwork(null)}
+              >
+                Back
+              </Button>
+              <Button
+                onClick={handleWifiConnect}
+                disabled={
+                  wifiConnect.isPending ||
+                  (selectedNetwork.secured && !wifiPassword.trim())
+                }
+              >
+                {wifiConnect.isPending ? (
+                  <>
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <Wifi className='w-4 h-4' />
+                    Connect
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <ConfirmationDialog
         open={showShutdownConfirm}
         onOpenChange={setShowShutdownConfirm}
@@ -359,5 +599,17 @@ export default function SystemActionsSection() {
         buttonText='I Understand'
       />
     </>
+  );
+}
+
+function SignalBadge({ signal }: { signal: number }) {
+  const color =
+    signal >= 70
+      ? 'text-success'
+      : signal >= 40
+        ? 'text-warning'
+        : 'text-destructive';
+  return (
+    <span className={`text-xs font-mono ml-auto ${color}`}>{signal}%</span>
   );
 }

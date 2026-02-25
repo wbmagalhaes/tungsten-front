@@ -406,8 +406,8 @@ export default function NotesPage() {
     });
   };
 
-  const notes = notesData?.data ?? [];
-  const total = notesData?.total ?? 0;
+  const notes = notesData?.results ?? [];
+  const total = notesData?.count ?? 0;
 
   return (
     <div className='space-y-4'>

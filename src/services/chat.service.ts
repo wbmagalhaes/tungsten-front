@@ -1,3 +1,4 @@
+import type { Paginated } from '@models/paginated';
 import api from './api';
 
 export interface ChatRoom {
@@ -7,13 +8,6 @@ export interface ChatRoom {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  page_size: number;
 }
 
 export interface ListRoomsParams {
@@ -31,7 +25,7 @@ export interface EditRoomRequest {
 }
 
 export const listRooms = async (params?: ListRoomsParams) => {
-  const res = await api.get<PaginatedResponse<ChatRoom>>('/api/chat/rooms', {
+  const res = await api.get<Paginated<ChatRoom>>('/api/chat/rooms', {
     params,
   });
   return res.data;

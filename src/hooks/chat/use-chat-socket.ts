@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 export interface TalkMessage {
   type: 'talk';
   user_id: string;
+  username: string;
+  avatar: string | null;
   body: string;
   created_at: string;
 }
@@ -11,11 +13,18 @@ export interface TalkMessage {
 export interface JoinMessage {
   type: 'join';
   user_id: string;
+  username: string;
+  avatar: string | null;
 }
 
 export interface LeaveMessage {
   type: 'leave';
   user_id: string;
+}
+
+export interface MembersMessage {
+  type: 'members';
+  members: ChatMember[];
 }
 
 export interface PingMessage {
@@ -31,10 +40,17 @@ export interface HistoryEndMessage {
   type: 'history_end';
 }
 
+export interface ChatMember {
+  user_id: string;
+  username: string;
+  avatar: string | null;
+}
+
 export type IncomingMessage =
   | TalkMessage
   | JoinMessage
   | LeaveMessage
+  | MembersMessage
   | PingMessage
   | HistoryStartMessage
   | HistoryEndMessage;
@@ -56,7 +72,7 @@ export interface UseChatSocketReturn {
   sendPing: () => void;
 }
 
-const WS_BASE = import.meta.env.VITE_WS_BASE_URL ?? 'ws://localhost:3000';
+const WS_BASE = import.meta.env.VITE_WS_BASE_URL ?? 'wss://api.tungsten.rocks';
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
@@ -88,7 +104,7 @@ export const useChatSocket = ({
 
       setStatus('connecting');
 
-      const url = `${WS_BASE}/ws/chat/${roomId}?token=${encodeURIComponent(token)}`;
+      const url = `${WS_BASE}/ws/chat/join/${roomId}?token=${encodeURIComponent(token)}`;
       const ws = new WebSocket(url);
       wsRef.current = ws;
 

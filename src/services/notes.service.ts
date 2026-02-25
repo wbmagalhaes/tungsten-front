@@ -1,3 +1,4 @@
+import type { Paginated } from '@models/paginated';
 import api from './api';
 
 export interface Note {
@@ -10,13 +11,6 @@ export interface Note {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  page_size: number;
 }
 
 export interface ListNotesParams {
@@ -40,7 +34,7 @@ export interface UpdateNoteRequest {
 }
 
 export const listNotes = async (params?: ListNotesParams) => {
-  const res = await api.get<PaginatedResponse<Note>>('/api/notes', { params });
+  const res = await api.get<Paginated<Note>>('/api/notes', { params });
   return res.data;
 };
 

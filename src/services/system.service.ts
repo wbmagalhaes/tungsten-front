@@ -35,6 +35,28 @@ export const shutdownSystem = async () => {
   return res.data;
 };
 
+export const rebootIsScheduled = async () => {
+  const res = await api.get<ScheduleStatus>('/api/system/reboot-is-scheduled');
+  return res.data;
+};
+
+export const shutdownIsScheduled = async () => {
+  const res = await api.get<ScheduleStatus>(
+    '/api/system/shutdown-is-scheduled',
+  );
+  return res.data;
+};
+
+export const wifiScan = async () => {
+  const res = await api.get<WifiScanResponse>('/api/system/wifi/scan');
+  return res.data;
+};
+
+export const wifiConnect = async (body: WifiConnectRequest) => {
+  const res = await api.post('/api/system/wifi/connect', body);
+  return res.data;
+};
+
 export type ServiceListResponse = {
   services: string[];
 };
@@ -81,4 +103,24 @@ export type SystemStatus = {
   kernel_version: string;
   os_version: string;
   hostname: string;
+};
+
+export type ScheduleStatus = {
+  scheduled: boolean;
+  detail: string | null;
+};
+
+export type WifiNetwork = {
+  ssid: string;
+  signal: number;
+  secured: boolean;
+};
+
+export type WifiScanResponse = {
+  networks: WifiNetwork[];
+};
+
+export type WifiConnectRequest = {
+  ssid: string;
+  password?: string;
 };

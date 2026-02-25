@@ -40,6 +40,7 @@ import {
   useChatSocket,
   type IncomingMessage,
   type ConnectionStatus,
+  type ChatMember,
 } from '@hooks/chat/use-chat-socket';
 import type { ChatRoom } from '@services/chat.service';
 import { useAuthStore } from '@stores/useAuthStore';
@@ -47,13 +48,10 @@ import { useAuthStore } from '@stores/useAuthStore';
 interface LocalMessage {
   key: string;
   user_id: string;
+  username: string;
+  avatar: string | null;
   body: string;
   created_at: string;
-}
-
-interface ActiveUser {
-  user_id: string;
-  joinedAt: number;
 }
 
 type FeedItem =
@@ -68,6 +66,10 @@ function formatTimestamp(iso: string): string {
 
 function uid() {
   return Math.random().toString(36).slice(2);
+}
+
+function displayName(username: string, user_id: string): string {
+  return username || `${user_id.slice(0, 8)}…`;
 }
 
 function ConnectionBadge({ status }: { status: ConnectionStatus }) {
@@ -165,47 +167,38 @@ function RoomCard({
       <CardContent>
         <div className='text-xs text-muted-foreground flex items-center gap-1 mt-1'>
           <Clock className='w-3 h-3' />
-          {formatTimestamp(room.updated_at)}
+          {new Date(room.updated_at).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-interface MessageBubbleProps {
-  msg: LocalMessage;
-  isOwn: boolean;
-}
-
-function MessageBubble({ msg, isOwn }: MessageBubbleProps) {
-  const initials = msg.user_id.slice(0, 2).toUpperCase();
-  const seed = msg.user_id;
+function MessageBubble({ msg, isOwn }: { msg: LocalMessage; isOwn: boolean }) {
+  const name = displayName(msg.username, msg.user_id);
+  const avatarSrc =
+    msg.avatar ??
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.user_id}`;
 
   return (
     <div className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {!isOwn && (
         <Avatar size='sm'>
-          <AvatarImage
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-            alt={msg.user_id}
-          />
-          <AvatarFallback>{initials}</AvatarFallback>
+          <AvatarImage src={avatarSrc} alt={name} />
+          <AvatarFallback>{name[0]?.toUpperCase()}</AvatarFallback>
         </Avatar>
       )}
       <div
         className={`flex-1 max-w-md ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}
       >
         {!isOwn && (
-          <span className='text-xs text-muted-foreground mb-1 font-mono'>
-            {msg.user_id.slice(0, 8)}…
-          </span>
+          <span className='text-xs text-muted-foreground mb-1'>{name}</span>
         )}
         <div
-          className={`px-4 py-2 rounded-sm ${
-            isOwn
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-foreground'
-          }`}
+          className={`px-4 py-2 rounded-sm ${isOwn ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}
         >
           <p className='text-sm whitespace-pre-wrap'>{msg.body}</p>
         </div>
@@ -306,7 +299,7 @@ interface ChatViewProps {
 
 function ChatView({ roomId, roomTitle, currentUserId, onBack }: ChatViewProps) {
   const [feed, setFeed] = useState<FeedItem[]>([]);
-  const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
+  const [activeUsers, setActiveUsers] = useState<ChatMember[]>([]);
   const [msgInput, setMsgInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -330,26 +323,50 @@ function ChatView({ roomId, roomTitle, currentUserId, onBack }: ChatViewProps) {
           pushMsg({
             key: uid(),
             user_id: msg.user_id,
+            username: msg.username,
+            avatar: msg.avatar,
             body: msg.body,
             created_at: msg.created_at,
           });
           break;
 
+        case 'members':
+          setActiveUsers(msg.members);
+          break;
+
         case 'join':
           setActiveUsers((u) => {
             if (u.find((x) => x.user_id === msg.user_id)) return u;
-            return [...u, { user_id: msg.user_id, joinedAt: Date.now() }];
+            return [
+              ...u,
+              {
+                user_id: msg.user_id,
+                username: msg.username,
+                avatar: msg.avatar,
+              },
+            ];
           });
-          pushSys(`${msg.user_id.slice(0, 8)}… joined`);
+          pushSys(`${displayName(msg.username, msg.user_id)} joined`);
           break;
 
         case 'leave':
           setActiveUsers((u) => u.filter((x) => x.user_id !== msg.user_id));
-          pushSys(`${msg.user_id.slice(0, 8)}… left`);
+
+          setFeed((f) => {
+            const name = activeUsers.find((x) => x.user_id === msg.user_id);
+            return [
+              ...f,
+              {
+                kind: 'sys',
+                key: uid(),
+                text: `${name ? displayName(name.username, msg.user_id) : msg.user_id.slice(0, 8) + '…'} left`,
+              },
+            ];
+          });
           break;
       }
     },
-    [pushMsg, pushSys],
+    [pushMsg, pushSys, activeUsers],
   );
 
   const { status, sendMessage, sendPing } = useChatSocket({
@@ -467,43 +484,45 @@ function ChatView({ roomId, roomTitle, currentUserId, onBack }: ChatViewProps) {
                 Nobody here yet
               </p>
             ) : (
-              activeUsers.map((u) => (
-                <div
-                  key={u.user_id}
-                  className='flex items-center gap-3 p-2 rounded-sm hover:bg-muted/30 transition-colors group'
-                >
-                  <div className='relative shrink-0'>
-                    <Avatar size='sm'>
-                      <AvatarImage
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${u.user_id}`}
-                        alt={u.user_id}
-                      />
-                      <AvatarFallback>
-                        {u.user_id.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Circle className='w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5 fill-success text-success' />
-                  </div>
-                  <span className='text-sm text-foreground truncate font-mono'>
-                    {u.user_id.slice(0, 8)}…
-                  </span>
-
-                  <ProtectedComponent
-                    requireScope='chat-rooms:Moderate'
-                    fallback={null}
+              activeUsers.map((u) => {
+                const name = displayName(u.username, u.user_id);
+                const avatarSrc =
+                  u.avatar ??
+                  `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.user_id}`;
+                return (
+                  <div
+                    key={u.user_id}
+                    className='flex items-center gap-3 p-2 rounded-sm hover:bg-muted/30 transition-colors group'
                   >
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='h-6 w-6 ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive shrink-0'
-                      title='Ban user (coming soon)'
-                      disabled
+                    <div className='relative shrink-0'>
+                      <Avatar size='sm'>
+                        <AvatarImage src={avatarSrc} alt={name} />
+                        <AvatarFallback>
+                          {name[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Circle className='w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5 fill-success text-success' />
+                    </div>
+                    <span className='text-sm text-foreground truncate'>
+                      {name}
+                    </span>
+                    <ProtectedComponent
+                      requireScope='chat-rooms:Moderate'
+                      fallback={null}
                     >
-                      <Ban className='w-3 h-3' />
-                    </Button>
-                  </ProtectedComponent>
-                </div>
-              ))
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='h-6 w-6 ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive shrink-0'
+                        title='Ban user (coming soon)'
+                        disabled
+                      >
+                        <Ban className='w-3 h-3' />
+                      </Button>
+                    </ProtectedComponent>
+                  </div>
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -555,8 +574,8 @@ export default function ChatPage() {
     });
   };
 
-  const rooms = roomsData?.data ?? [];
-  const total = roomsData?.total ?? 0;
+  const rooms = roomsData?.results ?? [];
+  const total = roomsData?.count ?? 0;
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId) ?? null;
 
   if (selectedRoomId && selectedRoom) {
