@@ -14,6 +14,8 @@ import {
   Lock,
   Eye,
   EyeOff,
+  BookmarkCheck,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
@@ -26,6 +28,7 @@ import useRebootIsScheduled from '@hooks/system/use-reboot-is-scheduled';
 import useShutdownIsScheduled from '@hooks/system/use-shutdown-is-scheduled';
 import useWifiScan from '@hooks/system/use-wifi-scan';
 import useWifiConnect from '@hooks/system/use-wifi-connect';
+import useWifiForget from '@hooks/system/use-wifi-forget';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import { InformationDialog } from '@components/InformationDialog';
 import {
@@ -73,9 +76,11 @@ export default function SystemActionsSection() {
   );
   const [wifiPassword, setWifiPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [forgetting, setForgetting] = useState(false);
 
   const wifiScan = useWifiScan(showWifiDialog);
   const wifiConnect = useWifiConnect();
+  const wifiForget = useWifiForget();
 
   const availablePackages: PackageUpdate[] = useMemo(() => {
     return (
@@ -155,12 +160,28 @@ export default function SystemActionsSection() {
     setSelectedNetwork(null);
     setWifiPassword('');
     setShowPassword(false);
+    setForgetting(false);
   };
 
   const handleSelectNetwork = (network: WifiNetwork) => {
     setSelectedNetwork(network);
     setWifiPassword('');
     setShowPassword(false);
+    setForgetting(false);
+  };
+
+  const handleWifiForget = () => {
+    if (!selectedNetwork) return;
+    wifiForget.mutate(
+      { ssid: selectedNetwork.ssid },
+      {
+        onSuccess: () => {
+          setForgetting(false);
+          setSelectedNetwork({ ...selectedNetwork, saved: false });
+          setWifiPassword('');
+        },
+      },
+    );
   };
 
   const handleWifiConnect = () => {
@@ -168,13 +189,16 @@ export default function SystemActionsSection() {
     wifiConnect.mutate(
       {
         ssid: selectedNetwork.ssid,
-        password: selectedNetwork.secured ? wifiPassword : undefined,
+        password:
+          selectedNetwork.security && (!selectedNetwork.saved || forgetting)
+            ? wifiPassword
+            : undefined,
       },
       { onSuccess: handleCloseWifiDialog },
     );
   };
 
-  const networks = wifiScan.data?.networks ?? [];
+  const networks = wifiScan.data ?? [];
 
   return (
     <>
@@ -460,18 +484,30 @@ export default function SystemActionsSection() {
                     <button
                       key={network.ssid}
                       onClick={() => handleSelectNetwork(network)}
-                      className='w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left'
+                      className={`w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left ${network.connected ? 'bg-primary/5 border border-primary/20 rounded-sm' : ''}`}
                     >
-                      <div className='flex items-center gap-2'>
-                        <Wifi className='w-4 h-4 text-muted-foreground' />
-                        <span className='text-sm font-medium'>
+                      <div className='flex items-center gap-2 min-w-0'>
+                        <Wifi
+                          className={`w-4 h-4 shrink-0 ${network.connected ? 'text-primary' : 'text-muted-foreground'}`}
+                        />
+                        <span className='text-sm font-medium truncate'>
                           {network.ssid}
                         </span>
-                        {network.secured && (
-                          <Lock className='w-3 h-3 text-muted-foreground' />
+                        {network.security && (
+                          <Lock className='w-3 h-3 text-muted-foreground shrink-0' />
+                        )}
+                        {network.saved && (
+                          <BookmarkCheck className='w-3 h-3 text-success shrink-0' />
                         )}
                       </div>
-                      <SignalBadge signal={network.signal} />
+                      <div className='flex items-center gap-2 shrink-0 ml-2'>
+                        {network.connected && (
+                          <span className='text-xs text-primary font-medium'>
+                            Connected
+                          </span>
+                        )}
+                        <SignalBadge signal={network.signal} />
+                      </div>
                     </button>
                   ))}
               </div>
@@ -484,17 +520,61 @@ export default function SystemActionsSection() {
                   ← Back to networks
                 </button>
                 <div className='flex items-center gap-3 p-3 rounded-sm bg-muted/30'>
-                  <Wifi className='w-4 h-4' />
+                  <Wifi
+                    className={`w-4 h-4 ${selectedNetwork.connected ? 'text-primary' : ''}`}
+                  />
                   <span className='text-sm font-medium'>
                     {selectedNetwork.ssid}
                   </span>
-                  {selectedNetwork.secured && (
+                  {selectedNetwork.security && (
                     <Lock className='w-3 h-3 text-muted-foreground' />
+                  )}
+                  {selectedNetwork.saved && (
+                    <BookmarkCheck className='w-3 h-3 text-success' />
+                  )}
+                  {selectedNetwork.connected && (
+                    <span className='text-xs text-primary font-medium ml-auto'>
+                      Connected
+                    </span>
                   )}
                   <SignalBadge signal={selectedNetwork.signal} />
                 </div>
-                {selectedNetwork.secured && (
+
+                {selectedNetwork.security &&
+                selectedNetwork.saved &&
+                !forgetting ? (
+                  <div className='flex items-center justify-between rounded-sm bg-success/10 border border-success/20 px-3 py-2'>
+                    <div className='flex items-center gap-2 text-sm text-success'>
+                      <BookmarkCheck className='w-4 h-4' />
+                      Password saved
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => setForgetting(true)}
+                      className='flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors'
+                    >
+                      <Trash2 className='w-3 h-3' />
+                      Forget
+                    </button>
+                  </div>
+                ) : selectedNetwork.security ? (
                   <div className='relative'>
+                    {forgetting && (
+                      <p className='text-xs text-muted-foreground mb-2'>
+                        Enter a new password to reconnect, or{' '}
+                        <button
+                          type='button'
+                          onClick={handleWifiForget}
+                          disabled={wifiForget.isPending}
+                          className='text-destructive hover:underline'
+                        >
+                          {wifiForget.isPending
+                            ? 'Forgetting…'
+                            : 'just forget this network'}
+                        </button>
+                        .
+                      </p>
+                    )}
                     <TextField
                       label='Password'
                       type={showPassword ? 'text' : 'password'}
@@ -518,7 +598,7 @@ export default function SystemActionsSection() {
                       )}
                     </button>
                   </div>
-                )}
+                ) : null}
               </div>
             )}
           </div>
@@ -535,7 +615,10 @@ export default function SystemActionsSection() {
                 onClick={handleWifiConnect}
                 disabled={
                   wifiConnect.isPending ||
-                  (selectedNetwork.secured && !wifiPassword.trim())
+                  wifiForget.isPending ||
+                  (selectedNetwork.security !== '' &&
+                    (!selectedNetwork.saved || forgetting) &&
+                    !wifiPassword.trim())
                 }
               >
                 {wifiConnect.isPending ? (

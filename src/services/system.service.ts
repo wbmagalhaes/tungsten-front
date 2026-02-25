@@ -57,6 +57,11 @@ export const wifiConnect = async (body: WifiConnectRequest) => {
   return res.data;
 };
 
+export const wifiForget = async (body: WifiForgetRequest) => {
+  const res = await api.post('/api/system/wifi/forget', body);
+  return res.data;
+};
+
 export type ServiceListResponse = {
   services: string[];
 };
@@ -113,14 +118,18 @@ export type ScheduleStatus = {
 export type WifiNetwork = {
   ssid: string;
   signal: number;
-  secured: boolean;
+  security: string;
+  connected: boolean;
+  saved: boolean;
 };
 
-export type WifiScanResponse = {
-  networks: WifiNetwork[];
-};
+export type WifiScanResponse = WifiNetwork[];
 
 export type WifiConnectRequest = {
   ssid: string;
   password?: string;
+};
+
+export type WifiForgetRequest = {
+  ssid: string;
 };
