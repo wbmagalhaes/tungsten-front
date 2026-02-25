@@ -179,16 +179,14 @@ function RoomCard({
 
 function MessageBubble({ msg, isOwn }: { msg: LocalMessage; isOwn: boolean }) {
   const name = displayName(msg.username, msg.user_id);
-  const avatarSrc =
-    msg.avatar ??
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.user_id}`;
+  const avatarSrc = msg.avatar || undefined;
 
   return (
     <div className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {!isOwn && (
         <Avatar size='sm'>
           <AvatarImage src={avatarSrc} alt={name} />
-          <AvatarFallback>{name[0]?.toUpperCase()}</AvatarFallback>
+          <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
       )}
       <div
@@ -486,9 +484,7 @@ function ChatView({ roomId, roomTitle, currentUserId, onBack }: ChatViewProps) {
             ) : (
               activeUsers.map((u) => {
                 const name = displayName(u.username, u.user_id);
-                const avatarSrc =
-                  u.avatar ??
-                  `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.user_id}`;
+                const avatarSrc = u.avatar || undefined;
                 return (
                   <div
                     key={u.user_id}
@@ -498,7 +494,7 @@ function ChatView({ roomId, roomTitle, currentUserId, onBack }: ChatViewProps) {
                       <Avatar size='sm'>
                         <AvatarImage src={avatarSrc} alt={name} />
                         <AvatarFallback>
-                          {name[0]?.toUpperCase()}
+                          {name.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <Circle className='w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5 fill-success text-success' />
