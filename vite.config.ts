@@ -82,5 +82,23 @@ export default defineConfig({
     minify: 'terser',
     cssCodeSplit: false,
     modulePreload: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-router')) {
+              return 'vendor-router';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('react')) {
+              return 'vendor-react';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
 });
