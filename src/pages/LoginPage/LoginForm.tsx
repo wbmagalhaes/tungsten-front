@@ -45,9 +45,19 @@ export default function LoginForm() {
 
   const handleRecover = async (e: React.FormEvent) => {
     e.preventDefault();
-    await recover.mutateAsync(
-      { email, token: recoverToken },
-      { onSuccess: () => setView('recover-sent') },
+
+    login.mutate(
+      { username, password, token: loginToken },
+      {
+        onSuccess: () => {
+          const params = new URLSearchParams(location.search);
+          navigate(params.get('cb_url') || '/root', { replace: true });
+        },
+        onError: () => {
+          setLoginToken('');
+          loginTurnstileRef.current?.reset();
+        },
+      },
     );
   };
 

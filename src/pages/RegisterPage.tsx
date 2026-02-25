@@ -27,9 +27,15 @@ export default function RegisterPage() {
     e.preventDefault();
     if (passwordMismatch) return;
 
-    await register.mutateAsync(
+    register.mutate(
       { username, password, token },
-      { onSuccess: () => navigate('/root', { replace: true }) },
+      {
+        onSuccess: () => navigate('/root', { replace: true }),
+        onError: () => {
+          setToken('');
+          turnstileRef.current?.reset();
+        },
+      },
     );
   };
 
