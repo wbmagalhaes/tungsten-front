@@ -37,7 +37,7 @@ export const sidebarItems: SidebarItem[] = [
     label: 'Chat',
     to: '/chat',
     icon: MessageCircleMore,
-    // scope: 'chat:List',
+    scope: 'chat-rooms:List',
   },
   {
     label: 'Media',
@@ -67,7 +67,7 @@ export const sidebarItems: SidebarItem[] = [
     label: 'Background Jobs',
     to: '/background-jobs',
     icon: ServerCog,
-    scope: 'bg-jobs:List',
+    scope: 'jobs:List',
   },
   {
     label: 'System Health',

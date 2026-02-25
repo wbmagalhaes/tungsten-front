@@ -5,12 +5,21 @@ import {
   ChevronLeft,
   ChevronUp,
   CircleQuestionMark,
+  Loader2,
+  Lock,
   Settings,
+  ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 import { sidebarItems } from './items';
 import { useSidebarStore } from '@stores/useSidebarStore';
-import React, { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -32,6 +41,15 @@ import { useAuthStore } from '@stores/useAuthStore';
 import { Button } from '@components/base/button';
 import { useIsDesktop } from '@hooks/use-is-desktop';
 import { filterItemsByPermission } from '@utils/hasPermission';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@components/base/dialog';
+import { PasswordField } from '@components/base/password-field';
 
 export default function Sidebar() {
   const { data: user, isLoading } = useGetProfile();
@@ -257,69 +275,151 @@ type SidebarProfileProps = {
 
 function SidebarProfile({ user, loading }: SidebarProfileProps) {
   const { close } = useSidebarStore();
-
   const { isSudo } = useAuthStore();
-
   const displayName = user?.fullname ?? user?.username;
   const avatarSrc = user?.avatar;
   const avatarFallback = getInitials(user);
-
   const switchSudo = useSwitchSudo();
   const canBeSudo = user?.is_sudo ?? false;
 
+  const [showSudoDialog, setShowSudoDialog] = useState(false);
+  const [password, setPassword] = useState('');
+
+  const handleSudoSubmit = () => {
+    switchSudo.mutate(
+      { password },
+      {
+        onSuccess: () => {
+          setShowSudoDialog(false);
+          setPassword('');
+          close();
+        },
+        onError: () => {
+          setPassword('');
+        },
+      },
+    );
+  };
+
+  const handleSudoDialogClose = (open: boolean) => {
+    if (!open) {
+      setPassword('');
+    }
+    setShowSudoDialog(open);
+  };
+
   return (
-    <SidebarMenuItem
-      tooltip={loading ? displayName : undefined}
-      className='p-2 hover:bg-transparent'
-    >
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          className='flex w-full items-center gap-3 cursor-pointer'
-          disabled={loading}
-        >
-          <Avatar
-            className={cn(isSudo && 'bg-destructive ring-2 ring-destructive')}
-            loading={loading}
+    <>
+      <SidebarMenuItem
+        tooltip={loading ? displayName : undefined}
+        className='p-2 hover:bg-transparent'
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className='flex w-full items-center gap-3 cursor-pointer'
+            disabled={loading}
           >
-            <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
-            <AvatarFallback>{avatarFallback}</AvatarFallback>
-          </Avatar>
-
-          <span className='flex-1 truncate text-left text-sm font-medium text-nowrap'>
-            {displayName}
-          </span>
-
-          <ChevronUp className='h-4 w-4' />
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent side='top' sideOffset={20}>
-          <DropdownMenuItem
-            render={<Link to='/profile'>Profile</Link>}
-            onClick={close}
-          />
-          {canBeSudo && (
-            <DropdownMenuItem
-              onClick={() => {
-                switchSudo.mutate();
-                close();
-              }}
+            <Avatar
+              className={cn(isSudo && 'bg-destructive ring-2 ring-destructive')}
+              loading={loading}
             >
-              Sudo Mode
-              {isSudo && (
-                <span className='text-destructive text-xs font-bold ml-auto'>
-                  <CheckCircle />
-                </span>
-              )}
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem
-            variant='destructive'
-            render={<Link to='/logout'>Logout</Link>}
-            onClick={close}
+              <AvatarImage src={avatarSrc} alt={`@${user?.username}`} />
+              <AvatarFallback>{avatarFallback}</AvatarFallback>
+            </Avatar>
+            <span className='flex-1 truncate text-left text-sm font-medium text-nowrap'>
+              {displayName}
+            </span>
+            <ChevronUp className='h-4 w-4' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='top' sideOffset={20}>
+            <DropdownMenuItem
+              render={<Link to='/profile'>Profile</Link>}
+              onClick={close}
+            />
+            {canBeSudo && (
+              <DropdownMenuItem
+                onClick={() => {
+                  if (isSudo) {
+                    switchSudo.mutate({ password: '' });
+                    close();
+                  } else {
+                    setShowSudoDialog(true);
+                  }
+                }}
+              >
+                Sudo Mode
+                {isSudo && (
+                  <span className='text-destructive text-xs font-bold ml-auto'>
+                    <CheckCircle />
+                  </span>
+                )}
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              variant='destructive'
+              render={<Link to='/logout'>Logout</Link>}
+              onClick={close}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+
+      <Dialog open={showSudoDialog} onOpenChange={handleSudoDialogClose}>
+        <DialogContent className='max-w-sm'>
+          <DialogHeader>
+            <DialogTitle className='flex items-center gap-2'>
+              <ShieldAlert className='w-5 h-5 text-destructive' />
+              Enter Sudo Mode
+            </DialogTitle>
+            <DialogDescription>
+              Confirm your password to enable elevated privileges.
+            </DialogDescription>
+          </DialogHeader>
+
+          <PasswordField
+            id='password'
+            label='Password'
+            icon={<Lock className='w-4 h-4' />}
+            placeholder='Enter your password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) =>
+              e.key === 'Enter' && password && handleSudoSubmit()
+            }
+            autoFocus
+            required
           />
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </SidebarMenuItem>
+
+          {switchSudo.isError && (
+            <p className='text-sm text-destructive'>
+              Incorrect password. Please try again.
+            </p>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => handleSudoDialogClose(false)}
+              disabled={switchSudo.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              onClick={handleSudoSubmit}
+              disabled={!password || switchSudo.isPending}
+            >
+              {switchSudo.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <ShieldAlert className='w-4 h-4' />
+              )}
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

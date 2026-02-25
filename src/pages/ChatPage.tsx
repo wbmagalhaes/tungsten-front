@@ -629,9 +629,13 @@ export default function ChatPage() {
         <div className='text-center py-16 text-muted-foreground'>
           No rooms found.{' '}
           <ProtectedComponent requireScope='chat-rooms:Create' fallback={null}>
-            <button className='underline' onClick={() => setCreateOpen(true)}>
+            <Button
+              className='underline p-0'
+              variant='link'
+              onClick={() => setCreateOpen(true)}
+            >
               Create one?
-            </button>
+            </Button>
           </ProtectedComponent>
         </div>
       )}

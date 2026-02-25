@@ -5,11 +5,10 @@ import {
   CheckCircle,
   XCircle,
   StopCircle,
-  ImagePlus,
-  BotMessageSquare,
   FlaskConical,
   Clock,
-  Trash2,
+  RotateCcw,
+  Dot,
 } from 'lucide-react';
 import {
   Card,
@@ -22,323 +21,299 @@ import {
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import PageHeader from '@components/PageHeader';
-import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import ProtectedComponent from '@components/ProtectedComponent';
 
-type JobType = 'image_generation' | 'chatbot_conversation' | 'sandbox_run';
-type JobStatus = 'pending' | 'running' | 'completed' | 'failed' | 'canceled';
+import { useListJobs } from '@hooks/jobs/use-list-jobs';
+import { useCancelJob } from '@hooks/jobs/use-cancel-job';
+import { useRetryJob } from '@hooks/jobs/use-retry-job';
+import type { Job, JobKind, JobStatus } from '@services/jobs.service';
 
-interface BackgroundJob {
-  id: number;
-  type: JobType;
-  title: string;
-  description: string;
-  status: JobStatus;
-  progress?: number;
-  createdAt: string;
-  startedAt?: string;
-  finishedAt?: string;
-  error?: string;
+function formatTimestamp(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
-export default function BackgroundJobsPage() {
-  const [cancelJobId, setCancelJobId] = useState<number | null>(null);
+const TYPE_CONFIG: Record<
+  JobKind,
+  { icon: React.ReactNode; label: string; color: string }
+> = {
+  sandbox: {
+    icon: <FlaskConical className='w-5 h-5' />,
+    label: 'Sandbox',
+    color: 'text-purple-400',
+  },
+};
 
-  // TODO: Implement endpoint GET /api/jobs
-  const jobs: BackgroundJob[] = [
-    {
-      id: 1,
-      type: 'image_generation',
-      title: 'Cyberpunk City',
-      description: 'Generating image: A futuristic cyberpunk city at night...',
-      status: 'running',
-      progress: 45,
-      createdAt: '2 minutes ago',
-      startedAt: '1 minute ago',
-    },
-    {
-      id: 2,
-      type: 'sandbox_run',
-      title: 'Data Analysis Script',
-      description: 'Running Python sandbox with pandas and numpy',
-      status: 'running',
-      progress: 78,
-      createdAt: '5 minutes ago',
-      startedAt: '4 minutes ago',
-    },
-    {
-      id: 3,
-      type: 'chatbot_conversation',
-      title: 'GPT-4 Conversation',
-      description: 'Processing response for: Explain React hooks...',
-      status: 'pending',
-      createdAt: '10 seconds ago',
-    },
-    {
-      id: 4,
-      type: 'image_generation',
-      title: 'Abstract Art',
-      description: 'Generated image: Abstract geometric patterns...',
-      status: 'completed',
-      createdAt: '1 hour ago',
-      startedAt: '1 hour ago',
-      finishedAt: '55 minutes ago',
-    },
-    {
-      id: 5,
-      type: 'sandbox_run',
-      title: 'Web Scraper',
-      description: 'Python script failed',
-      status: 'failed',
-      error: 'ModuleNotFoundError: No module named "requests"',
-      createdAt: '2 hours ago',
-      startedAt: '2 hours ago',
-      finishedAt: '2 hours ago',
-    },
-    {
-      id: 6,
-      type: 'chatbot_conversation',
-      title: 'Claude Conversation',
-      description: 'Conversation canceled by user',
-      status: 'canceled',
-      createdAt: '3 hours ago',
-      startedAt: '3 hours ago',
-      finishedAt: '3 hours ago',
-    },
-  ];
+const STATUS_CONFIG: Record<JobStatus, { badge: React.ReactNode }> = {
+  queued: {
+    badge: (
+      <Badge variant='secondary'>
+        <Clock className='w-3 h-3' />
+        Queued
+      </Badge>
+    ),
+  },
+  running: {
+    badge: (
+      <Badge variant='warning'>
+        <Loader2 className='w-3 h-3 animate-spin' />
+        Running
+      </Badge>
+    ),
+  },
+  done: {
+    badge: (
+      <Badge variant='success'>
+        <CheckCircle className='w-3 h-3' />
+        Done
+      </Badge>
+    ),
+  },
+  failed: {
+    badge: (
+      <Badge variant='destructive'>
+        <XCircle className='w-3 h-3' />
+        Failed
+      </Badge>
+    ),
+  },
+  cancelled: {
+    badge: <Badge variant='outline'>Cancelled</Badge>,
+  },
+};
 
-  const handleCancelJob = () => {
-    if (!cancelJobId) return;
-    // TODO: Implement endpoint POST /api/jobs/:id/cancel
-    console.log('Canceling job:', cancelJobId);
-    setCancelJobId(null);
+function JobCard({ job }: { job: Job }) {
+  const cancelJob = useCancelJob();
+  const retryJob = useRetryJob();
+
+  const typeCfg = TYPE_CONFIG[job.kind] ?? {
+    icon: <ServerCog className='w-5 h-5' />,
+    label: job.kind,
+    color: 'text-muted-foreground',
   };
+  const statusCfg = STATUS_CONFIG[job.status];
 
-  const handleDeleteJob = (jobId: number) => {
-    // TODO: Implement endpoint DELETE /api/jobs/:id
-    console.log('Deleting job:', jobId);
-  };
+  const isActive = job.status === 'queued' || job.status === 'running';
+  const canRetry = job.status === 'failed' || job.status === 'cancelled';
 
-  const activeJobs = jobs.filter(
-    (j) => j.status === 'running' || j.status === 'pending',
-  );
-  const completedJobs = jobs.filter(
-    (j) =>
-      j.status === 'completed' ||
-      j.status === 'failed' ||
-      j.status === 'canceled',
-  );
-
-  return (
-    <div className='space-y-4'>
-      <PageHeader
-        title='Background Jobs'
-        icon={<ServerCog className='w-5 h-5' />}
-      />
-
-      {activeJobs.length > 0 && (
-        <div>
-          <h2 className='text-lg font-semibold text-foreground mb-3 flex items-center gap-2'>
-            <Loader2 className='w-5 h-5 text-primary animate-spin' />
-            Active Jobs ({activeJobs.length})
-          </h2>
-          <div className='space-y-3'>
-            {activeJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onCancel={() => setCancelJobId(job.id)}
-                onDelete={() => handleDeleteJob(job.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div>
-        <h2 className='text-lg font-semibold text-foreground mb-3 flex items-center gap-2'>
-          <CheckCircle className='w-5 h-5 text-success' />
-          Completed Jobs ({completedJobs.length})
-        </h2>
-        <div className='space-y-3'>
-          {completedJobs.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              onCancel={() => setCancelJobId(job.id)}
-              onDelete={() => handleDeleteJob(job.id)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {jobs.length === 0 && (
-        <Card>
-          <CardContent className='p-12 text-center'>
-            <ServerCog className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>
-              No background jobs running or completed
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      <ConfirmationDialog
-        open={!!cancelJobId}
-        onOpenChange={() => setCancelJobId(null)}
-        title='Cancel Job'
-        description='Are you sure you want to cancel this job? This action cannot be undone.'
-        icon={<StopCircle className='w-5 h-5 text-warning' />}
-        confirmText='Cancel Job'
-        confirmVariant='destructive'
-        onConfirm={handleCancelJob}
-      />
-    </div>
-  );
-}
-
-function JobCard({
-  job,
-  onCancel,
-  onDelete,
-}: {
-  job: BackgroundJob;
-  onCancel: () => void;
-  onDelete: () => void;
-}) {
-  const typeConfig = {
-    image_generation: {
-      icon: <ImagePlus className='w-5 h-5' />,
-      label: 'Image Generation',
-      color: 'text-fuchsia-400',
-    },
-    chatbot_conversation: {
-      icon: <BotMessageSquare className='w-5 h-5' />,
-      label: 'ChatBot',
-      color: 'text-cyan-400',
-    },
-    sandbox_run: {
-      icon: <FlaskConical className='w-5 h-5' />,
-      label: 'Sandbox',
-      color: 'text-purple-400',
-    },
-  };
-
-  const statusConfig = {
-    pending: {
-      badge: (
-        <Badge variant='secondary'>
-          <Clock className='w-3 h-3' />
-          Pending
-        </Badge>
-      ),
-    },
-    running: {
-      badge: (
-        <Badge variant='warning'>
-          <Loader2 className='w-3 h-3 animate-spin' />
-          Running
-        </Badge>
-      ),
-    },
-    completed: {
-      badge: (
-        <Badge variant='success'>
-          <CheckCircle className='w-3 h-3' />
-          Completed
-        </Badge>
-      ),
-    },
-    failed: {
-      badge: (
-        <Badge variant='destructive'>
-          <XCircle className='w-3 h-3' />
-          Failed
-        </Badge>
-      ),
-    },
-    canceled: {
-      badge: <Badge variant='outline'>Canceled</Badge>,
-    },
-  };
-
-  const canCancel = job.status === 'pending' || job.status === 'running';
-  const canDelete = job.status !== 'running' && job.status !== 'pending';
+  const summary = (() => {
+    if (job.kind === 'sandbox') {
+      const firstLine = job.payload.code?.split('\n')[0]?.slice(0, 72) ?? '';
+      return firstLine || 'Python script';
+    }
+    return null;
+  })();
 
   return (
     <Card className='hover:border-primary/30 transition-all'>
       <CardHeader>
-        <CardIcon className={typeConfig[job.type].color}>
-          {typeConfig[job.type].icon}
-        </CardIcon>
+        <CardIcon className={typeCfg.color}>{typeCfg.icon}</CardIcon>
         <div className='flex-1 min-w-0'>
-          <CardTitle className='mb-1'>{job.title}</CardTitle>
+          <CardTitle className='mb-1 font-mono text-sm truncate'>
+            {summary ?? job.id.slice(0, 8)}
+          </CardTitle>
           <Badge variant='outline' className='text-xs'>
-            {typeConfig[job.type].label}
+            {typeCfg.label}
           </Badge>
         </div>
-        {statusConfig[job.status].badge}
+        {statusCfg.badge}
       </CardHeader>
 
       <CardContent className='space-y-3'>
-        <p className='text-sm text-muted-foreground'>{job.description}</p>
-
-        {job.status === 'running' && job.progress !== undefined && (
-          <div>
-            <div className='flex justify-between items-center mb-2'>
-              <span className='text-xs text-muted-foreground'>Progress</span>
-              <span className='text-xs text-foreground font-medium'>
-                {job.progress}%
-              </span>
-            </div>
-            <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
-              <div
-                className='h-full bg-linear-to-r from-primary to-accent transition-all duration-300'
-                style={{ width: `${job.progress}%` }}
-              />
-            </div>
+        {job.kind === 'sandbox' && job.result?.stderr && (
+          <div className='p-3 bg-warning/5 rounded-sm border border-warning/20'>
+            <div className='text-xs font-medium text-warning mb-1'>stderr</div>
+            <pre className='text-xs font-mono whitespace-pre-wrap line-clamp-3'>
+              {job.result.stderr}
+            </pre>
           </div>
         )}
 
         {job.error && (
           <div className='p-3 bg-destructive/5 rounded-sm border border-destructive/20'>
             <div className='text-xs font-medium text-destructive mb-1'>
-              Error:
+              Error
             </div>
-            <pre className='text-xs text-destructive font-mono whitespace-pre-wrap'>
+            <pre className='text-xs text-destructive font-mono whitespace-pre-wrap line-clamp-3'>
               {job.error}
             </pre>
           </div>
         )}
 
+        {job.kind === 'sandbox' && job.result && (
+          <p className='text-xs text-muted-foreground font-mono'>
+            exit {job.result.exit_code}
+            <Dot />
+            {job.result.duration_ms < 1000
+              ? `${job.result.duration_ms}ms`
+              : `${(job.result.duration_ms / 1000).toFixed(2)}s`}
+          </p>
+        )}
+
         <div className='flex flex-wrap items-center gap-3 text-xs text-muted-foreground'>
           <span className='flex items-center gap-1'>
             <Clock className='w-3 h-3' />
-            Created {job.createdAt}
+            {formatTimestamp(job.created_at)}
           </span>
-          {job.startedAt && <span>• Started {job.startedAt}</span>}
-          {job.finishedAt && <span>• Finished {job.finishedAt}</span>}
+          {job.started_at && (
+            <span className='flex items-center'>
+              <Dot />
+              Started {formatTimestamp(job.started_at)}
+            </span>
+          )}
+          {job.finished_at && (
+            <span className='flex items-center'>
+              <Dot /> Finished {formatTimestamp(job.finished_at)}
+            </span>
+          )}
         </div>
       </CardContent>
 
       <CardFooter className='gap-2'>
-        {canCancel && (
-          <Button variant='destructive' size='sm' onClick={onCancel}>
-            <StopCircle className='w-4 h-4' />
-            Cancel
-          </Button>
+        {isActive && (
+          <ProtectedComponent requireScope='jobs:Cancel'>
+            <Button
+              variant='destructive'
+              size='sm'
+              onClick={() => cancelJob.mutate(job.id)}
+              disabled={cancelJob.isPending}
+            >
+              {cancelJob.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <StopCircle className='w-4 h-4' />
+              )}
+              Cancel
+            </Button>
+          </ProtectedComponent>
         )}
-        {canDelete && (
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={onDelete}
-            className='ml-auto text-destructive hover:bg-destructive/10'
-          >
-            <Trash2 className='w-4 h-4' />
-            Delete
-          </Button>
+        {canRetry && (
+          <ProtectedComponent requireScope='sandbox:Run'>
+            <Button
+              variant='secondary'
+              size='sm'
+              onClick={() => retryJob.mutate(job.id)}
+              disabled={retryJob.isPending}
+            >
+              {retryJob.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <RotateCcw className='w-4 h-4' />
+              )}
+              Retry
+            </Button>
+          </ProtectedComponent>
         )}
       </CardFooter>
     </Card>
+  );
+}
+
+export default function BackgroundJobsPage() {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isError, refetch } = useListJobs({
+    page,
+    page_size: 50,
+  });
+
+  const jobs = data?.results ?? [];
+  const total = data?.count ?? 0;
+
+  const activeJobs = jobs.filter(
+    (j) => j.status === 'queued' || j.status === 'running',
+  );
+  const finishedJobs = jobs.filter(
+    (j) =>
+      j.status === 'done' || j.status === 'failed' || j.status === 'cancelled',
+  );
+
+  if (isLoading) return <LoadingState message='Loading jobs…' />;
+  if (isError)
+    return (
+      <ErrorState
+        title='Failed to load jobs'
+        message='Could not reach the server.'
+        onRetry={refetch}
+      />
+    );
+
+  return (
+    <div className='space-y-6'>
+      <PageHeader
+        title='Background Jobs'
+        icon={<ServerCog className='w-5 h-5' />}
+      />
+
+      {jobs.length === 0 && (
+        <Card>
+          <CardContent className='p-12 text-center'>
+            <ServerCog className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
+            <p className='text-muted-foreground'>No background jobs yet.</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {activeJobs.length > 0 && (
+        <section className='space-y-3'>
+          <h2 className='text-sm font-semibold text-foreground flex items-center gap-2'>
+            <Loader2 className='w-4 h-4 text-primary animate-spin' />
+            Active ({activeJobs.length})
+          </h2>
+          <div className='space-y-3'>
+            {activeJobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {finishedJobs.length > 0 && (
+        <section className='space-y-3'>
+          <h2 className='text-sm font-semibold text-foreground flex items-center gap-2'>
+            <CheckCircle className='w-4 h-4 text-success' />
+            Finished ({finishedJobs.length})
+          </h2>
+          <div className='space-y-3'>
+            {finishedJobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {total > 50 && (
+        <div className='flex justify-center gap-2 pt-2'>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span className='text-sm text-muted-foreground self-center'>
+            Page {page}
+          </span>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={page * 50 >= total}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

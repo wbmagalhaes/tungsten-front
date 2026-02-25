@@ -4,14 +4,17 @@ import {
   Plus,
   Play,
   StopCircle,
-  Trash2,
+  RotateCcw,
   Code,
   CheckCircle,
   XCircle,
   Loader2,
   Clock,
-  Package,
   FilePlusCorner,
+  Terminal,
+  ChevronDown,
+  ChevronUp,
+  Dot,
 } from 'lucide-react';
 import {
   Card,
@@ -23,7 +26,6 @@ import {
 } from '@components/base/card';
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
-import { TextField } from '@components/base/text-field';
 import { Textarea } from '@components/base/text-area';
 import PageHeader from '@components/PageHeader';
 import {
@@ -34,263 +36,196 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@components/base/dialog';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import ProtectedComponent from '@components/ProtectedComponent';
 
-type SandboxStatus = 'running' | 'finished' | 'error' | 'canceled';
+import { useListJobs } from '@hooks/jobs/use-list-jobs';
+import { useRunSandbox } from '@hooks/jobs/use-run-sandbox';
+import { useCancelJob } from '@hooks/jobs/use-cancel-job';
+import { useRetryJob } from '@hooks/jobs/use-retry-job';
+import type { Job, SandboxResult } from '@services/jobs.service';
 
-interface Sandbox {
-  id: number;
-  name: string;
-  script: string;
-  status: SandboxStatus;
-  output?: string;
-  error?: string;
-  libraries: string[];
-  createdAt: string;
-  finishedAt?: string;
+function formatTimestamp(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
-const AVAILABLE_LIBRARIES = [
-  'requests',
-  'numpy',
-  'pandas',
-  'matplotlib',
-  'beautifulsoup4',
-  'pillow',
-  'scikit-learn',
-  'tensorflow',
-  'torch',
-  'opencv-python',
-];
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(2)}s`;
+}
 
-export default function SandboxPage() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newScript, setNewScript] = useState('');
-  const [selectedLibs, setSelectedLibs] = useState<string[]>([]);
+const STATUS_CONFIG = {
+  queued: {
+    badge: (
+      <Badge variant='secondary'>
+        <Clock className='w-3 h-3' />
+        Queued
+      </Badge>
+    ),
+    icon: <Clock className='w-5 h-5 text-muted-foreground' />,
+  },
+  running: {
+    badge: (
+      <Badge variant='warning'>
+        <Loader2 className='w-3 h-3 animate-spin' />
+        Running
+      </Badge>
+    ),
+    icon: <Loader2 className='w-5 h-5 text-warning animate-spin' />,
+  },
+  done: {
+    badge: (
+      <Badge variant='success'>
+        <CheckCircle className='w-3 h-3' />
+        Done
+      </Badge>
+    ),
+    icon: <CheckCircle className='w-5 h-5 text-success' />,
+  },
+  failed: {
+    badge: (
+      <Badge variant='destructive'>
+        <XCircle className='w-3 h-3' />
+        Failed
+      </Badge>
+    ),
+    icon: <XCircle className='w-5 h-5 text-destructive' />,
+  },
+  cancelled: {
+    badge: <Badge variant='outline'>Cancelled</Badge>,
+    icon: <StopCircle className='w-5 h-5 text-muted-foreground' />,
+  },
+} as const;
 
-  // TODO: Implement endpoint GET /api/sandbox
-  const sandboxes: Sandbox[] = [
-    {
-      id: 1,
-      name: 'Data Analysis',
-      script:
-        'import pandas as pd\ndf = pd.read_csv("data.csv")\nprint(df.head())',
-      status: 'finished',
-      output: '   id  name  value\n0   1  foo     10\n1   2  bar     20',
-      libraries: ['pandas'],
-      createdAt: '2 hours ago',
-      finishedAt: '2 hours ago',
-    },
-    {
-      id: 2,
-      name: 'API Request',
-      script:
-        'import requests\nr = requests.get("https://api.example.com")\nprint(r.json())',
-      status: 'running',
-      libraries: ['requests'],
-      createdAt: '5 minutes ago',
-    },
-    {
-      id: 3,
-      name: 'Image Processing',
-      script:
-        'from PIL import Image\nimg = Image.open("photo.jpg")\nimg.resize((800, 600)).save("resized.jpg")',
-      status: 'error',
-      error: 'FileNotFoundError: photo.jpg not found',
-      libraries: ['pillow'],
-      createdAt: '1 day ago',
-      finishedAt: '1 day ago',
-    },
-    {
-      id: 4,
-      name: 'Web Scraping',
-      script:
-        'import requests\nfrom bs4 import BeautifulSoup\nhtml = requests.get("https://example.com").text\nsoup = BeautifulSoup(html, "html.parser")\nprint(soup.title.string)',
-      status: 'canceled',
-      libraries: ['requests', 'beautifulsoup4'],
-      createdAt: '3 days ago',
-      finishedAt: '3 days ago',
-    },
-  ];
+interface CreateDialogProps {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}
 
-  const handleCreateSandbox = () => {
-    if (!newName.trim() || !newScript.trim()) return;
-    // TODO: Implement endpoint POST /api/sandbox
-    console.log('Creating sandbox:', {
-      name: newName,
-      script: newScript,
-      libraries: selectedLibs,
-    });
-    setShowCreateDialog(false);
-    setNewName('');
-    setNewScript('');
-    setSelectedLibs([]);
-  };
+function CreateDialog({ open, onOpenChange }: CreateDialogProps) {
+  const [code, setCode] = useState('');
+  const [stdin, setStdin] = useState('');
+  const [showStdin, setShowStdin] = useState(false);
+  const runSandbox = useRunSandbox();
 
-  const toggleLibrary = (lib: string) => {
-    setSelectedLibs((prev) =>
-      prev.includes(lib) ? prev.filter((l) => l !== lib) : [...prev, lib],
+  const handleSubmit = () => {
+    if (!code.trim()) return;
+    runSandbox.mutate(
+      { language: 'python', code, stdin: stdin || undefined },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          setCode('');
+          setStdin('');
+          setShowStdin(false);
+        },
+      },
     );
   };
 
   return (
-    <div className='space-y-4'>
-      <PageHeader
-        title='Sandbox'
-        icon={<FlaskConical className='w-5 h-5' />}
-        action={
-          <Button onClick={() => setShowCreateDialog(true)} size='icon'>
-            <FilePlusCorner className='w-4 h-4' />
-          </Button>
-        }
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='max-w-3xl max-h-[90vh] overflow-y-auto'>
+        <DialogHeader>
+          <DialogTitle className='flex items-center gap-2'>
+            <FlaskConical className='w-5 h-5 text-primary' />
+            New Sandbox
+          </DialogTitle>
+          <DialogDescription>
+            Write Python code to run in an isolated environment.
+          </DialogDescription>
+        </DialogHeader>
 
-      <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
-        {sandboxes.map((sandbox) => (
-          <SandboxCard key={sandbox.id} sandbox={sandbox} />
-        ))}
-      </div>
-
-      {sandboxes.length === 0 && (
-        <Card>
-          <CardContent className='p-12 text-center'>
-            <FlaskConical className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground mb-4'>
-              No sandboxes yet. Create your first sandbox!
-            </p>
-            <Button onClick={() => setShowCreateDialog(true)}>
-              <Plus className='w-4 h-4' />
-              New Sandbox
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className='max-w-4xl max-h-[90vh] overflow-y-auto'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-              <FlaskConical className='w-5 h-5 text-primary' />
-              Create New Sandbox
-            </DialogTitle>
-            <DialogDescription>
-              Write Python code to run in an isolated environment
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className='space-y-4'>
-            <TextField
-              label='Sandbox Name'
-              placeholder='My Script'
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+        <div className='space-y-4'>
+          <div>
+            <label className='text-sm text-muted-foreground mb-2 block'>
+              Python Script
+            </label>
+            <Textarea
+              placeholder={'print("Hello, world!")'}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className='min-h-64 font-mono text-sm'
+              autoFocus
             />
-
-            <div>
-              <label className='text-sm text-muted-foreground mb-2 block'>
-                Python Script
-              </label>
-              <Textarea
-                placeholder='import requests&#10;&#10;response = requests.get("https://api.example.com")&#10;print(response.json())'
-                value={newScript}
-                onChange={(e) => setNewScript(e.target.value)}
-                className='min-h-64 font-mono text-sm'
-              />
-            </div>
-
-            <div>
-              <label className='text-sm text-muted-foreground mb-3 flex items-center gap-2'>
-                <Package className='w-4 h-4' />
-                Select Libraries
-              </label>
-              <div className='grid grid-cols-2 md:grid-cols-3 gap-2'>
-                {AVAILABLE_LIBRARIES.map((lib) => (
-                  <Badge
-                    key={lib}
-                    variant={selectedLibs.includes(lib) ? 'default' : 'outline'}
-                    className='cursor-pointer justify-center py-2'
-                    render={(props) => (
-                      <button {...props} onClick={() => toggleLibrary(lib)} />
-                    )}
-                  >
-                    {lib}
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => setShowCreateDialog(false)}
+          <div>
+            <button
+              type='button'
+              onClick={() => setShowStdin((v) => !v)}
+              className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
             >
-              Cancel
-            </Button>
-            <Button onClick={handleCreateSandbox}>
+              <Terminal className='w-4 h-4' />
+              stdin (optional)
+              {showStdin ? (
+                <ChevronUp className='w-3 h-3' />
+              ) : (
+                <ChevronDown className='w-3 h-3' />
+              )}
+            </button>
+            {showStdin && (
+              <Textarea
+                placeholder='Input fed to the script via stdin…'
+                value={stdin}
+                onChange={(e) => setStdin(e.target.value)}
+                className='mt-2 min-h-20 font-mono text-sm'
+              />
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+            disabled={runSandbox.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!code.trim() || runSandbox.isPending}
+          >
+            {runSandbox.isPending ? (
+              <Loader2 className='w-4 h-4 animate-spin' />
+            ) : (
               <Play className='w-4 h-4' />
-              Create & Run
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+            )}
+            Run
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function SandboxCard({ sandbox }: { sandbox: Sandbox }) {
-  const statusConfig = {
-    running: {
-      badge: (
-        <Badge variant='warning'>
-          <Loader2 className='w-3 h-3 animate-spin' />
-          Running
-        </Badge>
-      ),
-      icon: <Loader2 className='w-5 h-5 text-warning animate-spin' />,
-    },
-    finished: {
-      badge: (
-        <Badge variant='success'>
-          <CheckCircle className='w-3 h-3' />
-          Finished
-        </Badge>
-      ),
-      icon: <CheckCircle className='w-5 h-5 text-success' />,
-    },
-    error: {
-      badge: (
-        <Badge variant='destructive'>
-          <XCircle className='w-3 h-3' />
-          Error
-        </Badge>
-      ),
-      icon: <XCircle className='w-5 h-5 text-destructive' />,
-    },
-    canceled: {
-      badge: <Badge variant='outline'>Canceled</Badge>,
-      icon: <StopCircle className='w-5 h-5 text-muted-foreground' />,
-    },
-  };
+function SandboxCard({ job }: { job: Job }) {
+  const cancelJob = useCancelJob();
+  const retryJob = useRetryJob();
 
-  const handleStop = () => {
-    // TODO: Implement endpoint POST /api/sandbox/:id/stop
-    console.log('Stopping sandbox:', sandbox.id);
-  };
-
-  const handleDelete = () => {
-    // TODO: Implement endpoint DELETE /api/sandbox/:id
-    console.log('Deleting sandbox:', sandbox.id);
-  };
+  const cfg = STATUS_CONFIG[job.status];
+  const result = job.result as SandboxResult | null;
 
   return (
     <Card className='hover:border-primary/30 transition-all'>
       <CardHeader>
-        <CardIcon>{statusConfig[sandbox.status].icon}</CardIcon>
+        <CardIcon>{cfg.icon}</CardIcon>
         <div className='flex-1 min-w-0'>
-          <CardTitle>{sandbox.name}</CardTitle>
+          <CardTitle className='font-mono text-sm truncate'>
+            {job.payload.code.split('\n')[0].slice(0, 48) || 'Empty script'}
+          </CardTitle>
         </div>
-        {statusConfig[sandbox.status].badge}
+        {cfg.badge}
       </CardHeader>
 
       <CardContent className='space-y-3'>
@@ -298,67 +233,191 @@ function SandboxCard({ sandbox }: { sandbox: Sandbox }) {
           <div className='flex items-center gap-2 mb-2'>
             <Code className='w-4 h-4 text-primary' />
             <span className='text-xs font-medium text-foreground'>Script</span>
+            <span className='ml-auto text-xs text-muted-foreground font-mono'>
+              {job.payload.language}
+            </span>
           </div>
-          <pre className='text-xs text-muted-foreground font-mono line-clamp-3 whitespace-pre-wrap'>
-            {sandbox.script}
+          <pre className='text-xs text-muted-foreground font-mono line-clamp-4 whitespace-pre-wrap'>
+            {job.payload.code}
           </pre>
         </div>
 
-        {sandbox.libraries.length > 0 && (
-          <div className='flex flex-wrap gap-1'>
-            {sandbox.libraries.map((lib) => (
-              <Badge key={lib} variant='secondary' className='text-xs'>
-                {lib}
-              </Badge>
-            ))}
-          </div>
-        )}
-
-        {sandbox.output && (
+        {result?.stdout && (
           <div className='p-3 bg-success/5 rounded-sm border border-success/20'>
-            <div className='text-xs font-medium text-success mb-1'>Output:</div>
-            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap'>
-              {sandbox.output}
+            <div className='text-xs font-medium text-success mb-1'>stdout</div>
+            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-40 overflow-y-auto'>
+              {result.stdout}
             </pre>
           </div>
         )}
 
-        {sandbox.error && (
+        {result?.stderr && (
+          <div className='p-3 bg-warning/5 rounded-sm border border-warning/20'>
+            <div className='text-xs font-medium text-warning mb-1'>stderr</div>
+            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-32 overflow-y-auto'>
+              {result.stderr}
+            </pre>
+          </div>
+        )}
+
+        {job.error && (
           <div className='p-3 bg-destructive/5 rounded-sm border border-destructive/20'>
             <div className='text-xs font-medium text-destructive mb-1'>
-              Error:
+              Error
             </div>
             <pre className='text-xs text-destructive font-mono whitespace-pre-wrap'>
-              {sandbox.error}
+              {job.error}
             </pre>
           </div>
         )}
 
-        <div className='flex items-center gap-4 text-xs text-muted-foreground'>
+        <div className='flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground'>
           <span className='flex items-center gap-1'>
             <Clock className='w-3 h-3' />
-            {sandbox.createdAt}
+            {formatTimestamp(job.created_at)}
           </span>
-          {sandbox.finishedAt && <span>• Finished {sandbox.finishedAt}</span>}
+          {result && (
+            <span className='font-mono'>
+              exit {result.exit_code} <Dot />
+              {formatDuration(result.duration_ms)}
+            </span>
+          )}
+          {job.payload.stdin && (
+            <span className='flex items-center gap-1'>
+              <Terminal className='w-3 h-3' />
+              stdin
+            </span>
+          )}
         </div>
       </CardContent>
 
       <CardFooter className='gap-2'>
-        {sandbox.status === 'running' && (
-          <Button variant='destructive' size='sm' onClick={handleStop}>
-            <StopCircle className='w-4 h-4' />
-            Stop
-          </Button>
+        {(job.status === 'queued' || job.status === 'running') && (
+          <ProtectedComponent requireScope='jobs:Cancel'>
+            <Button
+              variant='destructive'
+              size='sm'
+              onClick={() => cancelJob.mutate(job.id)}
+              disabled={cancelJob.isPending}
+            >
+              {cancelJob.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <StopCircle className='w-4 h-4' />
+              )}
+              Cancel
+            </Button>
+          </ProtectedComponent>
         )}
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={handleDelete}
-          className='ml-auto text-destructive hover:bg-destructive/10'
-        >
-          <Trash2 className='w-4 h-4' />
-        </Button>
+
+        {(job.status === 'failed' || job.status === 'cancelled') && (
+          <ProtectedComponent requireScope='sandbox:Run'>
+            <Button
+              variant='secondary'
+              size='sm'
+              onClick={() => retryJob.mutate(job.id)}
+              disabled={retryJob.isPending}
+            >
+              {retryJob.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <RotateCcw className='w-4 h-4' />
+              )}
+              Retry
+            </Button>
+          </ProtectedComponent>
+        )}
       </CardFooter>
     </Card>
+  );
+}
+
+export default function SandboxPage() {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isError, refetch } = useListJobs({
+    kind: 'sandbox',
+    page,
+    page_size: 24,
+  });
+
+  const jobs = data?.results ?? [];
+  const total = data?.count ?? 0;
+
+  return (
+    <div className='space-y-4'>
+      <PageHeader
+        title='Sandbox'
+        icon={<FlaskConical className='w-5 h-5' />}
+        action={
+          <ProtectedComponent requireScope='sandbox:Run'>
+            <Button onClick={() => setCreateOpen(true)} size='icon'>
+              <FilePlusCorner className='w-4 h-4' />
+            </Button>
+          </ProtectedComponent>
+        }
+      />
+
+      {isLoading && <LoadingState message='Loading jobs…' />}
+      {isError && (
+        <ErrorState
+          title='Failed to load jobs'
+          message='Could not reach the server.'
+          onRetry={refetch}
+        />
+      )}
+
+      {!isLoading && !isError && jobs.length === 0 && (
+        <Card>
+          <CardContent className='p-12 text-center'>
+            <FlaskConical className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
+            <p className='text-muted-foreground mb-4'>
+              No sandboxes yet. Run your first script!
+            </p>
+            <ProtectedComponent requireScope='sandbox:Run'>
+              <Button onClick={() => setCreateOpen(true)}>
+                <Plus className='w-4 h-4' />
+                New Sandbox
+              </Button>
+            </ProtectedComponent>
+          </CardContent>
+        </Card>
+      )}
+
+      {jobs.length > 0 && (
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
+          {jobs.map((job) => (
+            <SandboxCard key={job.id} job={job} />
+          ))}
+        </div>
+      )}
+
+      {total > 24 && (
+        <div className='flex justify-center gap-2 pt-4'>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span className='text-sm text-muted-foreground self-center'>
+            Page {page}
+          </span>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={page * 24 >= total}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+
+      <CreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </div>
   );
 }

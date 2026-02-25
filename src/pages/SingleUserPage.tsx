@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import type { UpdateUserRequest } from '@services/users.service';
 import { useUpdateSudo } from '@hooks/users/use-update-sudo';
 import { useUpdateUser } from '@hooks/users/use-update-user';
 import { useGetUser } from '@hooks/users/use-get-user';
 import { useUpdatePermissions } from '@hooks/users/use-update-permissions';
+import { useForceSetPassword } from '@hooks/auth/use-force-set-password';
 import ProtectedComponent from '@components/ProtectedComponent';
 import {
   ArrowLeft,
@@ -19,8 +21,9 @@ import {
   AlertTriangle,
   LockKeyholeOpen,
   Shield,
+  KeyRound,
+  CheckCircle,
 } from 'lucide-react';
-import { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -32,6 +35,7 @@ import {
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import { PasswordField } from '@components/base/password-field';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 
@@ -41,15 +45,20 @@ export default function SingleUserPage() {
   const updateUser = useUpdateUser(id);
   const updatePerms = useUpdatePermissions(id);
   const updateSudo = useUpdateSudo(id);
+  const forceSetPassword = useForceSetPassword(id);
   const form = useForm<UpdateUserRequest>({ values: user ?? {} });
 
   const [pendingScopes, setPendingScopes] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  if (isLoading) {
-    return <LoadingState message='Loading user data...' />;
-  }
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSet, setPasswordSet] = useState(false);
 
+  const passwordMismatch =
+    confirmPassword.length > 0 && newPassword !== confirmPassword;
+
+  if (isLoading) return <LoadingState message='Loading user data...' />;
   if (error || !user) {
     return (
       <ErrorState
@@ -67,7 +76,6 @@ export default function SingleUserPage() {
       setPendingScopes(currentScopes);
       setHasChanges(true);
     }
-
     setPendingScopes((prev) => {
       const scopes = hasChanges ? prev : currentScopes;
       return scopes.includes(scope)
@@ -91,6 +99,22 @@ export default function SingleUserPage() {
   const cancelPermissions = () => {
     setPendingScopes([]);
     setHasChanges(false);
+  };
+
+  const handleForceSetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordMismatch) return;
+    forceSetPassword.mutate(
+      { new_password: newPassword },
+      {
+        onSuccess: () => {
+          setNewPassword('');
+          setConfirmPassword('');
+          setPasswordSet(true);
+          setTimeout(() => setPasswordSet(false), 3000);
+        },
+      },
+    );
   };
 
   return (
@@ -140,7 +164,6 @@ export default function SingleUserPage() {
               placeholder='Enter full name'
               {...form.register('fullname')}
             />
-
             <TextField
               label='Email'
               icon={<Mail className='w-4 h-4' />}
@@ -149,7 +172,6 @@ export default function SingleUserPage() {
               {...form.register('email')}
               error={form.formState.errors.email?.message}
             />
-
             <TextField
               label='Avatar URL'
               icon={<ImageIcon className='w-4 h-4' />}
@@ -157,7 +179,6 @@ export default function SingleUserPage() {
               description='URL of your profile picture'
               {...form.register('avatar')}
             />
-
             <ProtectedComponent requireScope='users:Edit'>
               <Button type='submit' className='w-full'>
                 <Save className='w-4 h-4' />
@@ -167,6 +188,67 @@ export default function SingleUserPage() {
           </form>
         </CardContent>
       </Card>
+
+      <ProtectedComponent requireScope='sudo'>
+        <Card>
+          <CardHeader>
+            <CardIcon>
+              <KeyRound className='w-5 h-5' />
+            </CardIcon>
+            <div className='flex flex-wrap items-center gap-2'>
+              <CardTitle>Set Password</CardTitle>
+              <CardDescription>
+                Force a new password for this user
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForceSetPassword} className='space-y-4'>
+              <PasswordField
+                label='New Password'
+                placeholder='Enter new password'
+                autoComplete='new-password'
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <PasswordField
+                label='Confirm Password'
+                placeholder='Repeat new password'
+                autoComplete='new-password'
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={passwordMismatch ? 'Passwords do not match' : undefined}
+                required
+              />
+              {forceSetPassword.isError && (
+                <p className='text-sm text-destructive'>
+                  {forceSetPassword.error.message}
+                </p>
+              )}
+              {passwordSet && (
+                <div className='flex items-center gap-2 text-sm text-success'>
+                  <CheckCircle className='w-4 h-4' />
+                  Password updated successfully.
+                </div>
+              )}
+              <Button
+                type='submit'
+                variant='destructive'
+                className='w-full'
+                disabled={
+                  forceSetPassword.isPending || !newPassword || passwordMismatch
+                }
+              >
+                <KeyRound className='w-4 h-4' />
+                {forceSetPassword.isPending
+                  ? 'Updating...'
+                  : 'Force Set Password'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </ProtectedComponent>
 
       <Card>
         <CardHeader>
@@ -297,16 +379,15 @@ const ALL_SCOPES = [
   'notes:Edit',
   'notes:Delete',
   'templates:*',
+  'jobs:*',
+  'jobs:List',
+  'jobs:Get',
+  'jobs:Cancel',
+  'jobs:Retry',
   'sandbox:*',
-  'sandbox:List',
-  'sandbox:Get',
-  'sandbox:Start',
-  'sandbox:Stop',
-  'sandbox:Retry',
-  'sandbox:Destroy',
+  'sandbox:Run',
   'chat-bot:*',
   'img-gen:*',
-  'bg-jobs:*',
 ] as const;
 
 export type ScopeValue = (typeof ALL_SCOPES)[number];

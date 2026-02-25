@@ -21,6 +21,7 @@ import NotFoundPage from '@pages/NotFoundPage';
 import ProfilePage from '@pages/ProfilePage';
 import RootPage from '@pages/RootPage';
 import LoginPage from '@pages/LoginPage';
+import RegisterPage from '@pages/RegisterPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/LogoutPage';
 import SingleUserPage from '@pages/SingleUserPage';
@@ -35,6 +36,7 @@ export default function AppRoutes() {
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path='login' element={<LoginPage />} />
+          <Route path='register' element={<RegisterPage />} />
           <Route path='logout' element={<LogoutPage />} />
           <Route path='help' element={<HelpPage />} />
         </Route>
@@ -124,7 +126,7 @@ export default function AppRoutes() {
           <Route
             path='background-jobs'
             element={
-              <ProtectedPage requireScope='bg-jobs:List'>
+              <ProtectedPage requireScope='jobs:List'>
                 <BackgroundJobsPage />
               </ProtectedPage>
             }
