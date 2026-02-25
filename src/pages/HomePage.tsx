@@ -109,9 +109,20 @@ export default function HomePage() {
               </ButtonLink>
             </>
           ) : (
-            <ButtonLink to='/login' size='lg' className='w-full sm:w-48'>
-              Login
-            </ButtonLink>
+            <>
+              <ButtonLink to='/login' size='lg' className='w-full sm:w-48'>
+                Login
+              </ButtonLink>
+              <span>or</span>
+              <ButtonLink
+                variant='secondary'
+                to='/register'
+                size='lg'
+                className='w-full sm:w-48'
+              >
+                Register
+              </ButtonLink>
+            </>
           )}
         </div>
 

@@ -18,13 +18,20 @@ function PublicHeader() {
   const { isAuthenticated } = useAuthStore();
 
   return (
-    <header className='fixed top-0 inset-x-0 bg-background z-50'>
-      <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
+    <header className='fixed top-0 inset-x-0 bg-background/80 z-50'>
+      <div className='container mx-auto px-4 py-4 flex justify-between items-center'>
         <ButtonLink to='/' render={<Logo />} />
         {isAuthenticated ? (
           <ButtonLink to='/root'>Access Console</ButtonLink>
         ) : (
-          <ButtonLink to='/login'>Login</ButtonLink>
+          <div className='gap-4 hidden md:flex'>
+            <ButtonLink className='min-w-28' to='/login'>
+              Login
+            </ButtonLink>
+            <ButtonLink className='min-w-28' variant='secondary' to='/register'>
+              Register
+            </ButtonLink>
+          </div>
         )}
       </div>
     </header>
@@ -33,9 +40,9 @@ function PublicHeader() {
 
 function PublicFooter() {
   return (
-    <footer className='container mx-auto px-4 py-4 mt-20 border-t border-border'>
-      <div className='text-start text-muted-foreground'>
-        <p>&copy; 2026 tungsten</p>
+    <footer className='container mx-auto px-4 py-2 mt-20 border-t border-border'>
+      <div className='text-start text-muted-foreground/80 text-xs'>
+        <p>&copy; 2026 - tungsten</p>
       </div>
     </footer>
   );
@@ -50,7 +57,6 @@ function Logo() {
           74
         </span>
       </div>
-      <span className='text-2xl font-bold text-foreground'>Tungsten</span>
     </div>
   );
 }
