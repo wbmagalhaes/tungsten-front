@@ -33,39 +33,43 @@ export const COLOR_OPTIONS: {
   {
     value: 'purple',
     label: 'Purple',
-    classes: 'from-purple-600/20 border-purple-500/30',
+    classes: 'from-purple-500/30 border-purple-500/50',
   },
   {
     value: 'cyan',
     label: 'Cyan',
-    classes: 'from-cyan-600/20 border-cyan-500/30',
+    classes: 'from-cyan-500/30 border-cyan-500/50',
   },
   {
     value: 'green',
     label: 'Green',
-    classes: 'from-green-600/20 border-green-500/30',
+    classes: 'from-green-500/30 border-green-500/50',
   },
   {
     value: 'orange',
     label: 'Orange',
-    classes: 'from-orange-600/20 border-orange-500/30',
+    classes: 'from-orange-500/30 border-orange-500/50',
   },
   {
     value: 'pink',
     label: 'Pink',
-    classes: 'from-fuchsia-600/20 border-fuchsia-500/30',
+    classes: 'from-fuchsia-500/30 border-fuchsia-500/50',
   },
   {
     value: 'rose',
     label: 'Rose',
-    classes: 'from-rose-600/20 border-rose-500/30',
+    classes: 'from-rose-500/30 border-rose-500/50',
   },
   {
     value: 'yellow',
     label: 'Yellow',
-    classes: 'from-yellow-600/20 border-yellow-500/30',
+    classes: 'from-yellow-500/30 border-yellow-500/50',
   },
-  { value: 'sky', label: 'Sky', classes: 'from-sky-600/20 border-sky-500/30' },
+  {
+    value: 'sky',
+    label: 'Sky',
+    classes: 'from-sky-500/30 border-sky-500/50',
+  },
 ];
 
 export const COLOR_DOT: Record<string, string> = {

@@ -1,0 +1,131 @@
+[data-theme='cyberpunk'] {
+  --color-background: #0b0f1a;
+  --color-foreground: #e6f1ff;
+  --color-card: #111827;
+  --color-card-foreground: #e6f1ff;
+  --color-popover: #0f172a;
+  --color-popover-foreground: #f0f9ff;
+  --color-primary: #9131be;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #162e63;
+  --color-secondary-foreground: #f5e9ff;
+  --color-muted: #1d2a41;
+  --color-muted-foreground: #8ac7e3;
+  --color-accent: #ff2bd6;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #ff1744;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #1f2a44;
+  --color-input: #0c1424;
+  --color-ring: #00eaff;
+  --color-success: #00ff9f;
+  --color-success-foreground: #002616;
+  --color-warning: #ffc400;
+  --color-warning-foreground: #1a1200;
+  --color-info: #00d4ff;
+  --color-info-foreground: #001922;
+
+  --bg-main: linear-gradient(to bottom right, #111827, #0b0f1a, #111827);
+  --bg-main-gradient: linear-gradient(60deg, #dc199e, #b214c6, #4338ca);
+}
+
+[data-theme='dark'] {
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
+  --color-card: #18181b;
+  --color-card-foreground: #fafafa;
+  --color-popover: #18181b;
+  --color-popover-foreground: #fafafa;
+  --color-primary: #6d28d9;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #27272a;
+  --color-secondary-foreground: #fafafa;
+  --color-muted: #27272a;
+  --color-muted-foreground: #a1a1aa;
+  --color-accent: #7c3aed;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #27272a;
+  --color-input: #18181b;
+  --color-ring: #7c3aed;
+  --color-success: #22c55e;
+  --color-success-foreground: #052e16;
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #1c1200;
+  --color-info: #38bdf8;
+  --color-info-foreground: #082f49;
+
+  --bg-main: linear-gradient(to bottom right, #111111, #09090b, #111111);
+  --bg-main-gradient: linear-gradient(60deg, #6d28d9, #4c1d95, #1e1b4b);
+}
+
+[data-theme='light'] {
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+  --color-card: #f4f4f5;
+  --color-card-foreground: #09090b;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #09090b;
+  --color-primary: #7c3aed;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #e4e4e7;
+  --color-secondary-foreground: #18181b;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  --color-accent: #a855f7;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e4e4e7;
+  --color-input: #f4f4f5;
+  --color-ring: #7c3aed;
+  --color-success: #16a34a;
+  --color-success-foreground: #f0fdf4;
+  --color-warning: #d97706;
+  --color-warning-foreground: #fffbeb;
+  --color-info: #0284c7;
+  --color-info-foreground: #f0f9ff;
+
+  --bg-main: linear-gradient(to bottom right, #e4e4e7, #ffffff, #e4e4e7);
+  --bg-main-gradient: linear-gradient(60deg, #7c3aed, #a855f7, #6366f1);
+}
+
+[data-theme='neon'] {
+  --color-background: #000000;
+  --color-foreground: #00ffcc;
+  --color-card: #0a0a0a;
+  --color-card-foreground: #e0fff8;
+  --color-popover: #0a0a0a;
+  --color-popover-foreground: #e0fff8;
+  --color-primary: #00ffcc;
+  --color-primary-foreground: #000000;
+  --color-secondary: #0d1f1a;
+  --color-secondary-foreground: #00ffcc;
+  --color-muted: #111111;
+  --color-muted-foreground: #33cc99;
+  --color-accent: #ff00ff;
+  --color-accent-foreground: #000000;
+  --color-destructive: #ff0055;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #003322;
+  --color-input: #060606;
+  --color-ring: #00ffcc;
+  --color-success: #00ffcc;
+  --color-success-foreground: #001a11;
+  --color-warning: #ffee00;
+  --color-warning-foreground: #1a1600;
+  --color-info: #00ccff;
+  --color-info-foreground: #001a22;
+
+  --bg-main: linear-gradient(to bottom right, #0a0a0a, #000000, #0a0a0a);
+  --bg-main-gradient: linear-gradient(60deg, #00ffcc, #00ccff, #ff00ff);
+}
+
+.bg-main {
+  background: var(--bg-main);
+}
+
+.bg-main-gradient {
+  background: var(--bg-main-gradient);
+}

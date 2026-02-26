@@ -243,7 +243,7 @@ export default function SystemActionsSection() {
               onClick={handleOpenWifiDialog}
             >
               <Wifi className='w-4 h-4' />
-              Connect Wifi
+              Scan Wifi
             </Button>
           </ProtectedComponent>
 
@@ -484,13 +484,13 @@ export default function SystemActionsSection() {
                     <button
                       key={network.ssid}
                       onClick={() => handleSelectNetwork(network)}
-                      className={`w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left ${network.connected ? 'bg-primary/5 border border-primary/20 rounded-sm' : ''}`}
+                      className={`w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left cursor-pointer ${network.connected ? 'bg-primary/5 border border-primary/20 rounded-sm' : ''}`}
                     >
                       <div className='flex items-center gap-2 min-w-0'>
                         <Wifi
                           className={`w-4 h-4 shrink-0 ${network.connected ? 'text-primary' : 'text-muted-foreground'}`}
                         />
-                        <span className='text-sm font-medium truncate'>
+                        <span className='text-sm font-medium truncate text-foreground'>
                           {network.ssid}
                         </span>
                         {network.security && (
@@ -502,7 +502,7 @@ export default function SystemActionsSection() {
                       </div>
                       <div className='flex items-center gap-2 shrink-0 ml-2'>
                         {network.connected && (
-                          <span className='text-xs text-primary font-medium'>
+                          <span className='text-xs text-primary font-medium font-mono'>
                             Connected
                           </span>
                         )}

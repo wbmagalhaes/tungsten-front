@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Bell, Palette, Save, Sparkles } from 'lucide-react';
+import { Settings, Bell, Palette, Save, Check } from 'lucide-react';
 import {
   Card,
   CardHeader,
@@ -17,6 +17,37 @@ import {
   TabsContent,
 } from '@components/base/tabs';
 import { cn } from '@utils/cn';
+import { useTheme, THEMES, type Theme } from '@hooks/use-theme';
+
+const THEME_META: Record<
+  Theme,
+  { label: string; bg: string; primary: string; accent: string }
+> = {
+  cyberpunk: {
+    label: 'Cyberpunk',
+    bg: '#0b0f1a',
+    primary: '#9131be',
+    accent: '#ff2bd6',
+  },
+  dark: {
+    label: 'Dark',
+    bg: '#09090b',
+    primary: '#6d28d9',
+    accent: '#7c3aed',
+  },
+  light: {
+    label: 'Light',
+    bg: '#ffffff',
+    primary: '#7c3aed',
+    accent: '#a855f7',
+  },
+  neon: {
+    label: 'Neon',
+    bg: '#000000',
+    primary: '#00ffcc',
+    accent: '#ff00ff',
+  },
+};
 
 export default function ConfigPage() {
   return (
@@ -26,7 +57,7 @@ export default function ConfigPage() {
         icon={<Settings className='w-5 h-5' />}
       />
 
-      <Tabs defaultValue='profile'>
+      <Tabs defaultValue='appearance'>
         <TabsList>
           <TabsTrigger value='notifications'>
             <Bell className='w-4 h-4' />
@@ -51,7 +82,6 @@ export default function ConfigPage() {
 }
 
 function NotificationSettings() {
-  // TODO: Implement endpoint GET /api/config/notifications
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(false);
 
@@ -114,14 +144,7 @@ function NotificationSettings() {
 }
 
 function AppearanceSettings() {
-  // TODO: Implement endpoint GET /api/config/appearance
-  const themes = ['Cyberpunk', 'Dark', 'Light', 'Neon'];
-  const [selectedTheme, setSelectedTheme] = useState('Cyberpunk');
-
-  const handleSave = () => {
-    // TODO: Implement endpoint PATCH /api/config/appearance
-    console.log('Saving theme:', selectedTheme);
-  };
+  const { theme, setTheme } = useTheme();
 
   return (
     <Card>
@@ -137,40 +160,55 @@ function AppearanceSettings() {
             Theme Selection
           </h4>
           <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
-            {themes.map((theme) => (
-              <button
-                key={theme}
-                onClick={() => setSelectedTheme(theme)}
-                className={cn(
-                  'p-4 rounded-sm border-2 transition-all border-border hover:border-muted-foreground',
-                  selectedTheme === theme && 'border-primary bg-primary/10',
-                )}
-              >
-                <Sparkles
+            {THEMES.map((t) => {
+              const meta = THEME_META[t];
+              const isActive = theme === t;
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTheme(t)}
                   className={cn(
-                    'w-6 h-6 mx-auto mb-2 text-muted-foreground',
-                    selectedTheme === theme && 'text-primary',
-                  )}
-                />
-                <p
-                  className={cn(
-                    'text-sm font-medium text-foreground',
-                    selectedTheme === theme && 'text-primary font-bold',
+                    'relative p-4 rounded-sm border-2 transition-all text-left overflow-hidden',
+                    isActive
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-muted-foreground',
                   )}
                 >
-                  {theme}
-                </p>
-              </button>
-            ))}
+                  {/* Mini preview swatch */}
+                  <div
+                    className='w-full h-10 rounded-sm mb-3 flex items-center justify-center gap-1.5 overflow-hidden'
+                    style={{ background: meta.bg }}
+                  >
+                    <span
+                      className='w-3 h-3 rounded-full'
+                      style={{ background: meta.primary }}
+                    />
+                    <span
+                      className='w-3 h-3 rounded-full'
+                      style={{ background: meta.accent }}
+                    />
+                  </div>
+
+                  <p
+                    className={cn(
+                      'text-sm font-medium',
+                      isActive ? 'text-primary' : 'text-foreground',
+                    )}
+                  >
+                    {meta.label}
+                  </p>
+
+                  {isActive && (
+                    <span className='absolute top-2 right-2 w-4 h-4 rounded-full bg-primary flex items-center justify-center'>
+                      <Check className='w-2.5 h-2.5 text-primary-foreground' />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleSave} className='ml-auto'>
-          <Save className='w-4 h-4' />
-          Save Theme
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

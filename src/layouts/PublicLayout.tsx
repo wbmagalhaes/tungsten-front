@@ -52,8 +52,8 @@ function Logo() {
   return (
     <div className='flex items-center gap-3 cursor-pointer'>
       <div className='relative w-12 h-12 bg-main-gradient rounded-sm flex items-center justify-center'>
-        <span className='text-foreground font-bold text-2xl'>W</span>
-        <span className='absolute top-0.5 right-1 text-foreground text-[10px] font-bold font-mono'>
+        <span className='text-white font-bold text-2xl'>W</span>
+        <span className='absolute top-0.5 right-1 text-white text-[10px] font-bold font-mono'>
           74
         </span>
       </div>

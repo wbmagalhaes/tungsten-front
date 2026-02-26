@@ -8,13 +8,20 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-blue-900/50 text-blue-400 border border-blue-700',
-        secondary: 'bg-gray-700 text-gray-200 border border-transparent',
-        success: 'bg-green-900/50 text-green-400 border border-green-700',
-        warning: 'bg-orange-900/50 text-orange-400 border border-orange-700',
-        destructive: 'bg-red-900/50 text-red-400 border border-red-700',
-        purple: 'bg-purple-900/50 text-purple-400 border border-purple-700',
-        outline: 'bg-transparent text-secondary-foreground border border-border',
+        default:
+          'bg-[color-mix(in_srgb,var(--color-info)_15%,transparent)] text-[var(--color-info)] border border-[color-mix(in_srgb,var(--color-info)_40%,transparent)]',
+        secondary:
+          'bg-[var(--color-muted)] text-[var(--color-muted-foreground)] border border-transparent',
+        success:
+          'bg-[color-mix(in_srgb,var(--color-success)_15%,transparent)] text-[var(--color-success)] border border-[color-mix(in_srgb,var(--color-success)_40%,transparent)]',
+        warning:
+          'bg-[color-mix(in_srgb,var(--color-warning)_15%,transparent)] text-[var(--color-warning)] border border-[color-mix(in_srgb,var(--color-warning)_40%,transparent)]',
+        destructive:
+          'bg-[color-mix(in_srgb,var(--color-destructive)_15%,transparent)] text-[var(--color-destructive)] border border-[color-mix(in_srgb,var(--color-destructive)_40%,transparent)]',
+        purple:
+          'bg-[color-mix(in_srgb,var(--color-primary)_15%,transparent)] text-[var(--color-primary)] border border-[color-mix(in_srgb,var(--color-primary)_40%,transparent)]',
+        outline:
+          'bg-transparent text-[var(--color-secondary-foreground)] border border-[var(--color-border)]',
       },
     },
     defaultVariants: {
