@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { wifiConnect, type WifiConnectRequest } from '@services/system.service';
 
-const useWifiConnect = () => {
+export const useWifiConnect = () => {
   const qc = useQueryClient();
 
   return useMutation({
@@ -10,5 +10,3 @@ const useWifiConnect = () => {
     retry: 0,
   });
 };
-
-export default useWifiConnect;

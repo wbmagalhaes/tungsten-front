@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { wifiForget, type WifiForgetRequest } from '@services/system.service';
 
-const useWifiForget = () => {
+export const useWifiForget = () => {
   const qc = useQueryClient();
 
   return useMutation({
@@ -11,5 +11,3 @@ const useWifiForget = () => {
     retry: 0,
   });
 };
-
-export default useWifiForget;

@@ -1,13 +1,15 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import type { UpdateUserRequest } from '@services/users.service';
 import { useUpdateSudo } from '@hooks/users/use-update-sudo';
 import { useUpdateUser } from '@hooks/users/use-update-user';
 import { useGetUser } from '@hooks/users/use-get-user';
+import { useDeleteUser } from '@hooks/users/use-delete-user';
 import { useUpdatePermissions } from '@hooks/users/use-update-permissions';
 import { useForceSetPassword } from '@hooks/auth/use-force-set-password';
 import ProtectedComponent from '@components/ProtectedComponent';
+import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import {
   ArrowLeft,
   User,
@@ -23,6 +25,7 @@ import {
   Shield,
   KeyRound,
   CheckCircle,
+  Trash2,
 } from 'lucide-react';
 import {
   Card,
@@ -41,10 +44,12 @@ import { ErrorState } from '@components/ErrorState';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
+  const navigate = useNavigate();
   const { data: user, isLoading, error } = useGetUser(id);
   const updateUser = useUpdateUser(id);
   const updatePerms = useUpdatePermissions(id);
   const updateSudo = useUpdateSudo(id);
+  const deleteUser = useDeleteUser();
   const forceSetPassword = useForceSetPassword(id);
   const form = useForm<UpdateUserRequest>({ values: user ?? {} });
 
@@ -54,6 +59,8 @@ export default function SingleUserPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordSet, setPasswordSet] = useState(false);
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const passwordMismatch =
     confirmPassword.length > 0 && newPassword !== confirmPassword;
@@ -115,6 +122,12 @@ export default function SingleUserPage() {
         },
       },
     );
+  };
+
+  const handleDelete = () => {
+    deleteUser.mutate(id, {
+      onSuccess: () => navigate('/users'),
+    });
   };
 
   return (
@@ -341,6 +354,45 @@ export default function SingleUserPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ProtectedComponent requireScope='users:Delete'>
+        <Card className='border-destructive/50'>
+          <CardHeader>
+            <CardIcon className='bg-destructive/10 text-destructive'>
+              <Trash2 className='w-5 h-5' />
+            </CardIcon>
+            <div>
+              <CardTitle>Delete User</CardTitle>
+              <CardDescription>
+                Permanently remove this user. This action cannot be undone.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant='destructive'
+              onClick={() => setDeleteOpen(true)}
+              disabled={deleteUser.isPending}
+            >
+              <Trash2 className='w-4 h-4' />
+              Delete {user.username}
+            </Button>
+          </CardContent>
+        </Card>
+      </ProtectedComponent>
+
+      <ConfirmationDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title='Delete User'
+        description={`Are you sure you want to delete "${user.username}"? This action cannot be undone.`}
+        icon={<Trash2 className='w-5 h-5 text-destructive' />}
+        confirmText='Delete'
+        confirmVariant='destructive'
+        onConfirm={handleDelete}
+        isLoading={deleteUser.isPending}
+        loadingText='Deleting...'
+      />
     </div>
   );
 }
@@ -367,6 +419,7 @@ const ALL_SCOPES = [
   'files:Delete',
   'chat-rooms:*',
   'chat-rooms:List',
+  'chat-rooms:Get',
   'chat-rooms:Create',
   'chat-rooms:Edit',
   'chat-rooms:Moderate',

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { wifiScan } from '@services/system.service';
 
-const useWifiScan = (enabled = false) => {
+export const useWifiScan = (enabled = false) => {
   return useQuery({
     queryKey: ['system', 'wifi', 'scan'],
     queryFn: wifiScan,
@@ -9,5 +9,3 @@ const useWifiScan = (enabled = false) => {
     staleTime: 0,
   });
 };
-
-export default useWifiScan;

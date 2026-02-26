@@ -1,24 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   StickyNote,
   Plus,
   Trash2,
-  Edit,
   Clock,
   PencilLine,
   Search,
   Loader2,
-  FileText,
-  Lightbulb,
-  CheckCircle,
-  Bookmark,
-  Star,
-  Flame,
-  Pin,
-  Target,
-  Brain,
-  ClipboardList,
-  type LucideIcon,
 } from 'lucide-react';
 import {
   Card,
@@ -26,7 +15,7 @@ import {
   CardTitle,
   CardContent,
 } from '@components/base/card';
-import { Button } from '@components/base/button';
+import { Button, ButtonLink } from '@components/base/button';
 import { TextField } from '@components/base/text-field';
 import { Textarea } from '@components/base/text-area';
 import PageHeader from '@components/PageHeader';
@@ -44,147 +33,16 @@ import ProtectedComponent from '@components/ProtectedComponent';
 
 import { useListNotes } from '@hooks/notes/use-list-notes';
 import { useCreateNote } from '@hooks/notes/use-create-note';
-import { useUpdateNote } from '@hooks/notes/use-update-note';
 import { useDeleteNote } from '@hooks/notes/use-delete-note';
 import type { Note } from '@services/notes.service';
-
-const ICON_OPTIONS: { value: string; icon: LucideIcon }[] = [
-  { value: 'file-text', icon: FileText },
-  { value: 'lightbulb', icon: Lightbulb },
-  { value: 'check-circle', icon: CheckCircle },
-  { value: 'bookmark', icon: Bookmark },
-  { value: 'star', icon: Star },
-  { value: 'flame', icon: Flame },
-  { value: 'pin', icon: Pin },
-  { value: 'target', icon: Target },
-  { value: 'brain', icon: Brain },
-  { value: 'clipboard-list', icon: ClipboardList },
-];
-
-export function NoteIcon({
-  value,
-  className,
-}: {
-  value: string;
-  className?: string;
-}) {
-  const Icon = ICON_OPTIONS.find((o) => o.value === value)?.icon ?? FileText;
-  return <Icon className={className} />;
-}
-
-const COLOR_OPTIONS: { value: string; label: string; classes: string }[] = [
-  {
-    value: 'purple',
-    label: 'Purple',
-    classes: 'from-purple-600/20 border-purple-500/30',
-  },
-  {
-    value: 'cyan',
-    label: 'Cyan',
-    classes: 'from-cyan-600/20 border-cyan-500/30',
-  },
-  {
-    value: 'green',
-    label: 'Green',
-    classes: 'from-green-600/20 border-green-500/30',
-  },
-  {
-    value: 'orange',
-    label: 'Orange',
-    classes: 'from-orange-600/20 border-orange-500/30',
-  },
-  {
-    value: 'pink',
-    label: 'Pink',
-    classes: 'from-fuchsia-600/20 border-fuchsia-500/30',
-  },
-  {
-    value: 'rose',
-    label: 'Rose',
-    classes: 'from-rose-600/20 border-rose-500/30',
-  },
-  {
-    value: 'yellow',
-    label: 'Yellow',
-    classes: 'from-yellow-600/20 border-yellow-500/30',
-  },
-  { value: 'sky', label: 'Sky', classes: 'from-sky-600/20 border-sky-500/30' },
-];
-
-const COLOR_DOT: Record<string, string> = {
-  purple: 'bg-purple-500',
-  cyan: 'bg-cyan-500',
-  green: 'bg-green-500',
-  orange: 'bg-orange-500',
-  pink: 'bg-fuchsia-500',
-  rose: 'bg-rose-500',
-  yellow: 'bg-yellow-500',
-  sky: 'bg-sky-500',
-};
-
-function colorClasses(color: string): string {
-  return (
-    COLOR_OPTIONS.find((c) => c.value === color)?.classes ??
-    COLOR_OPTIONS[0].classes
-  );
-}
-
-function IconPicker({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className='flex flex-wrap gap-2'>
-      {ICON_OPTIONS.map(({ value: v, icon: Icon }) => (
-        <button
-          key={v}
-          type='button'
-          onClick={() => onChange(v)}
-          className={`w-8 h-8 flex items-center justify-center rounded-sm transition-colors hover:bg-muted ${
-            value === v ? 'bg-primary/20 ring-1 ring-primary' : ''
-          }`}
-        >
-          <Icon className='w-4 h-4' />
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ColorPicker({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className='flex flex-wrap gap-2'>
-      {COLOR_OPTIONS.map((c) => (
-        <button
-          key={c.value}
-          type='button'
-          title={c.label}
-          onClick={() => onChange(c.value)}
-          className={`w-7 h-7 rounded-full transition-transform hover:scale-110 ${
-            COLOR_DOT[c.value] ?? 'bg-muted'
-          } ${value === c.value ? 'ring-2 ring-offset-2 ring-offset-background ring-primary scale-110' : ''}`}
-        />
-      ))}
-    </div>
-  );
-}
+import { colorClasses } from './mappings';
+import { ColorPicker } from './ColorPicker';
+import { IconPicker } from './IconPicker';
+import { NoteIcon } from './NoteIcon';
 
 interface NoteFormDialogProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  initialTitle?: string;
-  initialBody?: string;
-  initialIcon?: string;
-  initialColor?: string;
   onSubmit: (data: {
     title: string;
     body: string;
@@ -192,24 +50,18 @@ interface NoteFormDialogProps {
     color: string;
   }) => void;
   isLoading: boolean;
-  mode: 'create' | 'edit';
 }
 
-function NoteFormDialog({
+function CreateNoteDialog({
   open,
   onOpenChange,
-  initialTitle = '',
-  initialBody = '',
-  initialIcon = 'file-text',
-  initialColor = 'purple',
   onSubmit,
   isLoading,
-  mode,
 }: NoteFormDialogProps) {
-  const [title, setTitle] = useState(initialTitle);
-  const [body, setBody] = useState(initialBody);
-  const [icon, setIcon] = useState(initialIcon);
-  const [color, setColor] = useState(initialColor);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [icon, setIcon] = useState('file-text');
+  const [color, setColor] = useState('purple');
 
   const handleSubmit = () => {
     if (!title.trim()) return;
@@ -222,7 +74,7 @@ function NoteFormDialog({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <StickyNote className='w-5 h-5 text-primary' />
-            {mode === 'create' ? 'Create Note' : 'Edit Note'}
+            Create Note
           </DialogTitle>
         </DialogHeader>
 
@@ -271,13 +123,11 @@ function NoteFormDialog({
           <Button onClick={handleSubmit} disabled={!title.trim() || isLoading}>
             {isLoading ? (
               <Loader2 className='w-4 h-4 animate-spin' />
-            ) : mode === 'create' ? (
+            ) : (
               <>
                 <Plus className='w-4 h-4' />
                 Create
               </>
-            ) : (
-              'Save'
             )}
           </Button>
         </DialogFooter>
@@ -299,14 +149,16 @@ function formatTimestamp(iso: string): string {
 
 interface NoteCardProps {
   note: Note;
-  onEdit: (note: Note) => void;
   onDelete: (note: Note) => void;
 }
 
-function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
+function NoteCard({ note, onDelete }: NoteCardProps) {
+  const navigate = useNavigate();
+
   return (
     <Card
       className={`bg-linear-to-br ${colorClasses(note.color)} to-transparent border-2 hover:scale-[1.02] transition-transform cursor-pointer group relative overflow-hidden`}
+      onClick={() => navigate(`/notes/${note.id}`)}
     >
       <div className='absolute inset-0 bg-linear-to-br from-transparent via-primary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity' />
 
@@ -320,17 +172,17 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
             className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0'
             onClick={(e) => e.stopPropagation()}
           >
-            <ProtectedComponent requireScope='notes:edit'>
-              <Button
+            <ProtectedComponent requireScope='notes:Get'>
+              <ButtonLink
+                to={`/notes/${note.id}`}
                 variant='ghost'
                 size='icon-sm'
-                onClick={() => onEdit(note)}
                 className='hover:bg-primary/20'
               >
-                <Edit className='w-3 h-3' />
-              </Button>
+                <PencilLine className='w-3 h-3' />
+              </ButtonLink>
             </ProtectedComponent>
-            <ProtectedComponent requireScope='notes:delete'>
+            <ProtectedComponent requireScope='notes:Delete'>
               <Button
                 variant='destructive'
                 size='icon-sm'
@@ -375,10 +227,7 @@ export default function NotesPage() {
   const deleteNote = useDeleteNote();
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<Note | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Note | null>(null);
-
-  const updateNote = useUpdateNote(editTarget?.id ?? '');
 
   const handleCreate = (data: {
     title: string;
@@ -387,16 +236,6 @@ export default function NotesPage() {
     color: string;
   }) => {
     createNote.mutate(data, { onSuccess: () => setCreateOpen(false) });
-  };
-
-  const handleEdit = (data: {
-    title: string;
-    body: string;
-    icon: string;
-    color: string;
-  }) => {
-    if (!editTarget) return;
-    updateNote.mutate(data, { onSuccess: () => setEditTarget(null) });
   };
 
   const handleDelete = () => {
@@ -415,7 +254,7 @@ export default function NotesPage() {
         title='Notes'
         icon={<StickyNote className='w-5 h-5' />}
         action={
-          <ProtectedComponent requireScope='notes:create'>
+          <ProtectedComponent requireScope='notes:Create'>
             <Button onClick={() => setCreateOpen(true)} size='icon'>
               <PencilLine className='w-4 h-4' />
             </Button>
@@ -452,7 +291,7 @@ export default function NotesPage() {
             <p className='text-muted-foreground mb-4'>
               No notes yet. Create your first note!
             </p>
-            <ProtectedComponent requireScope='notes:create'>
+            <ProtectedComponent requireScope='notes:Create'>
               <Button onClick={() => setCreateOpen(true)}>
                 <Plus className='w-4 h-4' />
                 New Note
@@ -465,12 +304,7 @@ export default function NotesPage() {
       {notes.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
           {notes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onEdit={setEditTarget}
-              onDelete={setDeleteTarget}
-            />
+            <NoteCard key={note.id} note={note} onDelete={setDeleteTarget} />
           ))}
         </div>
       )}
@@ -499,25 +333,11 @@ export default function NotesPage() {
         </div>
       )}
 
-      <NoteFormDialog
-        key='create'
+      <CreateNoteDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
-        mode='create'
         onSubmit={handleCreate}
         isLoading={createNote.isPending}
-      />
-      <NoteFormDialog
-        key={editTarget?.id ?? 'edit'}
-        open={!!editTarget}
-        onOpenChange={(v) => !v && setEditTarget(null)}
-        mode='edit'
-        initialTitle={editTarget?.title}
-        initialBody={editTarget?.body}
-        initialIcon={editTarget?.icon}
-        initialColor={editTarget?.color}
-        onSubmit={handleEdit}
-        isLoading={updateNote.isPending}
       />
       <ConfirmationDialog
         open={!!deleteTarget}

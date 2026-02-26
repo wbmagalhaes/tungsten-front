@@ -11,7 +11,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@utils/cn';
-import { sidebarItems } from './items';
+import { sidebarItems } from './menu-items';
 import { useSidebarStore } from '@stores/useSidebarStore';
 import React, {
   useCallback,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useIsDesktop(breakpoint = 768) {
+export const useIsDesktop = (breakpoint = 768) => {
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window === 'undefined') return true;
     return window.innerWidth >= breakpoint;
@@ -14,4 +14,4 @@ export function useIsDesktop(breakpoint = 768) {
   }, [breakpoint]);
 
   return isDesktop;
-}
+};

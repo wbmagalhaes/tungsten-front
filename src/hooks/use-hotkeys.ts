@@ -32,7 +32,7 @@ function matches(e: KeyboardEvent, hotkey: ParsedHotkey) {
   );
 }
 
-export function useHotkeys(hotkey: string, handler: () => void) {
+export const useHotkeys = (hotkey: string, handler: () => void) => {
   useEffect(() => {
     const parsed = parseHotkey(hotkey);
 
@@ -56,4 +56,4 @@ export function useHotkeys(hotkey: string, handler: () => void) {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [hotkey, handler]);
-}
+};

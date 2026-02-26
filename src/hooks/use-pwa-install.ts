@@ -32,7 +32,7 @@ function detectFirefox() {
   return /firefox/i.test(navigator.userAgent);
 }
 
-export function usePwaInstall() {
+export const usePwaInstall = () => {
   const [promptEvent, setPromptEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
 
@@ -67,4 +67,4 @@ export function usePwaInstall() {
     install,
     needsInstructions: (isIOS && !isIOSStandalone) || isFirefox,
   };
-}
+};

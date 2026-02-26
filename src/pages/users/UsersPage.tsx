@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useListUsers } from '@hooks/users/use-list-users';
 import { useCreateUser } from '@hooks/users/user-create-user';
+import { useDeleteUser } from '@hooks/users/use-delete-user';
 import ProtectedComponent from '@components/ProtectedComponent';
 import {
   UserPlus,
@@ -10,6 +11,7 @@ import {
   Shield,
   ShieldCheck,
   Dot,
+  Trash2,
 } from 'lucide-react';
 import PageHeader from '@components/PageHeader';
 import { Button, ButtonLink } from '@components/base/button';
@@ -17,18 +19,51 @@ import { Badge } from '@components/base/badge';
 import { Card, CardContent } from '@components/base/card';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
+import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@components/base/dialog';
+import { TextField } from '@components/base/text-field';
+import { PasswordField } from '@components/base/password-field';
+
+type UserTarget = { id: string; username: string };
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useListUsers({ page, page_size: 25 });
   const createUser = useCreateUser();
+  const deleteUser = useDeleteUser();
 
-  function handleAddUser() {
-    const username = prompt('Username:');
-    const password = prompt('Password:');
-    if (!username || !password) return;
-    createUser.mutate({ username, password });
-  }
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  const [deleteTarget, setDeleteTarget] = useState<UserTarget | null>(null);
+
+  const handleCreateOpen = () => {
+    setNewUsername('');
+    setNewPassword('');
+    setCreateOpen(true);
+  };
+
+  const handleCreate = () => {
+    if (!newUsername.trim() || !newPassword) return;
+    createUser.mutate(
+      { username: newUsername.trim(), password: newPassword },
+      { onSuccess: () => setCreateOpen(false) },
+    );
+  };
+
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    deleteUser.mutate(deleteTarget.id, {
+      onSuccess: () => setDeleteTarget(null),
+    });
+  };
 
   if (isLoading) {
     return <LoadingState message='Loading users...' />;
@@ -50,7 +85,7 @@ export default function UsersPage() {
         icon={<Users className='w-5 h-5' />}
         action={
           <ProtectedComponent requireScope='users:Create'>
-            <Button onClick={handleAddUser} size='icon'>
+            <Button onClick={handleCreateOpen} size='icon'>
               <UserPlus className='w-4 h-4' />
             </Button>
           </ProtectedComponent>
@@ -110,15 +145,31 @@ export default function UsersPage() {
                       )}
                     </td>
                     <td className='p-3 text-right'>
-                      <ProtectedComponent requireScope='users:Get'>
-                        <ButtonLink
-                          to={`/users/${u.id}`}
-                          variant='secondary'
-                          size='sm'
-                        >
-                          Open
-                        </ButtonLink>
-                      </ProtectedComponent>
+                      <div className='flex items-center justify-end gap-2'>
+                        <ProtectedComponent requireScope='users:Get'>
+                          <ButtonLink
+                            to={`/users/${u.id}`}
+                            variant='secondary'
+                            size='sm'
+                          >
+                            Open
+                          </ButtonLink>
+                        </ProtectedComponent>
+                        <ProtectedComponent requireScope='users:Delete'>
+                          <Button
+                            variant='destructive'
+                            size='sm'
+                            onClick={() =>
+                              setDeleteTarget({
+                                id: u.id,
+                                username: u.username,
+                              })
+                            }
+                          >
+                            <Trash2 className='w-4 h-4' />
+                          </Button>
+                        </ProtectedComponent>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -171,15 +222,27 @@ export default function UsersPage() {
                     )}
                   </div>
 
-                  <ProtectedComponent requireScope='users:Get'>
-                    <ButtonLink
-                      to={`/users/${u.id}`}
-                      variant='secondary'
-                      className='w-full'
-                    >
-                      Open Profile
-                    </ButtonLink>
-                  </ProtectedComponent>
+                  <div className='flex gap-2'>
+                    <ProtectedComponent requireScope='users:Get'>
+                      <ButtonLink
+                        to={`/users/${u.id}`}
+                        variant='secondary'
+                        className='flex-1'
+                      >
+                        Open Profile
+                      </ButtonLink>
+                    </ProtectedComponent>
+                    <ProtectedComponent requireScope='users:Delete'>
+                      <Button
+                        variant='destructive'
+                        onClick={() =>
+                          setDeleteTarget({ id: u.id, username: u.username })
+                        }
+                      >
+                        <Trash2 className='w-4 h-4' />
+                      </Button>
+                    </ProtectedComponent>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -218,6 +281,72 @@ export default function UsersPage() {
           </CardContent>
         </Card>
       )}
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className='flex items-center gap-2'>
+              <UserPlus className='w-5 h-5 text-primary' />
+              Create User
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className='space-y-4'>
+            <TextField
+              label='Username'
+              placeholder='Enter username'
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              autoFocus
+            />
+            <PasswordField
+              label='Password'
+              placeholder='Enter password'
+              autoComplete='new-password'
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+            />
+            {createUser.isError && (
+              <p className='text-sm text-destructive'>
+                {createUser.error.message}
+              </p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setCreateOpen(false)}
+              disabled={createUser.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreate}
+              disabled={
+                !newUsername.trim() || !newPassword || createUser.isPending
+              }
+            >
+              <UserPlus className='w-4 h-4' />
+              {createUser.isPending ? 'Creating...' : 'Create'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmationDialog
+        open={!!deleteTarget}
+        onOpenChange={(v) => !v && setDeleteTarget(null)}
+        title='Delete User'
+        description={`Are you sure you want to delete "${deleteTarget?.username}"? This action cannot be undone.`}
+        icon={<Trash2 className='w-5 h-5 text-destructive' />}
+        confirmText='Delete'
+        confirmVariant='destructive'
+        onConfirm={handleDelete}
+        isLoading={deleteUser.isPending}
+        loadingText='Deleting...'
+      />
     </div>
   );
 }

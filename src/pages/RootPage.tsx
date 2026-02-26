@@ -24,7 +24,7 @@ import {
 } from '@components/base/card';
 import { Button, ButtonLink } from '@components/base/button';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
-import useHealthCheck from '@hooks/system/use-health-check';
+import { useHealthCheck } from '@hooks/system/use-health-check';
 import { Avatar, AvatarImage, AvatarFallback } from '@components/base/avatar';
 import { getInitials } from '@models/user';
 import formatBytes from '@utils/formatBytes';

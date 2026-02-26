@@ -18,7 +18,7 @@ import {
   CardContent,
   CardFooter,
 } from '@components/base/card';
-import { Button } from '@components/base/button';
+import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import PageHeader from '@components/PageHeader';
 import { LoadingState } from '@components/LoadingState';
@@ -86,9 +86,7 @@ const STATUS_CONFIG: Record<JobStatus, { badge: React.ReactNode }> = {
       </Badge>
     ),
   },
-  cancelled: {
-    badge: <Badge variant='outline'>Cancelled</Badge>,
-  },
+  cancelled: { badge: <Badge variant='outline'>Cancelled</Badge> },
 };
 
 function JobCard({ job }: { job: Job }) {
@@ -137,7 +135,6 @@ function JobCard({ job }: { job: Job }) {
             </pre>
           </div>
         )}
-
         {job.error && (
           <div className='p-3 bg-destructive/5 rounded-sm border border-destructive/20'>
             <div className='text-xs font-medium text-destructive mb-1'>
@@ -148,7 +145,6 @@ function JobCard({ job }: { job: Job }) {
             </pre>
           </div>
         )}
-
         {job.kind === 'sandbox' && job.result && (
           <p className='text-xs text-muted-foreground font-mono'>
             exit {job.result.exit_code}
@@ -158,7 +154,6 @@ function JobCard({ job }: { job: Job }) {
               : `${(job.result.duration_ms / 1000).toFixed(2)}s`}
           </p>
         )}
-
         <div className='flex flex-wrap items-center gap-3 text-xs text-muted-foreground'>
           <span className='flex items-center gap-1'>
             <Clock className='w-3 h-3' />
@@ -172,13 +167,22 @@ function JobCard({ job }: { job: Job }) {
           )}
           {job.finished_at && (
             <span className='flex items-center'>
-              <Dot /> Finished {formatTimestamp(job.finished_at)}
+              <Dot />
+              Finished {formatTimestamp(job.finished_at)}
             </span>
           )}
         </div>
       </CardContent>
 
       <CardFooter className='gap-2'>
+        <ButtonLink
+          to={`/background-jobs/${job.id}`}
+          variant='secondary'
+          size='sm'
+          className='mr-auto'
+        >
+          Open
+        </ButtonLink>
         {isActive && (
           <ProtectedComponent requireScope='jobs:Cancel'>
             <Button

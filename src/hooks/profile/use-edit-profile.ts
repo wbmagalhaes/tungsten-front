@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateProfile } from '@services/profile.service';
 
 export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: updateProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] });
+      qc.invalidateQueries({ queryKey: ['me'] });
     },
   });
 };

@@ -8,9 +8,9 @@ import {
   Server,
   Clock,
 } from 'lucide-react';
-import useHealthCheck from '@hooks/system/use-health-check';
-import useRebootIsScheduled from '@hooks/system/use-reboot-is-scheduled';
-import useShutdownIsScheduled from '@hooks/system/use-shutdown-is-scheduled';
+import { useHealthCheck } from '@hooks/system/use-health-check';
+import { useRebootIsScheduled } from '@hooks/system/use-reboot-is-scheduled';
+import { useShutdownIsScheduled } from '@hooks/system/use-shutdown-is-scheduled';
 import formatBytes from '@utils/formatBytes';
 import formatTime from '@utils/formatTime';
 import { LoadingState } from '@components/LoadingState';

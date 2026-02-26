@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { shutdownSystem } from '@services/system.service';
 
-export default function useShutdownSystem() {
+export const useShutdownSystem = () => {
   return useMutation({
     mutationFn: shutdownSystem,
   });
-}
+};

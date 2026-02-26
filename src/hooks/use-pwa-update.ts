@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { registerSW } from 'virtual:pwa-register';
 
-export function usePwaUpdate() {
+export const usePwaUpdate = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updateServiceWorker, setUpdateServiceWorker] = useState<
     (() => void) | null
@@ -27,4 +27,4 @@ export function usePwaUpdate() {
   };
 
   return { updateAvailable, update };
-}
+};

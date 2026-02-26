@@ -6,26 +6,31 @@ import ProtectedPage from '@components/ProtectedPage';
 
 import { useAuthStore } from '@stores/useAuthStore';
 import HomePage from '@pages/HomePage';
-import MediaPage from '@pages/MediaPage';
-import NotesPage from '@pages/NotesPage';
-import UsersPage from '@pages/UsersPage';
-import TemplatesPage from '@pages/TemplatesPage';
-import SandboxPage from '@pages/SandboxPage';
-import ChatBotPage from '@pages/ChatBotPage';
-import ImageGenerationPage from '@pages/ImageGenerationPage';
-import BackgroundJobsPage from '@pages/BackgroundJobsPage';
-import SystemHealthPage from '@pages/SystemHealthPage';
+import MediaPage from '@pages/files/MediaPage';
+import SingleFilePage from '@pages/files/SingleFilePage';
+import NotesPage from '@pages/notes/NotesPage';
+import SingleNotePage from '@pages/notes/SingleNotePage';
+import UsersPage from '@pages/users/UsersPage';
+import SingleUserPage from '@pages/users/SingleUserPage';
+import TemplatesPage from '@pages/templates/TemplatesPage';
+import SandboxPage from '@pages/sandbox/SandboxPage';
+import SingleRunnerPage from '@pages/sandbox/SingleRunnerPage';
+import ChatBotPage from '@pages/chat-bot/ChatBotPage';
+import ImageGenerationPage from '@pages/img-gen/ImageGenerationPage';
+import BackgroundJobsPage from '@pages/jobs/BackgroundJobsPage';
+import SingleJobPage from '@pages/jobs/SingleJobPage';
+import SystemHealthPage from '@pages/system/SystemHealthPage';
 import ConfigPage from '@pages/ConfigPage';
 import HelpPage from '@pages/HelpPage';
 import NotFoundPage from '@pages/NotFoundPage';
-import ProfilePage from '@pages/ProfilePage';
+import ProfilePage from '@pages/users/ProfilePage';
 import RootPage from '@pages/RootPage';
-import LoginPage from '@pages/LoginPage';
-import RegisterPage from '@pages/RegisterPage';
+import LoginPage from '@pages/auth/LoginPage';
+import RegisterPage from '@pages/auth/RegisterPage';
 import AccessDeniedPage from '@pages/AccessDeniedPage';
-import LogoutPage from '@pages/LogoutPage';
-import SingleUserPage from '@pages/SingleUserPage';
-import ChatPage from '@pages/ChatPage';
+import LogoutPage from '@pages/auth/LogoutPage';
+import ChatPage from '@pages/chat/ChatPage';
+import ChatRoomPage from '@pages/chat/ChatRoomPage';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -59,6 +64,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='users'
             element={
@@ -75,6 +81,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='notes'
             element={
@@ -84,6 +91,15 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path='notes/:id'
+            element={
+              <ProtectedPage requireScope='notes:Get'>
+                <SingleNotePage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
             path='media'
             element={
               <ProtectedPage requireScope='files:List'>
@@ -92,6 +108,15 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path='media/:id'
+            element={
+              <ProtectedPage requireScope='files:Get'>
+                <SingleFilePage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
             path='templates'
             element={
               <ProtectedPage requireScope='templates:List'>
@@ -99,6 +124,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='sandbox'
             element={
@@ -108,6 +134,15 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path='sandbox/:id'
+            element={
+              <ProtectedPage requireScope='jobs:Get'>
+                <SingleRunnerPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
             path='chat-bot'
             element={
               <ProtectedPage requireScope='chat-bot:List'>
@@ -115,6 +150,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='image-generation'
             element={
@@ -123,6 +159,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='background-jobs'
             element={
@@ -132,10 +169,27 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path='background-jobs/:id'
+            element={
+              <ProtectedPage requireScope='jobs:Get'>
+                <SingleJobPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
             path='chat'
             element={
               <ProtectedPage>
                 <ChatPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='chat/:id'
+            element={
+              <ProtectedPage>
+                <ChatRoomPage />
               </ProtectedPage>
             }
           />
@@ -148,6 +202,7 @@ export default function AppRoutes() {
               </ProtectedPage>
             }
           />
+
           <Route
             path='profile'
             element={

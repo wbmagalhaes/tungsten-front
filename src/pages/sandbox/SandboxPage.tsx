@@ -6,8 +6,6 @@ import {
   StopCircle,
   RotateCcw,
   Code,
-  CheckCircle,
-  XCircle,
   Loader2,
   Clock,
   FilePlusCorner,
@@ -24,8 +22,7 @@ import {
   CardContent,
   CardFooter,
 } from '@components/base/card';
-import { Button } from '@components/base/button';
-import { Badge } from '@components/base/badge';
+import { Button, ButtonLink } from '@components/base/button';
 import { Textarea } from '@components/base/text-area';
 import PageHeader from '@components/PageHeader';
 import {
@@ -45,6 +42,7 @@ import { useRunSandbox } from '@hooks/jobs/use-run-sandbox';
 import { useCancelJob } from '@hooks/jobs/use-cancel-job';
 import { useRetryJob } from '@hooks/jobs/use-retry-job';
 import type { Job, SandboxResult } from '@services/jobs.service';
+import { STATUS_CONFIG } from './mappings';
 
 function formatTimestamp(iso: string | null): string {
   if (!iso) return '';
@@ -62,49 +60,6 @@ function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(2)}s`;
 }
-
-const STATUS_CONFIG = {
-  queued: {
-    badge: (
-      <Badge variant='secondary'>
-        <Clock className='w-3 h-3' />
-        Queued
-      </Badge>
-    ),
-    icon: <Clock className='w-5 h-5 text-muted-foreground' />,
-  },
-  running: {
-    badge: (
-      <Badge variant='warning'>
-        <Loader2 className='w-3 h-3 animate-spin' />
-        Running
-      </Badge>
-    ),
-    icon: <Loader2 className='w-5 h-5 text-warning animate-spin' />,
-  },
-  done: {
-    badge: (
-      <Badge variant='success'>
-        <CheckCircle className='w-3 h-3' />
-        Done
-      </Badge>
-    ),
-    icon: <CheckCircle className='w-5 h-5 text-success' />,
-  },
-  failed: {
-    badge: (
-      <Badge variant='destructive'>
-        <XCircle className='w-3 h-3' />
-        Failed
-      </Badge>
-    ),
-    icon: <XCircle className='w-5 h-5 text-destructive' />,
-  },
-  cancelled: {
-    badge: <Badge variant='outline'>Cancelled</Badge>,
-    icon: <StopCircle className='w-5 h-5 text-muted-foreground' />,
-  },
-} as const;
 
 interface CreateDialogProps {
   open: boolean;
@@ -158,7 +113,6 @@ function CreateDialog({ open, onOpenChange }: CreateDialogProps) {
               autoFocus
             />
           </div>
-
           <div>
             <button
               type='button'
@@ -245,7 +199,7 @@ function SandboxCard({ job }: { job: Job }) {
         {result?.stdout && (
           <div className='p-3 bg-success/5 rounded-sm border border-success/20'>
             <div className='text-xs font-medium text-success mb-1'>stdout</div>
-            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-40 overflow-y-auto'>
+            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-24 overflow-y-auto line-clamp-4'>
               {result.stdout}
             </pre>
           </div>
@@ -254,7 +208,7 @@ function SandboxCard({ job }: { job: Job }) {
         {result?.stderr && (
           <div className='p-3 bg-warning/5 rounded-sm border border-warning/20'>
             <div className='text-xs font-medium text-warning mb-1'>stderr</div>
-            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-32 overflow-y-auto'>
+            <pre className='text-xs text-foreground font-mono whitespace-pre-wrap max-h-16 overflow-y-auto line-clamp-3'>
               {result.stderr}
             </pre>
           </div>
@@ -265,7 +219,7 @@ function SandboxCard({ job }: { job: Job }) {
             <div className='text-xs font-medium text-destructive mb-1'>
               Error
             </div>
-            <pre className='text-xs text-destructive font-mono whitespace-pre-wrap'>
+            <pre className='text-xs text-destructive font-mono whitespace-pre-wrap line-clamp-3'>
               {job.error}
             </pre>
           </div>
@@ -282,16 +236,20 @@ function SandboxCard({ job }: { job: Job }) {
               {formatDuration(result.duration_ms)}
             </span>
           )}
-          {job.payload.stdin && (
-            <span className='flex items-center gap-1'>
-              <Terminal className='w-3 h-3' />
-              stdin
-            </span>
-          )}
         </div>
       </CardContent>
 
       <CardFooter className='gap-2'>
+        <ProtectedComponent requireScope='sandbox:Run'>
+          <ButtonLink
+            to={`/sandbox/${job.id}`}
+            variant='secondary'
+            size='sm'
+            className='mr-auto'
+          >
+            Open
+          </ButtonLink>
+        </ProtectedComponent>
         {(job.status === 'queued' || job.status === 'running') && (
           <ProtectedComponent requireScope='jobs:Cancel'>
             <Button
@@ -309,7 +267,6 @@ function SandboxCard({ job }: { job: Job }) {
             </Button>
           </ProtectedComponent>
         )}
-
         {(job.status === 'failed' || job.status === 'cancelled') && (
           <ProtectedComponent requireScope='sandbox:Run'>
             <Button

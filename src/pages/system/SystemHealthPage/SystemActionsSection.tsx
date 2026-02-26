@@ -20,15 +20,15 @@ import {
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
-import useCheckUpdates from '@hooks/system/use-check-updates';
-import useApplyUpdates from '@hooks/system/use-apply-updates';
-import useRebootSystem from '@hooks/system/use-reboot-system';
-import useShutdownSystem from '@hooks/system/use-shutdown-system';
-import useRebootIsScheduled from '@hooks/system/use-reboot-is-scheduled';
-import useShutdownIsScheduled from '@hooks/system/use-shutdown-is-scheduled';
-import useWifiScan from '@hooks/system/use-wifi-scan';
-import useWifiConnect from '@hooks/system/use-wifi-connect';
-import useWifiForget from '@hooks/system/use-wifi-forget';
+import { useCheckUpdates } from '@hooks/system/use-check-updates';
+import { useApplyUpdates } from '@hooks/system/use-apply-updates';
+import { useRebootSystem } from '@hooks/system/use-reboot-system';
+import { useShutdownSystem } from '@hooks/system/use-shutdown-system';
+import { useRebootIsScheduled } from '@hooks/system/use-reboot-is-scheduled';
+import { useShutdownIsScheduled } from '@hooks/system/use-shutdown-is-scheduled';
+import { useWifiScan } from '@hooks/system/use-wifi-scan';
+import { useWifiConnect } from '@hooks/system/use-wifi-connect';
+import { useWifiForget } from '@hooks/system/use-wifi-forget';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import { InformationDialog } from '@components/InformationDialog';
 import {
