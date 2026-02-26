@@ -86,6 +86,10 @@ export default function Sidebar() {
           ))}
         </SidebarMenu>
 
+        <span className='px-2'>
+          <Separator />
+        </span>
+
         <SidebarFooter>
           <SidebarMenuLink to='/config' label='Config' icon={Settings} />
           <SidebarMenuLink to='/help' label='Help' icon={CircleQuestionMark} />
@@ -425,9 +429,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
 
 function SidebarFooter({ children }: { children: React.ReactNode }) {
   return (
-    <div className='mt-auto flex flex-col gap-1 p-2 shrink-0 border-t border-border'>
-      {children}
-    </div>
+    <div className='mt-auto flex flex-col gap-1 p-2 shrink-0'>{children}</div>
   );
 }
 
