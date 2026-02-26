@@ -30,7 +30,8 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordMismatch) return;
+
+    if (passwordMismatch || passwordError) return;
 
     register.mutate(
       { username, password, token },
