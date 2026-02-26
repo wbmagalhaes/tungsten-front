@@ -29,6 +29,8 @@ import {
 } from '@components/base/dialog';
 import { TextField } from '@components/base/text-field';
 import { PasswordField } from '@components/base/password-field';
+import validateUsername from '@pages/auth/validateUsername';
+import { validatePassword } from '@pages/auth/validatePassword';
 
 type UserTarget = { id: string; username: string };
 
@@ -42,6 +44,9 @@ export default function UsersPage() {
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
   const [deleteTarget, setDeleteTarget] = useState<UserTarget | null>(null);
 
   const handleCreateOpen = () => {
@@ -53,7 +58,7 @@ export default function UsersPage() {
   const handleCreate = () => {
     if (!newUsername.trim() || !newPassword) return;
     createUser.mutate(
-      { username: newUsername.trim(), password: newPassword },
+      { username: newUsername.trim().toLowerCase(), password: newPassword },
       { onSuccess: () => setCreateOpen(false) },
     );
   };
@@ -296,7 +301,12 @@ export default function UsersPage() {
               label='Username'
               placeholder='Enter username'
               value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNewUsername(value);
+                setUsernameError(validateUsername(value));
+              }}
+              error={usernameError ?? undefined}
               autoFocus
             />
             <PasswordField
@@ -304,7 +314,12 @@ export default function UsersPage() {
               placeholder='Enter password'
               autoComplete='new-password'
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNewPassword(value);
+                setPasswordError(validatePassword(value));
+              }}
+              error={passwordError ?? undefined}
               onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
             />
             {createUser.isError && (
@@ -325,7 +340,11 @@ export default function UsersPage() {
             <Button
               onClick={handleCreate}
               disabled={
-                !newUsername.trim() || !newPassword || createUser.isPending
+                !newUsername.trim() ||
+                !newPassword ||
+                !!usernameError ||
+                !!passwordError ||
+                createUser.isPending
               }
             >
               <UserPlus className='w-4 h-4' />

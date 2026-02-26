@@ -41,6 +41,7 @@ import { TextField } from '@components/base/text-field';
 import { PasswordField } from '@components/base/password-field';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
+import { validatePassword } from '@pages/auth/validatePassword';
 
 export default function SingleUserPage() {
   const { id = '' } = useParams();
@@ -59,6 +60,8 @@ export default function SingleUserPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordSet, setPasswordSet] = useState(false);
+
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -110,7 +113,9 @@ export default function SingleUserPage() {
 
   const handleForceSetPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordMismatch) return;
+
+    if (passwordMismatch || passwordError) return;
+
     forceSetPassword.mutate(
       { new_password: newPassword },
       {
@@ -222,7 +227,12 @@ export default function SingleUserPage() {
                 placeholder='Enter new password'
                 autoComplete='new-password'
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewPassword(value);
+                  setPasswordError(validatePassword(value));
+                }}
+                error={passwordError ?? undefined}
                 required
               />
               <PasswordField

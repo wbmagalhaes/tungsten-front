@@ -174,7 +174,6 @@ function AppearanceSettings() {
                       : 'border-border hover:border-muted-foreground',
                   )}
                 >
-                  {/* Mini preview swatch */}
                   <div
                     className='w-full h-10 rounded-sm mb-3 flex items-center justify-center gap-1.5 overflow-hidden'
                     style={{ background: meta.bg }}

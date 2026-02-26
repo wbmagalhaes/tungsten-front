@@ -7,6 +7,8 @@ import { Card, CardContent } from '@components/base/card';
 import { Button } from '@components/base/button';
 import { TextField } from '@components/base/text-field';
 import { PasswordField } from '@components/base/password-field';
+import validateUsername from './validateUsername';
+import { validatePassword } from './validatePassword';
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -19,6 +21,9 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [token, setToken] = useState('');
+
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const passwordMismatch =
     confirmPassword.length > 0 && password !== confirmPassword;
@@ -50,7 +55,12 @@ export default function RegisterPage() {
                 icon={<User className='w-4 h-4' />}
                 placeholder='Choose a username'
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setUsername(value);
+                  setUsernameError(validateUsername(value));
+                }}
+                error={usernameError ?? undefined}
                 required
               />
 
@@ -59,7 +69,12 @@ export default function RegisterPage() {
                 icon={<Lock className='w-4 h-4' />}
                 placeholder='Choose a password'
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setPassword(value);
+                  setPasswordError(validatePassword(value));
+                }}
+                error={passwordError ?? undefined}
                 required
               />
 
@@ -109,7 +124,9 @@ export default function RegisterPage() {
                     !token ||
                     passwordMismatch ||
                     !username ||
-                    !password
+                    !password ||
+                    !!usernameError ||
+                    !!passwordError
                   }
                 >
                   <UserPlus className='w-4 h-4' />

@@ -12,14 +12,11 @@ import {
   Wifi,
   WifiOff,
   Lock,
-  Eye,
-  EyeOff,
   BookmarkCheck,
   Trash2,
 } from 'lucide-react';
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
-import { TextField } from '@components/base/text-field';
 import { useCheckUpdates } from '@hooks/system/use-check-updates';
 import { useApplyUpdates } from '@hooks/system/use-apply-updates';
 import { useRebootSystem } from '@hooks/system/use-reboot-system';
@@ -47,6 +44,7 @@ import {
 import SystemCard from './SystemCard';
 import ProtectedComponent from '@components/ProtectedComponent';
 import type { WifiNetwork } from '@services/system.service';
+import { PasswordField } from '@components/base/password-field';
 
 type PackageUpdate = {
   name: string;
@@ -75,7 +73,6 @@ export default function SystemActionsSection() {
     null,
   );
   const [wifiPassword, setWifiPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [forgetting, setForgetting] = useState(false);
 
   const wifiScan = useWifiScan(showWifiDialog);
@@ -153,20 +150,20 @@ export default function SystemActionsSection() {
     setShowWifiDialog(true);
     setSelectedNetwork(null);
     setWifiPassword('');
+    setForgetting(false);
   };
 
   const handleCloseWifiDialog = () => {
     setShowWifiDialog(false);
     setSelectedNetwork(null);
     setWifiPassword('');
-    setShowPassword(false);
     setForgetting(false);
   };
 
   const handleSelectNetwork = (network: WifiNetwork) => {
+    if (selectedNetwork?.ssid === network.ssid) return;
     setSelectedNetwork(network);
     setWifiPassword('');
-    setShowPassword(false);
     setForgetting(false);
   };
 
@@ -199,6 +196,14 @@ export default function SystemActionsSection() {
   };
 
   const networks = wifiScan.data ?? [];
+
+  const needsPassword =
+    !!selectedNetwork?.security && (!selectedNetwork.saved || forgetting);
+  const connectDisabled =
+    !selectedNetwork ||
+    wifiConnect.isPending ||
+    wifiForget.isPending ||
+    (needsPassword && !wifiPassword.trim());
 
   return (
     <>
@@ -444,9 +449,7 @@ export default function SystemActionsSection() {
               Connect to WiFi
             </DialogTitle>
             <DialogDescription>
-              {selectedNetwork
-                ? `Enter credentials for "${selectedNetwork.ssid}"`
-                : 'Select a network to connect to.'}
+              Select a network and click Connect.
             </DialogDescription>
           </DialogHeader>
 
@@ -476,70 +479,58 @@ export default function SystemActionsSection() {
                   Retry
                 </Button>
               </div>
-            ) : !selectedNetwork ? (
-              <div className='space-y-1 max-h-72 overflow-y-auto'>
+            ) : (
+              <div className='space-y-1 max-h-60 overflow-y-auto'>
                 {networks
                   .sort((a, b) => b.signal - a.signal)
-                  .map((network) => (
-                    <button
-                      key={network.ssid}
-                      onClick={() => handleSelectNetwork(network)}
-                      className={`w-full flex items-center justify-between p-3 rounded-sm hover:bg-muted/50 transition-colors text-left cursor-pointer ${network.connected ? 'bg-primary/5 border border-primary/20 rounded-sm' : ''}`}
-                    >
-                      <div className='flex items-center gap-2 min-w-0'>
-                        <Wifi
-                          className={`w-4 h-4 shrink-0 ${network.connected ? 'text-primary' : 'text-muted-foreground'}`}
-                        />
-                        <span className='text-sm font-medium truncate text-foreground'>
-                          {network.ssid}
-                        </span>
-                        {network.security && (
-                          <Lock className='w-3 h-3 text-muted-foreground shrink-0' />
-                        )}
-                        {network.saved && (
-                          <BookmarkCheck className='w-3 h-3 text-success shrink-0' />
-                        )}
-                      </div>
-                      <div className='flex items-center gap-2 shrink-0 ml-2'>
-                        {network.connected && (
-                          <span className='text-xs text-primary font-medium font-mono'>
-                            Connected
+                  .map((network) => {
+                    const isSelected = selectedNetwork?.ssid === network.ssid;
+                    return (
+                      <button
+                        key={network.ssid}
+                        onClick={() => handleSelectNetwork(network)}
+                        className={`w-full flex items-center justify-between p-3 rounded-sm transition-colors text-left cursor-pointer border ${
+                          isSelected
+                            ? 'bg-primary/10 border-primary/40'
+                            : network.connected
+                              ? 'bg-primary/5 border-primary/20'
+                              : 'border-transparent hover:bg-muted/50'
+                        }`}
+                      >
+                        <div className='flex items-center gap-2 min-w-0'>
+                          <Wifi
+                            className={`w-4 h-4 shrink-0 ${
+                              isSelected || network.connected
+                                ? 'text-primary'
+                                : 'text-muted-foreground'
+                            }`}
+                          />
+                          <span className='text-sm font-medium truncate text-foreground'>
+                            {network.ssid}
                           </span>
-                        )}
-                        <SignalBadge signal={network.signal} />
-                      </div>
-                    </button>
-                  ))}
+                          {network.security && (
+                            <Lock className='w-3 h-3 text-muted-foreground shrink-0' />
+                          )}
+                          {network.saved && (
+                            <BookmarkCheck className='w-3 h-3 text-success shrink-0' />
+                          )}
+                        </div>
+                        <div className='flex items-center gap-2 shrink-0 ml-2'>
+                          {network.connected && (
+                            <span className='text-xs text-primary font-medium font-mono'>
+                              Connected
+                            </span>
+                          )}
+                          <SignalBadge signal={network.signal} />
+                        </div>
+                      </button>
+                    );
+                  })}
               </div>
-            ) : (
-              <div className='space-y-4'>
-                <button
-                  onClick={() => setSelectedNetwork(null)}
-                  className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  ← Back to networks
-                </button>
-                <div className='flex items-center gap-3 p-3 rounded-sm bg-muted/30'>
-                  <Wifi
-                    className={`w-4 h-4 ${selectedNetwork.connected ? 'text-primary' : ''}`}
-                  />
-                  <span className='text-sm font-medium'>
-                    {selectedNetwork.ssid}
-                  </span>
-                  {selectedNetwork.security && (
-                    <Lock className='w-3 h-3 text-muted-foreground' />
-                  )}
-                  {selectedNetwork.saved && (
-                    <BookmarkCheck className='w-3 h-3 text-success' />
-                  )}
-                  {selectedNetwork.connected && (
-                    <span className='text-xs text-primary font-medium ml-auto'>
-                      Connected
-                    </span>
-                  )}
-                  <SignalBadge signal={selectedNetwork.signal} />
-                </div>
+            )}
 
+            {selectedNetwork && (
+              <div className='border-t border-border pt-3 space-y-3'>
                 {selectedNetwork.security &&
                 selectedNetwork.saved &&
                 !forgetting ? (
@@ -566,7 +557,7 @@ export default function SystemActionsSection() {
                           type='button'
                           onClick={handleWifiForget}
                           disabled={wifiForget.isPending}
-                          className='text-destructive hover:underline'
+                          className='text-destructive hover:underline disabled:opacity-50'
                         >
                           {wifiForget.isPending
                             ? 'Forgetting…'
@@ -575,66 +566,53 @@ export default function SystemActionsSection() {
                         .
                       </p>
                     )}
-                    <TextField
+                    <PasswordField
                       label='Password'
-                      type={showPassword ? 'text' : 'password'}
+                      icon={<Lock className='w-4 h-4' />}
                       placeholder='Network password'
+                      autoComplete='new-password'
                       value={wifiPassword}
                       onChange={(e) => setWifiPassword(e.target.value)}
                       onKeyDown={(e) =>
-                        e.key === 'Enter' && handleWifiConnect()
+                        e.key === 'Enter' &&
+                        !connectDisabled &&
+                        handleWifiConnect()
                       }
                       autoFocus
                     />
-                    <button
-                      type='button'
-                      onClick={() => setShowPassword((v) => !v)}
-                      className='absolute right-3 top-8 text-muted-foreground hover:text-foreground transition-colors'
-                    >
-                      {showPassword ? (
-                        <EyeOff className='w-4 h-4' />
-                      ) : (
-                        <Eye className='w-4 h-4' />
-                      )}
-                    </button>
                   </div>
                 ) : null}
               </div>
             )}
           </div>
 
-          {selectedNetwork && (
-            <DialogFooter>
-              <Button
-                variant='outline'
-                onClick={() => setSelectedNetwork(null)}
-              >
-                Back
-              </Button>
-              <Button
-                onClick={handleWifiConnect}
-                disabled={
-                  wifiConnect.isPending ||
-                  wifiForget.isPending ||
-                  (selectedNetwork.security !== '' &&
-                    (!selectedNetwork.saved || forgetting) &&
-                    !wifiPassword.trim())
-                }
-              >
-                {wifiConnect.isPending ? (
-                  <>
-                    <Loader2 className='w-4 h-4 animate-spin' />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    <Wifi className='w-4 h-4' />
-                    Connect
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          )}
+          <DialogFooter>
+            <Button variant='outline' onClick={handleCloseWifiDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleWifiConnect} disabled={connectDisabled}>
+              {wifiConnect.isPending ? (
+                <>
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                  Connecting...
+                </>
+              ) : (
+                <>
+                  <Wifi className='w-4 h-4' />
+                  Connect
+                  {selectedNetwork && (
+                    <>
+                      {' '}
+                      to
+                      <span className='-ml-1 opacity-70 truncate max-w-24'>
+                        {selectedNetwork.ssid}
+                      </span>
+                    </>
+                  )}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

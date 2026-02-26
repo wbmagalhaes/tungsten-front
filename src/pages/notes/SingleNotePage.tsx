@@ -51,7 +51,6 @@ export default function SingleNotePage() {
     );
   }
 
-  // Initialize local state from fetched data once
   if (!initialized) {
     setTitle(note.title);
     setBody(note.body ?? '');

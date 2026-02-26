@@ -28,6 +28,7 @@ import { useChangePassword } from '@hooks/auth/use-change-password';
 import type { UpdateProfileRequest } from '@services/profile.service';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
+import { validatePassword } from '@pages/auth/validatePassword';
 
 export default function ProfilePage() {
   const { data: me, isLoading, error } = useGetProfile();
@@ -49,12 +50,16 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordChanged, setPasswordChanged] = useState(false);
 
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
   const passwordMismatch =
     confirmPassword.length > 0 && newPassword !== confirmPassword;
 
   const handleChangePassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordMismatch) return;
+
+    if (passwordMismatch || passwordError) return;
+
     changePassword.mutate(
       { current_password: currentPassword, new_password: newPassword },
       {
@@ -194,7 +199,12 @@ export default function ProfilePage() {
               placeholder='Enter new password'
               autoComplete='new-password'
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNewPassword(value);
+                setPasswordError(validatePassword(value));
+              }}
+              error={passwordError ?? undefined}
               required
             />
             <PasswordField
@@ -224,7 +234,8 @@ export default function ProfilePage() {
                 changePassword.isPending ||
                 !currentPassword ||
                 !newPassword ||
-                passwordMismatch
+                passwordMismatch ||
+                !!passwordError
               }
             >
               <Lock className='w-4 h-4' />
