@@ -275,7 +275,7 @@ export default function HomePage() {
           </span>
         )}
 
-        <div className='relative inline-block cursor-default z-10'>
+        <div className='relative inline-block cursor-default z-10 select-none'>
           <div
             className='tg-title-layer tg-title-red'
             aria-hidden='true'
@@ -310,7 +310,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65'>
+        <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none'>
           <div className='glitch' data-text='> personal self-hosted server'>
             &gt; personal self-hosted server
           </div>

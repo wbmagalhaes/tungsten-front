@@ -8,7 +8,7 @@ export default function PublicLayout() {
   return (
     <div className='min-h-screen flex flex-col'>
       <PublicHeader />
-      <main className='flex-1 mt-20'>
+      <main className='flex-1 mt-16'>
         <Outlet />
       </main>
       <PublicFooter />
