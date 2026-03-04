@@ -40,13 +40,11 @@ export function RainColumn({ x, delay, speed }: RainColumnProps) {
 
   return (
     <div
-      className='absolute flex flex-col pointer-events-none select-none'
+      className='absolute flex flex-col pointer-events-none select-none text-xs font-mono-tech'
       style={{
         left: `${x}%`,
         top: `${offset}%`,
         gap: '2px',
-        fontFamily: 'var(--font-mono-tech)',
-        fontSize: '11px',
         lineHeight: '1.4',
       }}
     >
