@@ -19,10 +19,7 @@ export const breadcrumbMap: Record<string, { label: string; parent?: string }> =
     '/chat-bot': { label: 'chat-bot', parent: '/' },
     '/chat-bot/:id': { label: '...', parent: '/chat-bot' },
     '/image-generation': { label: 'image-generation', parent: '/' },
-    '/image-generation/:id': {
-      label: '...',
-      parent: '/image-generation',
-    },
+    '/image-generation/:id': { label: '...', parent: '/image-generation' },
     '/background-jobs': { label: 'background-jobs', parent: '/' },
     '/background-jobs/:id': { label: '...', parent: '/background-jobs' },
     '/config': { label: 'config', parent: '/' },

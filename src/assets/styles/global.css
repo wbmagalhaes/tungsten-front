@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&family=Russo+One&family=Black+Ops+One&family=VT323&family=Chakra+Petch:wght@700&family=Rajdhani:wght@700&family=Nova+Mono&display=swap');
 @import 'tailwindcss';
 @import './themes.css';
 
@@ -27,6 +28,16 @@
   --color-warning-foreground: #1a1200;
   --color-info: #00d4ff;
   --color-info-foreground: #001922;
+
+  --font-cyber: 'Orbitron', sans-serif;
+  --font-mono-tech: 'Share Tech Mono', 'Courier New', monospace;
+  --font-russo: 'Russo One', sans-serif;
+  --font-black-ops: 'Black Ops One', cursive;
+  --font-vt: 'VT323', monospace;
+  --font-chakra: 'Chakra Petch', sans-serif;
+  --font-raj: 'Rajdhani', sans-serif;
+  --font-nova: 'Nova Mono', monospace;
+
   --animate-loading-bar: loading-bar 1.75s ease-in-out infinite;
 }
 

@@ -1,0 +1,64 @@
+.tg-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 255, 136, 0) 10%,
+    rgba(0, 255, 136, 0.4) 35%,
+    rgba(0, 255, 136, 0.6) 50%,
+    rgba(0, 255, 136, 0.4) 65%,
+    rgba(0, 255, 136, 0) 90%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.tg-logo:hover .tg-logo-badge {
+  border-color: rgba(0, 255, 136, 0.7);
+  background-color: rgba(0, 255, 136, 0.1);
+}
+
+.tg-logo:hover .tg-logo-name {
+  color: rgb(0, 255, 136);
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
+}
+
+.tg-logo-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tg-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 255, 136, 0) 10%,
+    rgba(0, 255, 136, 0.4) 35%,
+    rgba(0, 255, 136, 0.6) 50%,
+    rgba(0, 255, 136, 0.4) 65%,
+    rgba(0, 255, 136, 0) 90%,
+    transparent 100%
+  );
+  pointer-events: none;
+}

@@ -1,99 +1,439 @@
-import { useGetProfile } from '@hooks/profile/use-get-profile';
-import { useAuthStore } from '@stores/useAuthStore';
+import '@styles/hero.css';
+import { useState, useEffect, useRef } from 'react';
 import {
   StickyNote,
   BotMessageSquare,
   ImagePlus,
   FlaskConical,
 } from 'lucide-react';
-import { usePwaInstall } from '@hooks/use-pwa-install';
-import { cn } from '@utils/cn';
-import { usePwaUpdate } from '@hooks/use-pwa-update';
+import CloudflareIcon from '../components/Icons/CloudflareIcon';
+import NginxIcon from '../components/Icons/NginxIcon';
+import ReactIcon from '../components/Icons/ReactIcon';
+import RustIcon from '../components/Icons/RustIcon';
 import { Button, ButtonLink } from '@components/base/button';
-import { Card, CardContent } from '@components/base/card';
+import { useAuthStore } from '@stores/useAuthStore';
+import { useGetProfile } from '@hooks/profile/use-get-profile';
+import { usePwaInstall } from '@hooks/use-pwa-install';
+import { usePwaUpdate } from '@hooks/use-pwa-update';
+
+const ORIGINAL = 'TUNGSTEN';
+
+const GLITCH_CHARS =
+  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789';
+
+const FONTS: { name: string; family: string; note: string }[] = [
+  { name: 'Orbitron', family: 'var(--font-cyber)', note: 'Geométrico, sci-fi' },
+  {
+    name: 'Share Tech Mono',
+    family: 'var(--font-mono-tech)',
+    note: 'Terminal monospaced',
+  },
+  {
+    name: 'Russo One',
+    family: 'var(--font-russo)',
+    note: 'Militar/industrial',
+  },
+  {
+    name: 'Black Ops One',
+    family: 'var(--font-black-ops)',
+    note: 'Bold tático, punk',
+  },
+  { name: 'VT323', family: 'var(--font-vt)', note: 'CRT retro puro' },
+  {
+    name: 'Chakra Petch',
+    family: 'var(--font-chakra)',
+    note: 'Tech asiático, clean',
+  },
+  { name: 'Rajdhani', family: 'var(--font-raj)', note: 'Condensado, punk' },
+  { name: 'Nova Mono', family: 'var(--font-nova)', note: 'Mono com caráter' },
+];
+
+function useGlitchText(original: string, active: boolean): string {
+  const [display, setDisplay] = useState(original);
+  const frameRef = useRef(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (!active) {
+      setDisplay(original);
+      return;
+    }
+    let frame = 0;
+    intervalRef.current = setInterval(() => {
+      frame++;
+      setDisplay(
+        original
+          .split('')
+          .map((char, i) => {
+            const noise = Math.sin(frame * 0.3 + i * 1.7) * 0.5 + 0.5;
+            return noise > 0.78
+              ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+              : char;
+          })
+          .join(''),
+      );
+      frameRef.current = frame;
+    }, 60);
+    return () => clearInterval(intervalRef.current);
+  }, [active, original]);
+
+  return display;
+}
+
+interface RainColumnProps {
+  x: number;
+  delay: number;
+  speed: number;
+}
+
+function RainColumn({ x, delay, speed }: RainColumnProps) {
+  const [offset, setOffset] = useState(-100);
+  const [columnChars, setColumnChars] = useState(() =>
+    Array.from(
+      { length: 20 },
+      () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)],
+    ),
+  );
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      let pos = -100;
+      const iv = setInterval(() => {
+        pos += speed;
+        if (pos > 110) pos = -100;
+        setOffset(pos);
+        setColumnChars((prev) =>
+          prev.map((c) =>
+            Math.random() > 0.85
+              ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+              : c,
+          ),
+        );
+      }, 50);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, speed]);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: `${x}%`,
+        top: `${offset}%`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2px',
+        fontFamily: 'var(--font-mono-tech)',
+        fontSize: '12px',
+        lineHeight: '1.4',
+        userSelect: 'none',
+        pointerEvents: 'none',
+      }}
+    >
+      {columnChars.map((c, i) => (
+        <span
+          key={i}
+          style={{
+            color:
+              i === columnChars.length - 1
+                ? '#00ff88'
+                : `rgba(0, ${Math.floor(180 - i * 8)}, ${Math.floor(60 + i * 4)}, ${Math.max(0.05, 0.6 - i * 0.03)})`,
+            textShadow:
+              i === columnChars.length - 1 ? '0 0 8px #00ff88' : 'none',
+          }}
+        >
+          {c}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+type AccentColor =
+  | 'blue'
+  | 'green'
+  | 'orange'
+  | 'purple'
+  | 'yellow'
+  | 'violet'
+  | 'fuchsia'
+  | 'cyan';
+
+interface StackCardProps {
+  icon: React.ReactNode;
+  name: string;
+  label: string;
+  color: AccentColor;
+}
+
+function StackCard({ icon, name, label, color }: StackCardProps) {
+  return (
+    <div className={`tg-card tg-stack-card tg-accent-${color}`}>
+      <div className='tg-card-icon'>{icon}</div>
+      <div className={`tg-card-name`}>{name}</div>
+      <div className='tg-card-label'>{label}</div>
+    </div>
+  );
+}
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  color: AccentColor;
+}
+
+function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
+  return (
+    <div className={`tg-card tg-feature-card tg-accent-${color}`}>
+      <div className={`tg-feature-icon-wrap tg-accent-${color}`}>{icon}</div>
+      <div>
+        <div className='tg-feature-title'>{title}</div>
+        <div className='tg-feature-desc'>{description}</div>
+      </div>
+    </div>
+  );
+}
+
+interface BlockGlitchItem {
+  id: number;
+  top: number;
+  height: number;
+  offset: number;
+  opacity: number;
+}
 
 export default function HomePage() {
+  const [glitching, setGlitching] = useState(false);
+  const [scanlinePos, setScanlinePos] = useState(-10);
+  const [chromaOffset, setChromaOffset] = useState({ x: 0, y: 0 });
+  const [blockGlitch, setBlockGlitch] = useState<BlockGlitchItem[]>([]);
+  const [activeFontIndex, setActiveFontIndex] = useState(0);
+  const display = useGlitchText(ORIGINAL, glitching);
+  const activeFont = FONTS[activeFontIndex];
+
   const { isAuthenticated } = useAuthStore();
   const { data: user, isLoading } = useGetProfile();
-
   const { canInstall, install, needsInstructions } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
 
+  const randomOtherFont = (current: number) => {
+    let next = current;
+    while (next === current) next = Math.floor(Math.random() * FONTS.length);
+    return next;
+  };
+
+  const triggerGlitch = (switchFont: boolean) => {
+    const duration = 200 + Math.random() * 400;
+    setGlitching(true);
+
+    if (switchFont) {
+      setTimeout(
+        () => setActiveFontIndex((cur) => randomOtherFont(cur)),
+        duration * 0.4,
+      );
+    }
+
+    const frames = Math.floor(duration / 30);
+    let f = 0;
+    const iv = setInterval(() => {
+      f++;
+      setChromaOffset({
+        x: (Math.random() - 0.5) * 8,
+        y: (Math.random() - 0.5) * 3,
+      });
+      if (f >= frames) {
+        clearInterval(iv);
+        setChromaOffset({ x: 0, y: 0 });
+        setGlitching(false);
+      }
+    }, 30);
+
+    const numBlocks = Math.floor(Math.random() * 5) + 2;
+    setBlockGlitch(
+      Array.from({ length: numBlocks }, (_, i) => ({
+        id: i,
+        top: Math.random() * 80,
+        height: 2 + Math.random() * 12,
+        offset: (Math.random() - 0.5) * 30,
+        opacity: 0.3 + Math.random() * 0.5,
+      })),
+    );
+    setTimeout(() => setBlockGlitch([]), duration);
+  };
+
+  useEffect(() => {
+    setTimeout(() => triggerGlitch(false), 600);
+    const schedule = () => {
+      const next = 1500 + Math.random() * 3000;
+      return setTimeout(() => {
+        triggerGlitch(true);
+        scheduleRef.current = schedule();
+      }, next);
+    };
+    const scheduleRef: { current: ReturnType<typeof setTimeout> } = {
+      current: schedule(),
+    };
+    return () => clearTimeout(scheduleRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    let pos = -10;
+    const iv = setInterval(() => {
+      pos += 0.6;
+      if (pos > 110) pos = -10;
+      setScanlinePos(pos);
+    }, 16);
+    return () => clearInterval(iv);
+  }, []);
+
+  const rainColumns: RainColumnProps[] = [
+    { x: 2, delay: 0, speed: 1.2 },
+    { x: 8, delay: 800, speed: 0.9 },
+    { x: 15, delay: 300, speed: 1.5 },
+    { x: 22, delay: 1200, speed: 0.7 },
+    { x: 78, delay: 500, speed: 1.1 },
+    { x: 85, delay: 0, speed: 0.8 },
+    { x: 91, delay: 900, speed: 1.4 },
+    { x: 97, delay: 400, speed: 1.0 },
+    { x: 35, delay: 600, speed: 0.6 },
+    { x: 65, delay: 1100, speed: 1.3 },
+  ];
+
+  const textShadowBase = `0 0 20px rgba(0,255,136,0.8), 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,255,136,0.2)`;
+
   return (
-    <div className='container mx-auto px-4 pt-8 md:pt-16'>
-      <div className='max-w-4xl mx-auto text-center'>
-        <div className='flex flex-col items-center gap-2 mb-12'>
-          {isAuthenticated && (
-            <div className='px-6 py-3 bg-green-900/50 border border-green-700 text-green-300 rounded-full min-w-[200px] flex justify-center items-center gap-2'>
-              {isLoading ? (
-                <>
-                  <div className='my-1 h-4 w-4 border-2 border-t-green-300 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
-                </>
-              ) : (
-                <>Welcome back, {user?.fullname || user?.username || 'User'}!</>
-              )}
-            </div>
-          )}
+    <div className='tg-hero'>
+      <div className='tg-grid-bg' />
+      <div className='tg-corner tg-corner-tl' />
+      <div className='tg-corner tg-corner-tr' />
+      <div className='tg-corner tg-corner-bl' />
+      <div className='tg-corner tg-corner-br' />
+      {rainColumns.map((col, i) => (
+        <RainColumn key={i} {...col} />
+      ))}
+      <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
+      <div className='tg-scanlines-static' />
+      {blockGlitch.map((block) => (
+        <div
+          key={block.id}
+          className='tg-block-glitch'
+          style={{
+            top: `${block.top}%`,
+            height: `${block.height}px`,
+            transform: `translateX(${block.offset}px)`,
+            background: `rgba(0,255,136,${block.opacity * 0.1})`,
+            boxShadow: `0 0 10px rgba(0,255,136,0.15)`,
+          }}
+        />
+      ))}
 
-          {isAuthenticated && (
-            <span className='text-sm text-muted-foreground'>
-              Want to login with another account?{' '}
-              <ButtonLink variant='link' className='p-0' to='/login'>
-                Click here
-              </ButtonLink>
-            </span>
-          )}
-        </div>
-
-        {!isLoading && isAuthenticated && updateAvailable && (
-          <div
-            className='fixed bottom-4 right-4 bg-emerald-600 text-foreground px-4 py-2 rounded shadow-lg cursor-pointer'
-            onClick={update}
-          >
-            New version available - Click to update
+      <div className='tg-hero-content'>
+        {isAuthenticated && (
+          <div className='tg-welcome-badge'>
+            {isLoading ? (
+              <div className='my-1 h-4 w-4 border-2 border-t-green-300 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
+            ) : (
+              <>Welcome back, {user?.fullname || user?.username || 'User'}!</>
+            )}
           </div>
         )}
+        {isAuthenticated && (
+          <span className='text-sm text-muted-foreground mb-8'>
+            Want to login with another account?{' '}
+            <ButtonLink variant='link' className='p-0' to='/login'>
+              Click here
+            </ButtonLink>
+          </span>
+        )}
 
-        <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
-          Tungsten
-        </h1>
-        <p className='text-xl text-muted-foreground mb-10 max-w-2xl mx-auto'>
-          Personal self-hosted server running useful tools.
-        </p>
-        <div className='max-w-3xl mx-auto mb-12'>
-          <Card>
-            <CardContent className='p-6'>
-              <div className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center'>
-                <StackItem
-                  icon={<ReactIcon />}
-                  name='React'
-                  label='Frontend'
-                  color='blue'
-                />
-                <StackItem
-                  icon={<NginxIcon />}
-                  name='Nginx'
-                  label='Proxy'
-                  color='green'
-                />
-                <StackItem
-                  icon={<RustIcon />}
-                  name='Rust'
-                  label='Backend'
-                  color='orange'
-                />
-                <StackItem
-                  icon={<CloudflareIcon />}
-                  name='Cloudflare'
-                  label='Tunnel'
-                  color='purple'
-                />
-              </div>
-            </CardContent>
-          </Card>
+        <div className='tg-title-container'>
+          <div
+            className='tg-title-layer tg-title-red'
+            aria-hidden='true'
+            style={{
+              fontFamily: activeFont.family,
+              transform: `translate(${-3 + chromaOffset.x * 0.6}px, ${chromaOffset.y * 0.3}px)`,
+              mixBlendMode: 'screen',
+            }}
+          >
+            {display}
+          </div>
+
+          <div
+            className='tg-title-layer tg-title-blue'
+            aria-hidden='true'
+            style={{
+              fontFamily: activeFont.family,
+              transform: `translate(${3 - chromaOffset.x * 0.6}px, ${-chromaOffset.y * 0.3}px)`,
+              mixBlendMode: 'screen',
+            }}
+          >
+            {display}
+          </div>
+
+          <div
+            className='tg-title-main'
+            style={{
+              fontFamily: activeFont.family,
+              transform: `translate(${chromaOffset.x * 0.1}px, ${chromaOffset.y * 0.1}px)`,
+              textShadow: glitching
+                ? `0 0 30px rgba(0,255,136,1), 0 0 60px rgba(0,255,136,0.6), 0 0 100px rgba(0,255,136,0.3)`
+                : textShadowBase,
+            }}
+          >
+            {display}
+          </div>
+
+          <div
+            className='tg-title-spacer'
+            style={{ fontFamily: activeFont.family }}
+            aria-hidden='true'
+          >
+            {ORIGINAL}
+          </div>
         </div>
 
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto'>
+        <div className='tg-subtitle'>
+          &gt; personal self-hosted server _ system online
+        </div>
+
+        <div className='tg-divider' />
+
+        <div className='tg-stack-grid'>
+          <StackCard
+            icon={<ReactIcon />}
+            name='React'
+            label='Frontend'
+            color='blue'
+          />
+          <StackCard
+            icon={<NginxIcon />}
+            name='Nginx'
+            label='Proxy'
+            color='green'
+          />
+          <StackCard
+            icon={<RustIcon />}
+            name='Rust'
+            label='Backend'
+            color='orange'
+          />
+          <StackCard
+            icon={<CloudflareIcon />}
+            name='Cloudflare'
+            label='Tunnel'
+            color='purple'
+          />
+        </div>
+
+        <div className='tg-divider' />
+
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mb-4'>
           {isAuthenticated ? (
             <>
               <ButtonLink to='/root' size='lg' className='w-full sm:w-48'>
@@ -113,7 +453,7 @@ export default function HomePage() {
               <ButtonLink to='/login' size='lg' className='w-full sm:w-48'>
                 Login
               </ButtonLink>
-              <span>or</span>
+              <span className='text-muted-foreground'>or</span>
               <ButtonLink
                 variant='secondary'
                 to='/register'
@@ -127,7 +467,7 @@ export default function HomePage() {
         </div>
 
         {isAuthenticated && (
-          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mt-6'>
+          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
             {canInstall && (
               <Button
                 onClick={install}
@@ -137,7 +477,6 @@ export default function HomePage() {
                 Install App
               </Button>
             )}
-
             {needsInstructions && (
               <div className='text-sm text-muted-foreground text-center'>
                 iOS: Share → Add to Home Screen
@@ -147,10 +486,10 @@ export default function HomePage() {
             )}
           </div>
         )}
-      </div>
 
-      <div className='mt-16 max-w-4xl mx-auto'>
-        <div className='grid md:grid-cols-2 gap-6'>
+        <div className='tg-divider' />
+
+        <div className='tg-feature-grid'>
           <FeatureCard
             icon={<StickyNote className='w-6 h-6' />}
             title='Notes'
@@ -177,141 +516,15 @@ export default function HomePage() {
           />
         </div>
       </div>
-    </div>
-  );
-}
 
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  color: string;
-}
-
-function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
-  const colorClasses = {
-    yellow: 'bg-yellow-900/30 text-yellow-400 border-yellow-800',
-    violet: 'bg-violet-900/30 text-violet-400 border-violet-800',
-    fuchsia: 'bg-fuchsia-900/30 text-fuchsia-400 border-fuchsia-800',
-    cyan: 'bg-cyan-900/30 text-cyan-400 border-cyan-800',
-  };
-
-  return (
-    <Card>
-      <CardContent>
-        <div className='flex items-start gap-4'>
-          <div
-            className={`w-12 h-12 rounded-sm flex items-center justify-center shrink-0 border ${colorClasses[color as keyof typeof colorClasses]}`}
-          >
-            {icon}
-          </div>
-          <div>
-            <h3 className='font-semibold text-foreground mb-1'>{title}</h3>
-            <p className='text-muted-foreground text-sm'>{description}</p>
-          </div>
+      {updateAvailable && (
+        <div
+          className='fixed bottom-4 right-4 bg-emerald-600 text-foreground px-4 py-2 rounded shadow-lg cursor-pointer z-50'
+          onClick={update}
+        >
+          New version available - Click to update
         </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface StackItemProps {
-  icon?: React.ReactNode;
-  name: string;
-  label: string;
-  color: 'orange' | 'green' | 'blue' | 'purple';
-}
-
-function StackItem({ icon, name, label, color }: StackItemProps) {
-  const colorClasses = {
-    orange: 'text-orange-400',
-    green: 'text-green-400',
-    blue: 'text-blue-400',
-    purple: 'text-purple-400',
-  };
-
-  return (
-    <div>
-      <div className={cn('flex justify-center mb-2', colorClasses[color])}>
-        {icon}
-      </div>
-      <div className={cn('font-mono font-bold text-lg', colorClasses[color])}>
-        {name}
-      </div>
-      <div className='text-sm text-muted-foreground'>{label}</div>
+      )}
     </div>
-  );
-}
-
-function ReactIcon() {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width='32'
-      height='32'
-      viewBox='0 0 32 32'
-    >
-      <path
-        fill='currentColor'
-        d='M16 12c7.444 0 12 2.59 12 4s-4.556 4-12 4s-12-2.59-12-4s4.556-4 12-4m0-2c-7.732 0-14 2.686-14 6s6.268 6 14 6s14-2.686 14-6s-6.268-6-14-6'
-      />
-      <path fill='currentColor' d='M16 14a2 2 0 1 0 2 2a2 2 0 0 0-2-2' />
-      <path
-        fill='currentColor'
-        d='M10.458 5.507c2.017 0 5.937 3.177 9.006 8.493c3.722 6.447 3.757 11.687 2.536 12.392a.9.9 0 0 1-.457.1c-2.017 0-5.938-3.176-9.007-8.492C8.814 11.553 8.779 6.313 10 5.608a.9.9 0 0 1 .458-.1m-.001-2A2.87 2.87 0 0 0 9 3.875C6.13 5.532 6.938 12.304 10.804 19c3.284 5.69 7.72 9.493 10.74 9.493A2.87 2.87 0 0 0 23 28.124c2.87-1.656 2.062-8.428-1.804-15.124c-3.284-5.69-7.72-9.493-10.74-9.493Z'
-      />
-      <path
-        fill='currentColor'
-        d='M21.543 5.507a.9.9 0 0 1 .457.1c1.221.706 1.186 5.946-2.536 12.393c-3.07 5.316-6.99 8.493-9.007 8.493a.9.9 0 0 1-.457-.1C8.779 25.686 8.814 20.446 12.536 14c3.07-5.316 6.99-8.493 9.007-8.493m0-2c-3.02 0-7.455 3.804-10.74 9.493C6.939 19.696 6.13 26.468 9 28.124a2.87 2.87 0 0 0 1.457.369c3.02 0 7.455-3.804 10.74-9.493C25.061 12.304 25.87 5.532 23 3.876a2.87 2.87 0 0 0-1.457-.369'
-      />
-    </svg>
-  );
-}
-
-function NginxIcon() {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width='32'
-      height='32'
-      viewBox='0 0 32 32'
-    >
-      <path
-        fill='currentColor'
-        d='M16 0L2 8v16l14 8l14-8V8Zm8 23a1 1 0 0 1-1 1h-2.52a1 1 0 0 1-.78-.375L12 14v9a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h2.52a1 1 0 0 1 .78.375L20 18V9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z'
-      />
-    </svg>
-  );
-}
-
-function RustIcon() {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width='32'
-      height='32'
-      viewBox='0 0 32 32'
-    >
-      <path
-        fill='currentColor'
-        d='m30 12l-4-2V6h-4l-2-4l-4 2l-4-2l-2 4H6v4l-4 2l2 4l-2 4l4 2v4h4l2 4l4-2l4 2l2-4h4v-4l4-2l-2-4ZM6 16a9.9 9.9 0 0 1 .842-4H10v8H6.842A9.9 9.9 0 0 1 6 16m10 10a9.98 9.98 0 0 1-7.978-4H16v-2h-2v-2h4c.819.819.297 2.308 1.179 3.37a1.89 1.89 0 0 0 1.46.63h3.34A9.98 9.98 0 0 1 16 26m-2-12v-2h4a1 1 0 0 1 0 2Zm11.158 6H24a2.006 2.006 0 0 1-2-2a2 2 0 0 0-2-2a3 3 0 0 0 3-3q0-.08-.004-.161A3.115 3.115 0 0 0 19.83 10H8.022a9.986 9.986 0 0 1 17.136 10'
-      />
-    </svg>
-  );
-}
-
-function CloudflareIcon() {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width='32'
-      height='32'
-      viewBox='0 0 128 128'
-    >
-      <path
-        fill='currentColor'
-        d='M87.295 89.022c.763-2.617.472-5.015-.8-6.796c-1.163-1.635-3.125-2.58-5.488-2.689l-44.737-.581c-.291 0-.545-.145-.691-.363s-.182-.509-.109-.8c.145-.436.581-.763 1.054-.8l45.137-.581c5.342-.254 11.157-4.579 13.192-9.885l2.58-6.723c.109-.291.145-.581.073-.872c-2.906-13.158-14.644-22.97-28.672-22.97c-12.938 0-23.913 8.359-27.838 19.952a13.35 13.35 0 0 0-9.267-2.58c-6.215.618-11.193 5.597-11.811 11.811c-.145 1.599-.036 3.162.327 4.615C10.104 70.051 2 78.337 2 88.549c0 .909.073 1.817.182 2.726a.895.895 0 0 0 .872.763h82.57c.472 0 .909-.327 1.054-.8zm14.247-28.747c-.4 0-.836 0-1.236.036c-.291 0-.545.218-.654.509l-1.744 6.069c-.763 2.617-.472 5.015.8 6.796c1.163 1.635 3.125 2.58 5.488 2.689l9.522.581c.291 0 .545.145.691.363s.182.545.109.8c-.145.436-.581.763-1.054.8l-9.924.582c-5.379.254-11.157 4.579-13.192 9.885l-.727 1.853c-.145.363.109.727.509.727h34.089c.4 0 .763-.254.872-.654c.581-2.108.909-4.325.909-6.614c0-13.447-10.975-24.422-24.458-24.422'
-      />
-    </svg>
   );
 }

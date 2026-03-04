@@ -12,7 +12,7 @@ const is4xx = (error: unknown) => {
   return false;
 };
 
-const queryClient = new QueryClient({
+const qc = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60_000,
@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={qc}>
       <AppRoutes />
     </QueryClientProvider>
   );
