@@ -43,7 +43,7 @@ export default function HelpPage() {
   };
 
   return (
-    <div className='container mx-auto px-4 pt-8 md:pt-16'>
+    <div className='flex flex-col items-center justify-center'>
       <div className='max-w-4xl mx-auto text-center'>
         <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
           Help Center
@@ -69,7 +69,9 @@ export default function HelpPage() {
                     <h3 className='font-semibold text-foreground mb-1'>
                       {topic.title}
                     </h3>
-                    <p className='text-muted-foreground text-sm'>{topic.description}</p>
+                    <p className='text-muted-foreground text-sm'>
+                      {topic.description}
+                    </p>
                   </div>
                 </div>
               </CardContent>

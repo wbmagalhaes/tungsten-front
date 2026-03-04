@@ -16,6 +16,8 @@ const buttonVariants = cva(
         destructive:
           'bg-destructive/10 text-destructive hover:bg-destructive/30 border border-destructive/30',
         link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
+        glitch:
+          'group relative text-ring hover:text-ring/80 overflow-hidden transition-all duration-150 underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-10 px-4 py-2 gap-2 [&_svg:not([class*="size-"])]:size-4',
@@ -66,7 +68,7 @@ function ButtonLink({
 }: ButtonLinkProps) {
   return (
     <Button
-      className={className}
+      className={cn(className)}
       variant={variant}
       size={size}
       nativeButton={false}
@@ -79,12 +81,47 @@ function ButtonLink({
           );
         }
 
-        return <Link {...buttonProps} {...state} to={to} />;
+        return (
+          <Link {...buttonProps} {...state} to={to}>
+            {variant === 'glitch' ? (
+              <GlitchText>{children}</GlitchText>
+            ) : (
+              children
+            )}
+          </Link>
+        );
       }}
       {...props}
     >
       {children}
     </Button>
+  );
+}
+
+function GlitchText({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className='
+        relative inline-block
+        before:absolute before:inset-0
+        before:pointer-events-none before:select-none
+        before:opacity-0 before:content-[attr(data-text)]
+        before:text-[#ff0040] before:translate-x-px
+        before:mix-blend-screen
+
+        after:absolute after:inset-0
+        after:pointer-events-none after:select-none
+        after:opacity-0 after:content-[attr(data-text)]
+        after:text-[#00e5ff] after:-translate-x-px
+        after:mix-blend-screen
+
+        group-hover:before:animate-[tg-glitch-1_0.2s_steps(1)_1]
+        group-hover:after:animate-[tg-glitch-2_0.2s_steps(1)_1]
+      '
+      data-text={children}
+    >
+      {children}
+    </span>
   );
 }
 

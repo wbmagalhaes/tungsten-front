@@ -1,4 +1,3 @@
-import '@styles/hero.css';
 import { useState, useEffect, useRef } from 'react';
 import {
   StickyNote,
@@ -15,8 +14,9 @@ import { useAuthStore } from '@stores/useAuthStore';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import { usePwaInstall } from '@hooks/use-pwa-install';
 import { usePwaUpdate } from '@hooks/use-pwa-update';
-import { RainColumn, type RainColumnProps } from './RainColumn';
 import { FeatureCard } from './FeatureCard';
+import { StackCard } from './StackCard';
+import { LoadingShuffle } from '@components/LoadingShuffle';
 
 const ORIGINAL = 'TUNGSTEN';
 
@@ -82,57 +82,9 @@ function useGlitchText(original: string, active: boolean): string {
   return display;
 }
 
-type AccentColor =
-  | 'blue'
-  | 'green'
-  | 'orange'
-  | 'purple'
-  | 'yellow'
-  | 'violet'
-  | 'fuchsia'
-  | 'cyan';
-
-function StackCard({
-  icon,
-  name,
-  label,
-  color,
-}: {
-  icon: React.ReactNode;
-  name: string;
-  label: string;
-  color: AccentColor;
-}) {
-  return (
-    <div
-      className={`tg-card tg-stack-card tg-accent-${color} relative border border-white/6 rounded-md bg-white/2 overflow-hidden transition-[border-color,box-shadow] duration-200 p-5 flex flex-col items-center text-center gap-2 cursor-default`}
-    >
-      <div className='tg-card-icon transition-transform duration-100'>
-        {icon}
-      </div>
-      <div className='font-mono-tech font-bold text-[15px] tracking-[0.05em] transition-[text-shadow] duration-150'>
-        {name}
-      </div>
-      <div className='tg-card-label font-mono-tech text-[10px] tracking-widest uppercase text-white/30 transition-colors duration-150'>
-        {label}
-      </div>
-    </div>
-  );
-}
-
-interface BlockGlitchItem {
-  id: number;
-  top: number;
-  height: number;
-  offset: number;
-  opacity: number;
-}
-
 export default function HomePage() {
   const [glitching, setGlitching] = useState(false);
-  const [scanlinePos, setScanlinePos] = useState(-10);
   const [chromaOffset, setChromaOffset] = useState({ x: 0, y: 0 });
-  const [blockGlitch, setBlockGlitch] = useState<BlockGlitchItem[]>([]);
   const [activeFontIndex, setActiveFontIndex] = useState(0);
   const display = useGlitchText(ORIGINAL, glitching);
   const activeFont = FONTS[activeFontIndex];
@@ -171,17 +123,6 @@ export default function HomePage() {
         setGlitching(false);
       }
     }, 30);
-    const numBlocks = Math.floor(Math.random() * 5) + 2;
-    setBlockGlitch(
-      Array.from({ length: numBlocks }, (_, i) => ({
-        id: i,
-        top: Math.random() * 80,
-        height: 2 + Math.random() * 12,
-        offset: (Math.random() - 0.5) * 30,
-        opacity: 0.3 + Math.random() * 0.5,
-      })),
-    );
-    setTimeout(() => setBlockGlitch([]), duration);
   };
 
   useEffect(() => {
@@ -200,116 +141,91 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    let pos = -10;
-    const iv = setInterval(() => {
-      pos += 0.6;
-      if (pos > 110) pos = -10;
-      setScanlinePos(pos);
-    }, 16);
-    return () => clearInterval(iv);
-  }, []);
-
-  const rainColumns: RainColumnProps[] = [
-    { x: 2, delay: 0, speed: 1.2 },
-    { x: 8, delay: 800, speed: 0.9 },
-    { x: 15, delay: 300, speed: 1.5 },
-    { x: 22, delay: 1200, speed: 0.7 },
-    { x: 78, delay: 500, speed: 1.1 },
-    { x: 85, delay: 0, speed: 0.8 },
-    { x: 91, delay: 900, speed: 1.4 },
-    { x: 97, delay: 400, speed: 1.0 },
-    { x: 35, delay: 600, speed: 0.6 },
-    { x: 65, delay: 1100, speed: 1.3 },
-  ];
-
   const textShadowBase = `0 0 20px color-mix(in srgb, var(--color-ring) 80%, transparent), 0 0 40px color-mix(in srgb, var(--color-ring) 40%, transparent), 0 0 80px color-mix(in srgb, var(--color-ring) 20%, transparent)`;
   const textShadowGlitch = `0 0 30px var(--color-ring), 0 0 60px color-mix(in srgb, var(--color-ring) 60%, transparent), 0 0 100px color-mix(in srgb, var(--color-ring) 30%, transparent)`;
 
   return (
-    <div className='relative overflow-hidden flex flex-col items-center justify-center px-10 py-20 min-h-[70vh] bg-transparent max-sm:px-5 max-sm:py-15'>
-      <div className='tg-grid-bg' />
-      <div className='tg-scanlines-static' />
-
-      <div className='tg-corner tg-corner-tl' />
-      <div className='tg-corner tg-corner-tr' />
-      <div className='tg-corner tg-corner-bl' />
-      <div className='tg-corner tg-corner-br' />
-
-      {rainColumns.map((col, i) => (
-        <RainColumn key={i} {...col} />
-      ))}
-
-      <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
-
-      {blockGlitch.map((block) => (
-        <div
-          key={block.id}
-          className='absolute left-0 right-0 pointer-events-none z-8 overflow-hidden'
-          style={{
-            top: `${block.top}%`,
-            height: `${block.height}px`,
-            transform: `translateX(${block.offset}px)`,
-            background: `color-mix(in srgb, var(--color-ring) ${Math.round(block.opacity * 10)}%, transparent)`,
-            boxShadow: `0 0 10px color-mix(in srgb, var(--color-ring) 15%, transparent)`,
-          }}
-        />
-      ))}
-
-      <div className='relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center'>
-        {isAuthenticated && (
-          <div className='tg-welcome-badge'>
-            {isLoading ? (
-              <div className='my-1 h-4 w-4 border-2 border-t-success border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
-            ) : (
-              <>Welcome back, {user?.fullname || user?.username || 'User'}!</>
-            )}
-          </div>
-        )}
-        {isAuthenticated && (
-          <span className='text-sm text-muted-foreground mb-8'>
-            Want to login with another account?{' '}
-            <ButtonLink variant='link' className='p-0' to='/login'>
-              Click here
-            </ButtonLink>
-          </span>
-        )}
-
-        <div className='relative inline-block cursor-default z-10 select-none'>
-          <div
-            className='tg-title-layer tg-title-red'
-            aria-hidden='true'
-            style={{
-              fontFamily: activeFont.family,
-              transform: `translate(${-3 + chromaOffset.x * 0.6}px, ${+2 + chromaOffset.y * 0.3}px)`,
-              mixBlendMode: 'screen',
-            }}
-          >
-            {display}
-          </div>
-          <div
-            className='tg-title-layer tg-title-blue'
-            aria-hidden='true'
-            style={{
-              fontFamily: activeFont.family,
-              transform: `translate(${3 - chromaOffset.x * 0.6}px, ${-2 - chromaOffset.y * 0.3}px)`,
-              mixBlendMode: 'screen',
-            }}
-          >
-            {display}
-          </div>
-          <div
-            className='tg-title-main'
-            style={{
-              fontFamily: activeFont.family,
-              transform: `translate(${chromaOffset.x * 0.1}px, ${chromaOffset.y * 0.1}px)`,
-              textShadow: glitching ? textShadowGlitch : textShadowBase,
-            }}
-          >
-            {display}
-          </div>
+    <div className='flex flex-col items-center justify-center'>
+      {isAuthenticated && (
+        <div className='font-mono-tech uppercase tracking-widest text-sm text-ring/80 border border-ring/20 px-4 py-1 rounded-sm bg-ring/5'>
+          <LoadingShuffle
+            isLoading={isLoading}
+            target={`--- Welcome back, ${user?.fullname || user?.username || 'User'}! ---`}
+          />
         </div>
+      )}
 
+      {isAuthenticated && (
+        <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mb-8'>
+          Want to login with another account?{' '}
+          <ButtonLink
+            variant='glitch'
+            className='font-raj text-xs tracking-widest uppercase p-0'
+            to='/login'
+          >
+            Click here
+          </ButtonLink>
+        </span>
+      )}
+
+      <div className='relative inline-block cursor-default z-10 select-none'>
+        <div
+          className='tg-title-layer tg-title-red'
+          aria-hidden='true'
+          style={{
+            fontFamily: activeFont.family,
+            transform: `translate(${-3 + chromaOffset.x * 0.6}px, ${+2 + chromaOffset.y * 0.3}px)`,
+            mixBlendMode: 'screen',
+          }}
+        >
+          {display}
+        </div>
+        <div
+          className='tg-title-layer tg-title-blue'
+          aria-hidden='true'
+          style={{
+            fontFamily: activeFont.family,
+            transform: `translate(${3 - chromaOffset.x * 0.6}px, ${-2 - chromaOffset.y * 0.3}px)`,
+            mixBlendMode: 'screen',
+          }}
+        >
+          {display}
+        </div>
+        <div
+          className='tg-title-layer tg-title-slice-1'
+          aria-hidden='true'
+          style={{ fontFamily: activeFont.family }}
+        >
+          {display}
+        </div>
+        <div
+          className='tg-title-layer tg-title-slice-2'
+          aria-hidden='true'
+          style={{ fontFamily: activeFont.family }}
+        >
+          {display}
+        </div>
+        <div
+          className='tg-title-layer tg-title-desync'
+          aria-hidden='true'
+          style={{ fontFamily: activeFont.family }}
+        >
+          {display}
+        </div>
+        <div
+          className='tg-title-main'
+          data-text={display}
+          style={{
+            fontFamily: activeFont.family,
+            transform: `translate(${chromaOffset.x * 0.1}px, ${chromaOffset.y * 0.1}px)`,
+            textShadow: glitching ? textShadowGlitch : textShadowBase,
+          }}
+        >
+          {display}
+        </div>
+      </div>
+
+      <div className='w-full max-w-4xl mx-auto flex flex-col items-center'>
         <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none'>
           <div className='glitch' data-text='> personal self-hosted server'>
             &gt; personal self-hosted server
@@ -400,10 +316,10 @@ export default function HomePage() {
               </Button>
             )}
             {needsInstructions && (
-              <div className='text-sm text-muted-foreground text-center'>
-                iOS: Share → Add to Home Screen
+              <div className='font-mono-tech text-xs tracking-widest uppercase text-muted-foreground/70 text-center border border-white/10 px-3 py-2 rounded-sm bg-white/2'>
+                iOS: Share {'->'} Add to Home Screen
                 <br />
-                Firefox: Browser menu → Add to Home Screen
+                Firefox: Browser menu {'->'} Add to Home Screen
               </div>
             )}
           </div>

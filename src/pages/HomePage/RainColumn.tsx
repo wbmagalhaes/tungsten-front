@@ -52,10 +52,18 @@ export function RainColumn({ x, delay, speed }: RainColumnProps) {
         <span
           key={i}
           style={{
-            color:
-              i === columnChars.length - 1
-                ? 'var(--color-ring)'
-                : `rgba(0, ${Math.floor(180 - i * 8)}, ${Math.floor(60 + i * 4)}, ${Math.max(0.05, 0.6 - i * 0.03)})`,
+            color: (() => {
+              if (i === columnChars.length - 1) {
+                return 'var(--color-ring)';
+              }
+
+              const strength = (i / (columnChars.length - 1)) ** 2;
+              return `color-mix(
+                in srgb,
+                var(--color-ring) ${Math.max(5, strength * 70)}%,
+                transparent
+              )`;
+            })(),
             textShadow:
               i === columnChars.length - 1
                 ? '0 0 8px var(--color-ring)'

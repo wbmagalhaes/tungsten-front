@@ -1,16 +1,64 @@
+import '@styles/hero.css';
 import '@styles/layout.css';
+import { useEffect, useState } from 'react';
 import { ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
+import { RainColumn, type RainColumnProps } from '@pages/HomePage/RainColumn';
 
 export default function PublicLayout() {
+  const [scanlinePos, setScanlinePos] = useState(-10);
+
+  useEffect(() => {
+    let pos = -10;
+    const iv = setInterval(() => {
+      pos += 0.6;
+      if (pos > 110) pos = -10;
+      setScanlinePos(pos);
+    }, 16);
+    return () => clearInterval(iv);
+  }, []);
+
+  const rainColumns: RainColumnProps[] = [
+    { x: 2, delay: 0, speed: 1.2 },
+    { x: 8, delay: 800, speed: 0.9 },
+    { x: 15, delay: 300, speed: 1.5 },
+    { x: 22, delay: 1200, speed: 0.7 },
+    { x: 78, delay: 500, speed: 1.1 },
+    { x: 85, delay: 0, speed: 0.8 },
+    { x: 91, delay: 900, speed: 1.4 },
+    { x: 97, delay: 400, speed: 1.0 },
+    { x: 35, delay: 600, speed: 0.6 },
+    { x: 65, delay: 1100, speed: 1.3 },
+  ];
+
   return (
-    <div className='min-h-screen flex flex-col'>
+    <div className='flex flex-col min-h-screen'>
       <PublicHeader />
-      <main className='flex-1 mt-16'>
-        <Outlet />
-      </main>
+
+      <div className='relative flex-1 overflow-hidden'>
+        <div className='absolute inset-0 pointer-events-none'>
+          <div className='tg-grid-bg' />
+          <div className='tg-scanlines-static' />
+        </div>
+
+        {rainColumns.map((col, i) => (
+          <RainColumn key={i} {...col} />
+        ))}
+
+        <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
+
+        <main className='relative mt-16 w-full'>
+          <div className='container px-12 py-20 mx-auto'>
+            <Outlet />
+          </div>
+        </main>
+
+        <div className='tg-corner tg-corner-tl' />
+        <div className='tg-corner tg-corner-tr' />
+      </div>
+
       <PublicFooter />
     </div>
   );

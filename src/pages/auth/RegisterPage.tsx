@@ -46,7 +46,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className='min-h-screen flex justify-center p-4 mt-8 md:mt-32'>
+    <div className='flex flex-col items-center justify-center'>
       <div className='w-full max-w-xl space-y-4'>
         <Card>
           <CardContent className='p-6'>
@@ -69,6 +69,7 @@ export default function RegisterPage() {
                 label='Password'
                 icon={<Lock className='w-4 h-4' />}
                 placeholder='Choose a password'
+                autoComplete='new-password'
                 value={password}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -83,6 +84,7 @@ export default function RegisterPage() {
                 label='Confirm Password'
                 icon={<Lock className='w-4 h-4' />}
                 placeholder='Repeat your password'
+                autoComplete='new-password'
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 error={passwordMismatch ? 'Passwords do not match' : undefined}
