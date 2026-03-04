@@ -6,15 +6,17 @@ import {
   ImagePlus,
   FlaskConical,
 } from 'lucide-react';
-import CloudflareIcon from '../components/Icons/CloudflareIcon';
-import NginxIcon from '../components/Icons/NginxIcon';
-import ReactIcon from '../components/Icons/ReactIcon';
-import RustIcon from '../components/Icons/RustIcon';
+import CloudflareIcon from '@components/Icons/CloudflareIcon';
+import NginxIcon from '@components/Icons/NginxIcon';
+import ReactIcon from '@components/Icons/ReactIcon';
+import RustIcon from '@components/Icons/RustIcon';
 import { Button, ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import { usePwaInstall } from '@hooks/use-pwa-install';
 import { usePwaUpdate } from '@hooks/use-pwa-update';
+import { RainColumn, type RainColumnProps } from './RainColumn';
+import { FeatureCard } from './FeatureCard';
 
 const ORIGINAL = 'TUNGSTEN';
 
@@ -50,7 +52,6 @@ const FONTS: { name: string; family: string; note: string }[] = [
 
 function useGlitchText(original: string, active: boolean): string {
   const [display, setDisplay] = useState(original);
-  const frameRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined,
   );
@@ -74,82 +75,11 @@ function useGlitchText(original: string, active: boolean): string {
           })
           .join(''),
       );
-      frameRef.current = frame;
     }, 60);
     return () => clearInterval(intervalRef.current);
   }, [active, original]);
 
   return display;
-}
-
-interface RainColumnProps {
-  x: number;
-  delay: number;
-  speed: number;
-}
-
-function RainColumn({ x, delay, speed }: RainColumnProps) {
-  const [offset, setOffset] = useState(-100);
-  const [columnChars, setColumnChars] = useState(() =>
-    Array.from(
-      { length: 20 },
-      () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)],
-    ),
-  );
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      let pos = -100;
-      const iv = setInterval(() => {
-        pos += speed;
-        if (pos > 110) pos = -100;
-        setOffset(pos);
-        setColumnChars((prev) =>
-          prev.map((c) =>
-            Math.random() > 0.85
-              ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
-              : c,
-          ),
-        );
-      }, 50);
-      return () => clearInterval(iv);
-    }, delay);
-    return () => clearTimeout(t);
-  }, [delay, speed]);
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: `${x}%`,
-        top: `${offset}%`,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '2px',
-        fontFamily: 'var(--font-mono-tech)',
-        fontSize: '12px',
-        lineHeight: '1.4',
-        userSelect: 'none',
-        pointerEvents: 'none',
-      }}
-    >
-      {columnChars.map((c, i) => (
-        <span
-          key={i}
-          style={{
-            color:
-              i === columnChars.length - 1
-                ? '#00ff88'
-                : `rgba(0, ${Math.floor(180 - i * 8)}, ${Math.floor(60 + i * 4)}, ${Math.max(0.05, 0.6 - i * 0.03)})`,
-            textShadow:
-              i === columnChars.length - 1 ? '0 0 8px #00ff88' : 'none',
-          }}
-        >
-          {c}
-        </span>
-      ))}
-    </div>
-  );
 }
 
 type AccentColor =
@@ -162,37 +92,29 @@ type AccentColor =
   | 'fuchsia'
   | 'cyan';
 
-interface StackCardProps {
+function StackCard({
+  icon,
+  name,
+  label,
+  color,
+}: {
   icon: React.ReactNode;
   name: string;
   label: string;
   color: AccentColor;
-}
-
-function StackCard({ icon, name, label, color }: StackCardProps) {
+}) {
   return (
-    <div className={`tg-card tg-stack-card tg-accent-${color}`}>
-      <div className='tg-card-icon'>{icon}</div>
-      <div className={`tg-card-name`}>{name}</div>
-      <div className='tg-card-label'>{label}</div>
-    </div>
-  );
-}
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  color: AccentColor;
-}
-
-function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
-  return (
-    <div className={`tg-card tg-feature-card tg-accent-${color}`}>
-      <div className={`tg-feature-icon-wrap tg-accent-${color}`}>{icon}</div>
-      <div>
-        <div className='tg-feature-title'>{title}</div>
-        <div className='tg-feature-desc'>{description}</div>
+    <div
+      className={`tg-card tg-stack-card tg-accent-${color} relative border border-white/6 rounded-md bg-white/2 overflow-hidden transition-[border-color,box-shadow] duration-200 p-5 flex flex-col items-center text-center gap-2 cursor-default`}
+    >
+      <div className='tg-card-icon transition-transform duration-100'>
+        {icon}
+      </div>
+      <div className='font-mono-tech font-bold text-[15px] tracking-[0.05em] transition-[text-shadow] duration-150'>
+        {name}
+      </div>
+      <div className='tg-card-label font-mono-tech text-[10px] tracking-widest uppercase text-white/30 transition-colors duration-150'>
+        {label}
       </div>
     </div>
   );
@@ -229,14 +151,12 @@ export default function HomePage() {
   const triggerGlitch = (switchFont: boolean) => {
     const duration = 200 + Math.random() * 400;
     setGlitching(true);
-
     if (switchFont) {
       setTimeout(
         () => setActiveFontIndex((cur) => randomOtherFont(cur)),
         duration * 0.4,
       );
     }
-
     const frames = Math.floor(duration / 30);
     let f = 0;
     const iv = setInterval(() => {
@@ -251,7 +171,6 @@ export default function HomePage() {
         setGlitching(false);
       }
     }, 30);
-
     const numBlocks = Math.floor(Math.random() * 5) + 2;
     setBlockGlitch(
       Array.from({ length: numBlocks }, (_, i) => ({
@@ -304,39 +223,44 @@ export default function HomePage() {
     { x: 65, delay: 1100, speed: 1.3 },
   ];
 
-  const textShadowBase = `0 0 20px rgba(0,255,136,0.8), 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,255,136,0.2)`;
+  const textShadowBase = `0 0 20px color-mix(in srgb, var(--color-ring) 80%, transparent), 0 0 40px color-mix(in srgb, var(--color-ring) 40%, transparent), 0 0 80px color-mix(in srgb, var(--color-ring) 20%, transparent)`;
+  const textShadowGlitch = `0 0 30px var(--color-ring), 0 0 60px color-mix(in srgb, var(--color-ring) 60%, transparent), 0 0 100px color-mix(in srgb, var(--color-ring) 30%, transparent)`;
 
   return (
-    <div className='tg-hero'>
+    <div className='relative overflow-hidden flex flex-col items-center justify-center px-10 py-20 min-h-[70vh] bg-transparent max-sm:px-5 max-sm:py-15'>
       <div className='tg-grid-bg' />
+      <div className='tg-scanlines-static' />
+
       <div className='tg-corner tg-corner-tl' />
       <div className='tg-corner tg-corner-tr' />
       <div className='tg-corner tg-corner-bl' />
       <div className='tg-corner tg-corner-br' />
+
       {rainColumns.map((col, i) => (
         <RainColumn key={i} {...col} />
       ))}
+
       <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
-      <div className='tg-scanlines-static' />
+
       {blockGlitch.map((block) => (
         <div
           key={block.id}
-          className='tg-block-glitch'
+          className='absolute left-0 right-0 pointer-events-none z-8 overflow-hidden'
           style={{
             top: `${block.top}%`,
             height: `${block.height}px`,
             transform: `translateX(${block.offset}px)`,
-            background: `rgba(0,255,136,${block.opacity * 0.1})`,
-            boxShadow: `0 0 10px rgba(0,255,136,0.15)`,
+            background: `color-mix(in srgb, var(--color-ring) ${Math.round(block.opacity * 10)}%, transparent)`,
+            boxShadow: `0 0 10px color-mix(in srgb, var(--color-ring) 15%, transparent)`,
           }}
         />
       ))}
 
-      <div className='tg-hero-content'>
+      <div className='relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center'>
         {isAuthenticated && (
           <div className='tg-welcome-badge'>
             {isLoading ? (
-              <div className='my-1 h-4 w-4 border-2 border-t-green-300 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
+              <div className='my-1 h-4 w-4 border-2 border-t-success border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
             ) : (
               <>Welcome back, {user?.fullname || user?.username || 'User'}!</>
             )}
@@ -351,60 +275,58 @@ export default function HomePage() {
           </span>
         )}
 
-        <div className='tg-title-container'>
+        <div className='relative inline-block cursor-default z-10'>
           <div
             className='tg-title-layer tg-title-red'
             aria-hidden='true'
             style={{
               fontFamily: activeFont.family,
-              transform: `translate(${-3 + chromaOffset.x * 0.6}px, ${chromaOffset.y * 0.3}px)`,
+              transform: `translate(${-3 + chromaOffset.x * 0.6}px, ${+2 + chromaOffset.y * 0.3}px)`,
               mixBlendMode: 'screen',
             }}
           >
             {display}
           </div>
-
           <div
             className='tg-title-layer tg-title-blue'
             aria-hidden='true'
             style={{
               fontFamily: activeFont.family,
-              transform: `translate(${3 - chromaOffset.x * 0.6}px, ${-chromaOffset.y * 0.3}px)`,
+              transform: `translate(${3 - chromaOffset.x * 0.6}px, ${-2 - chromaOffset.y * 0.3}px)`,
               mixBlendMode: 'screen',
             }}
           >
             {display}
           </div>
-
           <div
             className='tg-title-main'
             style={{
               fontFamily: activeFont.family,
               transform: `translate(${chromaOffset.x * 0.1}px, ${chromaOffset.y * 0.1}px)`,
-              textShadow: glitching
-                ? `0 0 30px rgba(0,255,136,1), 0 0 60px rgba(0,255,136,0.6), 0 0 100px rgba(0,255,136,0.3)`
-                : textShadowBase,
+              textShadow: glitching ? textShadowGlitch : textShadowBase,
             }}
           >
             {display}
           </div>
-
-          <div
-            className='tg-title-spacer'
-            style={{ fontFamily: activeFont.family }}
-            aria-hidden='true'
-          >
-            {ORIGINAL}
-          </div>
         </div>
 
-        <div className='tg-subtitle'>
-          &gt; personal self-hosted server _ system online
+        <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65'>
+          <div className='glitch' data-text='> personal self-hosted server'>
+            &gt; personal self-hosted server
+          </div>
+
+          <div className='glitch' data-text='> system online'>
+            &gt; system online
+          </div>
+
+          <div className='glitch' data-text='>'>
+            &gt; <span className='cursor font-bold'>_</span>
+          </div>
         </div>
 
         <div className='tg-divider' />
 
-        <div className='tg-stack-grid'>
+        <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full mb-3'>
           <StackCard
             icon={<ReactIcon />}
             name='React'
@@ -472,7 +394,7 @@ export default function HomePage() {
               <Button
                 onClick={install}
                 variant='secondary'
-                className='bg-emerald-600 hover:bg-emerald-500'
+                className='bg-success hover:bg-success/80 text-success-foreground'
               >
                 Install App
               </Button>
@@ -489,7 +411,7 @@ export default function HomePage() {
 
         <div className='tg-divider' />
 
-        <div className='tg-feature-grid'>
+        <div className='grid grid-cols-2 max-sm:grid-cols-1 gap-3 w-full'>
           <FeatureCard
             icon={<StickyNote className='w-6 h-6' />}
             title='Notes'
@@ -519,7 +441,7 @@ export default function HomePage() {
 
       {updateAvailable && (
         <div
-          className='fixed bottom-4 right-4 bg-emerald-600 text-foreground px-4 py-2 rounded shadow-lg cursor-pointer z-50'
+          className='fixed bottom-4 right-4 bg-success text-success-foreground px-4 py-2 rounded shadow-lg cursor-pointer z-50'
           onClick={update}
         >
           New version available - Click to update

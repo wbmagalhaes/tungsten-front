@@ -8,39 +8,26 @@
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(0, 255, 136, 0) 10%,
-    rgba(0, 255, 136, 0.4) 35%,
-    rgba(0, 255, 136, 0.6) 50%,
-    rgba(0, 255, 136, 0.4) 65%,
-    rgba(0, 255, 136, 0) 90%,
+    color-mix(in srgb, var(--color-ring) 0%, transparent) 10%,
+    color-mix(in srgb, var(--color-ring) 40%, transparent) 35%,
+    color-mix(in srgb, var(--color-ring) 60%, transparent) 50%,
+    color-mix(in srgb, var(--color-ring) 40%, transparent) 65%,
+    color-mix(in srgb, var(--color-ring) 0%, transparent) 90%,
     transparent 100%
   );
   pointer-events: none;
 }
 
 .tg-logo:hover .tg-logo-badge {
-  border-color: rgba(0, 255, 136, 0.7);
-  background-color: rgba(0, 255, 136, 0.1);
+  border-color: color-mix(in srgb, var(--color-ring) 70%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--color-ring) 20%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--color-ring) 8%, transparent);
 }
 
 .tg-logo:hover .tg-logo-name {
-  color: rgb(0, 255, 136);
-  text-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
-}
-
-.tg-logo-badge::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 0, 0, 0.18) 2px,
-    rgba(0, 0, 0, 0.18) 4px
-  );
-  pointer-events: none;
-  z-index: 0;
+  color: var(--color-ring);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-ring) 35%, transparent);
 }
 
 .tg-footer::before {
@@ -53,12 +40,16 @@
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(0, 255, 136, 0) 10%,
-    rgba(0, 255, 136, 0.4) 35%,
-    rgba(0, 255, 136, 0.6) 50%,
-    rgba(0, 255, 136, 0.4) 65%,
-    rgba(0, 255, 136, 0) 90%,
+    color-mix(in srgb, var(--color-ring) 0%, transparent) 10%,
+    color-mix(in srgb, var(--color-ring) 40%, transparent) 35%,
+    color-mix(in srgb, var(--color-ring) 60%, transparent) 50%,
+    color-mix(in srgb, var(--color-ring) 40%, transparent) 65%,
+    color-mix(in srgb, var(--color-ring) 0%, transparent) 90%,
     transparent 100%
   );
   pointer-events: none;
+}
+
+.tg-theme-active-dot {
+  box-shadow: 0 0 5px var(--color-ring);
 }
