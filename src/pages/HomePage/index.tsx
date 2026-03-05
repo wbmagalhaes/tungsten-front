@@ -31,13 +31,13 @@ export default function HomePage() {
   return (
     <div className='relative flex flex-col items-center justify-center'>
       <div className='text-sm font-black-ops text-foreground text-shadow-sm text-shadow-ring/50 pointer-events-none'>
-        <span className='absolute top-6 left-7'>
+        <span className='absolute top-6 left-3'>
           <span className='glitch' data-text='74'>
             74
           </span>
         </span>
 
-        <span className='absolute top-6 right-7'>
+        <span className='absolute top-6 right-3'>
           <span className='glitch' data-text='183.84u'>
             183.84u
           </span>
@@ -45,7 +45,7 @@ export default function HomePage() {
       </div>
 
       <div className='text-sm font-vt tracking-wide text-foreground/60 text-shadow-xs text-shadow-ring pointer-events-none'>
-        <span className='absolute top-6 left-14'>
+        <span className='absolute top-6 left-10'>
           <span className='glitch'>
             [Xe] 4f<sup>14</sup> 5d<sup>4</sup> 6s<sup>2</sup>
           </span>
