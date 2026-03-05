@@ -40,7 +40,7 @@ export default function PublicLayout() {
       <PublicHeader />
 
       <div className='relative flex-1 overflow-hidden min-h-full'>
-        <div className='fixed w-screen h-120 mt-12 flex justify-center'>
+        <div className='fixed w-screen h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
           <AsciiCanvas
             src={[
               '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
