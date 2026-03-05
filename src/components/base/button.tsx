@@ -17,7 +17,7 @@ const buttonVariants = cva(
           'bg-destructive/10 text-destructive hover:bg-destructive/30 border border-destructive/30',
         link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
         glitch:
-          'group relative text-ring hover:text-ring/80 overflow-hidden transition-all duration-150 underline-offset-4 hover:underline',
+          'group relative text-ring hover:text-ring/80 overflow-hidden transition-all duration-150 underline-offset-2 hover:underline',
       },
       size: {
         default: 'h-10 px-4 py-2 gap-2 [&_svg:not([class*="size-"])]:size-4',
