@@ -77,7 +77,7 @@
 
 .tg-title-layer {
   font-weight: 900;
-  font-size: clamp(64px, 12vw, 120px);
+  font-size: clamp(48px, 10vw, 120px);
   letter-spacing: 0.08em;
   line-height: 1;
   position: absolute;
@@ -99,7 +99,7 @@
   color: var(--color-ring);
   position: relative;
   font-weight: 900;
-  font-size: clamp(64px, 12vw, 120px);
+  font-size: clamp(48px, 10vw, 120px);
   letter-spacing: 0.08em;
   line-height: 1;
   white-space: nowrap;
