@@ -44,6 +44,7 @@
 }
 
 .tg-corner {
+  position: absolute;
   width: 32px;
   height: 32px;
   border-color: color-mix(in srgb, var(--color-ring) 25%, transparent);
@@ -52,14 +53,12 @@
 }
 
 .tg-corner-tl {
-  position: fixed;
   top: calc(64px + 16px);
   left: 16px;
   border-width: 1px 0 0 1px;
 }
 
 .tg-corner-tr {
-  position: fixed;
   top: calc(64px + 16px);
   right: 16px;
   border-width: 1px 1px 0 0;

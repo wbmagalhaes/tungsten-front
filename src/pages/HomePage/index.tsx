@@ -147,21 +147,24 @@ export default function HomePage() {
   return (
     <div className='flex flex-col items-center justify-center mt-8'>
       {isAuthenticated && (
-        <div className='font-mono-tech font-semibold uppercase tracking-widest text-sm text-ring border border-ring/30 px-4 py-1 rounded-sm bg-ring/5'>
+        <div className='font-mono-tech font-semibold uppercase tracking-widest text-xs sm:text-sm text-ring border border-ring/30 px-3 sm:px-4 py-1 rounded-sm bg-ring/5 w-full sm:w-auto text-center'>
+          <span className='hidden sm:inline tracking-widest'>--- </span>
+          <span>Welcome back, </span>
           <LoadingShuffle
             isLoading={isLoading}
-            target={`--- Welcome back, ${user?.fullname || user?.username || 'User'}! ---`}
+            target={`${user?.fullname || user?.username || 'username'}!`}
             speed={15}
           />
+          <span className='hidden sm:inline tracking-widest'> ---</span>
         </div>
       )}
 
       {isAuthenticated && (
-        <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mb-8'>
+        <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mb-12 mt-2 text-center'>
           Want to login with another account?{' '}
           <ButtonLink
             variant='glitch'
-            className='text-xs tracking-widest uppercase p-0'
+            className='text-xs tracking-widest uppercase p-0 h-auto'
             to='/login'
           >
             Click here
