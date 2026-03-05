@@ -9,6 +9,10 @@ import CloudflareIcon from '@components/Icons/CloudflareIcon';
 import NginxIcon from '@components/Icons/NginxIcon';
 import ReactIcon from '@components/Icons/ReactIcon';
 import RustIcon from '@components/Icons/RustIcon';
+import TypeScriptIcon from '@components/Icons/TypeScriptIcon';
+import SQLiteIcon from '@components/Icons/SQLiteIcon';
+import TailwindIcon from '@components/Icons/TailwindIcon';
+import ViteIcon from '@components/Icons/ViteIcon';
 import { Button, ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
@@ -246,10 +250,16 @@ export default function HomePage() {
 
         <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full'>
           <StackCard
-            icon={<ReactIcon />}
-            title='React'
-            description='Frontend'
-            color='blue'
+            icon={<RustIcon />}
+            title='Rust'
+            description='Backend'
+            color='orange'
+          />
+          <StackCard
+            icon={<SQLiteIcon />}
+            title='SQLite'
+            description='Database'
+            color='yellow'
           />
           <StackCard
             icon={<NginxIcon />}
@@ -258,16 +268,34 @@ export default function HomePage() {
             color='green'
           />
           <StackCard
-            icon={<RustIcon />}
-            title='Rust'
-            description='Backend'
-            color='orange'
-          />
-          <StackCard
             icon={<CloudflareIcon />}
             title='Cloudflare'
             description='Tunnel'
             color='purple'
+          />
+          <StackCard
+            icon={<TypeScriptIcon />}
+            title='TypeScript'
+            description='Frontend'
+            color='cyan'
+          />
+          <StackCard
+            icon={<ReactIcon />}
+            title='React'
+            description='UI'
+            color='blue'
+          />
+          <StackCard
+            icon={<ViteIcon />}
+            title='Vite'
+            description='Build'
+            color='violet'
+          />
+          <StackCard
+            icon={<TailwindIcon />}
+            title='Tailwind'
+            description='Styles'
+            color='fuchsia'
           />
         </div>
 
