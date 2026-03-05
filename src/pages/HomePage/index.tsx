@@ -53,31 +53,33 @@ export default function HomePage() {
       </div>
 
       <div className='flex flex-col items-center justify-center'>
-        {isAuthenticated && (
-          <div className='flex flex-col items-center justify-center pt-18 md:pt-32 px-4 md:px-0'>
-            <div className='font-mono-tech font-semibold uppercase tracking-widest text-xs sm:text-sm text-ring border border-ring/30 px-3 sm:px-4 py-0.5 rounded-sm bg-ring/5 max-w-full w-auto text-center'>
-              <span className='hidden sm:inline tracking-widest'>--- </span>
-              <span>Welcome back, </span>
-              <LoadingShuffle
-                isLoading={isLoading}
-                target={`${user?.fullname || user?.username || 'username'}`}
-                speed={15}
-              />
-              <span className='hidden sm:inline tracking-widest'> ---</span>
-            </div>
+        <div className='flex flex-col items-center justify-center pt-18 md:pt-32 px-4 md:px-0'>
+          {isAuthenticated && (
+            <>
+              <div className='font-mono-tech font-semibold uppercase tracking-widest text-xs sm:text-sm text-ring border border-ring/30 px-3 sm:px-4 py-0.5 rounded-sm bg-ring/5 max-w-full w-auto text-center'>
+                <span className='hidden sm:inline tracking-widest'>--- </span>
+                <span>Welcome back, </span>
+                <LoadingShuffle
+                  isLoading={isLoading}
+                  target={`${user?.fullname || user?.username || 'username'}`}
+                  speed={15}
+                />
+                <span className='hidden sm:inline tracking-widest'> ---</span>
+              </div>
 
-            <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mt-2 text-center'>
-              Want to login with another account?{' '}
-              <ButtonLink
-                variant='glitch'
-                className='text-xs tracking-widest uppercase p-0 h-auto'
-                to='/login'
-              >
-                Click here
-              </ButtonLink>
-            </span>
-          </div>
-        )}
+              <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mt-2 text-center'>
+                Want to login with another account?{' '}
+                <ButtonLink
+                  variant='glitch'
+                  className='text-xs tracking-widest uppercase p-0 h-auto'
+                  to='/login'
+                >
+                  Click here
+                </ButtonLink>
+              </span>
+            </>
+          )}
+        </div>
 
         <div className='grid place-items-center w-screen my-12 md:my-8'>
           <MainHeader />

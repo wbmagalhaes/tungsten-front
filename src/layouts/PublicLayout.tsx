@@ -77,13 +77,13 @@ function PublicHeader() {
           ) : (
             <>
               <ButtonLink
-                className='hidden sm:inline-flex min-w-24'
+                className='min-w-24'
                 to='/login'
               >
                 Login
               </ButtonLink>
               <ButtonLink
-                className='min-w-24'
+                className='hidden sm:inline-flex min-w-24'
                 variant='secondary'
                 to='/register'
               >
