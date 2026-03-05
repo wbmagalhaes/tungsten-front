@@ -7,6 +7,7 @@ import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
 import { RainColumn, type RainColumnProps } from '@components/RainColumn';
 import { ShuffleText } from '@components/ShuffleText';
+import { AsciiCanvas } from '@components/AtomParticle';
 
 export default function PublicLayout() {
   const [scanlinePos, setScanlinePos] = useState(-10);
@@ -39,6 +40,22 @@ export default function PublicLayout() {
       <PublicHeader />
 
       <div className='relative flex-1 overflow-hidden min-h-full'>
+        <div className='fixed w-screen h-120 mt-12 flex justify-center'>
+          <AsciiCanvas
+            src={[
+              '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
+              '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
+            ]}
+            cols={90}
+            rows={45}
+            fontSize={11}
+            opacity={0.33}
+            dither={0.3}
+            blackThreshold={70}
+            speed={9}
+          />
+        </div>
+
         <div className='absolute inset-0 pointer-events-none'>
           <div className='tg-grid-bg' />
           <div className='tg-scanlines-static' />
@@ -76,10 +93,7 @@ function PublicHeader() {
             <ButtonLink to='/root'>Access Console</ButtonLink>
           ) : (
             <>
-              <ButtonLink
-                className='min-w-24'
-                to='/login'
-              >
+              <ButtonLink className='min-w-24' to='/login'>
                 Login
               </ButtonLink>
               <ButtonLink
