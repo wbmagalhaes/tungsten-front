@@ -70,5 +70,9 @@ export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
     };
   }, [isLoading, target, speed, n]);
 
-  return <span>{display.join('')}</span>;
+  return (
+    <span className='inline-block' style={{ minWidth: `${target.length}ch` }}>
+      {display.join('')}
+    </span>
+  );
 }
