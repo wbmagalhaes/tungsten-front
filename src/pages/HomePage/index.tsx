@@ -18,10 +18,10 @@ import { FeatureCard } from './FeatureCard';
 import { StackCard } from './StackCard';
 import { LoadingShuffle } from '@components/LoadingShuffle';
 
-const ORIGINAL = 'TUNGSTEN';
-
 const GLITCH_CHARS =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789';
+  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+const ORIGINAL = 'TUNGSTEN';
 
 const FONTS: { name: string; family: string; note: string }[] = [
   { name: 'Orbitron', family: 'var(--font-cyber)', note: 'Geométrico, sci-fi' },
@@ -145,13 +145,13 @@ export default function HomePage() {
   const textShadowGlitch = `0 0 30px var(--color-ring), 0 0 60px color-mix(in srgb, var(--color-ring) 60%, transparent), 0 0 100px color-mix(in srgb, var(--color-ring) 30%, transparent)`;
 
   return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='flex flex-col items-center justify-center mt-8'>
       {isAuthenticated && (
-        <div className='font-mono-tech uppercase tracking-widest text-sm text-ring/80 border border-ring/20 px-4 py-1 rounded-sm bg-ring/5'>
+        <div className='font-mono-tech font-semibold uppercase tracking-widest text-sm text-ring border border-ring/30 px-4 py-1 rounded-sm bg-ring/5'>
           <LoadingShuffle
             isLoading={isLoading}
             target={`--- Welcome back, ${user?.fullname || user?.username || 'User'}! ---`}
-            speed={20}
+            speed={15}
           />
         </div>
       )}
@@ -161,7 +161,7 @@ export default function HomePage() {
           Want to login with another account?{' '}
           <ButtonLink
             variant='glitch'
-            className='font-raj text-xs tracking-widest uppercase p-0'
+            className='text-xs tracking-widest uppercase p-0'
             to='/login'
           >
             Click here

@@ -6,6 +6,7 @@ import { useAuthStore } from '@stores/useAuthStore';
 import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
 import { RainColumn, type RainColumnProps } from '@pages/HomePage/RainColumn';
+import { ShuffleText } from '@components/ShuffleText';
 
 export default function PublicLayout() {
   const [scanlinePos, setScanlinePos] = useState(-10);
@@ -99,8 +100,14 @@ function PublicHeader() {
 }
 
 function TgLogo() {
+  const [hover, setHover] = useState(false);
+
   return (
-    <div className='tg-logo flex items-center gap-3 cursor-pointer select-none'>
+    <div
+      className='tg-logo flex items-center gap-3 cursor-pointer select-none'
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
       <div className='tg-logo-badge relative w-9 h-9 border border-ring/35 rounded-sm flex items-center justify-center bg-ring/6 overflow-hidden transition-all duration-200'>
         <span className='tg-logo-w relative z-10 font-cyber text-base font-black text-ring leading-none'>
           W
@@ -109,8 +116,13 @@ function TgLogo() {
           74
         </span>
       </div>
-      <span className='tg-logo-name font-mono-tech text-base tracking-[0.25em] uppercase text-ring/70 transition-all duration-200'>
-        Tungsten
+      <span className='tg-logo-name font-mono-tech font-bold text-base tracking-widest uppercase text-ring/70 transition-all duration-200'>
+        <ShuffleText
+          text='TUNGSTEN'
+          active={hover}
+          speed={15}
+          settleDelay={250}
+        />
       </span>
     </div>
   );
@@ -121,9 +133,9 @@ function PublicFooter() {
 
   return (
     <footer className='tg-footer relative w-full border-t border-ring/8'>
-      <div className='tg-footer-inner w-full max-w-7xl mx-auto px-6 py-3 flex items-center relative gap-4'>
-        <p className='font-mono-tech text-xs tracking-widest uppercase text-ring/75 shrink-0'>
-          &copy; 2026 - tungsten
+      <div className='tg-footer-inner w-full max-w-7xl mx-auto px-6 py-3 flex flex-wrap-reverse items-center relative gap-4'>
+        <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
+          &copy; 2026 - tungsten:v0.1.45.9f32a_unstable
         </p>
 
         <div className='flex items-center gap-1.5 ml-auto mr-2'>
@@ -139,19 +151,10 @@ function PublicFooter() {
                   'tg-theme-btn relative flex items-center gap-1 px-2 py-1 rounded-sm border transition-all duration-150',
                   'font-mono-tech text-xs tracking-widest uppercase',
                   isActive
-                    ? 'border-ring/50 bg-ring/[0.07] text-ring/80'
+                    ? 'border-ring/50 bg-ring/5 text-ring/80'
                     : 'border-white/6 bg-transparent text-white/20 hover:border-ring/25 hover:text-ring/45',
                 ].join(' ')}
               >
-                <span
-                  className='w-1.5 h-1.5 rounded-full shrink-0 hidden sm:inline'
-                  style={{ background: meta.primary }}
-                />
-                <span
-                  className='w-1.5 h-1.5 rounded-full shrink-0 hidden sm:inline'
-                  style={{ background: meta.accent }}
-                />
-
                 <span>{meta.label}</span>
 
                 {isActive && (
@@ -161,10 +164,6 @@ function PublicFooter() {
             );
           })}
         </div>
-
-        <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
-          v0.1.9f32a_unstable
-        </p>
       </div>
     </footer>
   );

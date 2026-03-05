@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-const CHARS = '!@#$%^&*<>[]{}|\\/?~`ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const CHARS =
+  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 interface Props {
   target: string;

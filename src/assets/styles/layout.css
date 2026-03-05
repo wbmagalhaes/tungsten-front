@@ -20,9 +20,7 @@
 
 .tg-logo:hover .tg-logo-badge {
   border-color: color-mix(in srgb, var(--color-ring) 70%, transparent);
-  box-shadow:
-    0 0 18px color-mix(in srgb, var(--color-ring) 20%, transparent),
-    inset 0 0 10px color-mix(in srgb, var(--color-ring) 8%, transparent);
+  background-color: color-mix(in srgb, var(--color-ring) 10%, transparent);
 }
 
 .tg-logo:hover .tg-logo-name {
