@@ -252,10 +252,12 @@
   box-shadow:
     0 0 20px var(--tg-glow),
     inset 0 0 24px var(--tg-glow);
+  background-color: color-mix(in srgb, var(--tg-accent) 10%, transparent);
 }
 
 .tg-feature-card:hover .tg-feature-icon-wrap {
   box-shadow: 0 0 14px var(--tg-glow);
+  background-color: color-mix(in srgb, var(--tg-accent) 25%, transparent);
   animation: tg-icon-border-glitch 0.35s steps(1) 1;
 }
 
