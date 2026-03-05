@@ -85,8 +85,8 @@ export default function HomePage() {
           <MainHeader />
         </div>
 
-        <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 md:px-0'>
-          <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none mb-8'>
+        <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 md:px-0 mt-6 md:mt-12'>
+          <div className='flex flex-col gap-2 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none mb-6 md:mb-12'>
             <div className='glitch' data-text='> personal self-hosted server'>
               &gt; personal self-hosted server
             </div>
