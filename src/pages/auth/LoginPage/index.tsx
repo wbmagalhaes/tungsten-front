@@ -3,7 +3,7 @@ import LoginForm from './LoginForm';
 
 export default function LoginPage() {
   return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='flex flex-col items-center justify-center mt-16'>
       <div className='w-full max-w-md space-y-4'>
         <LoginForm />
 

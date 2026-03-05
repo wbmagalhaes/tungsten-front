@@ -38,7 +38,7 @@ export default function PublicLayout() {
     <div className='flex flex-col min-h-screen'>
       <PublicHeader />
 
-      <div className='relative flex-1 overflow-hidden'>
+      <div className='relative flex-1 overflow-hidden min-h-full'>
         <div className='absolute inset-0 pointer-events-none'>
           <div className='tg-grid-bg' />
           <div className='tg-scanlines-static' />
@@ -50,10 +50,8 @@ export default function PublicLayout() {
 
         <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
 
-        <main className='relative mt-16 w-full'>
-          <div className='container px-12 py-20 mx-auto'>
-            <Outlet />
-          </div>
+        <main className='relative mt-22 mb-8'>
+          <Outlet />
         </main>
 
         <div className='tg-corner tg-corner-tl' />

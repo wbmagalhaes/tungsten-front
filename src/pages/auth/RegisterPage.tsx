@@ -46,7 +46,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='flex flex-col items-center justify-center mt-16'>
       <div className='w-full max-w-xl space-y-4'>
         <Card>
           <CardContent className='p-6'>
