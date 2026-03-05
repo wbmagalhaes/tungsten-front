@@ -163,7 +163,7 @@ function PublicFooter() {
         </div>
 
         <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
-          v0.1.0_stable
+          v0.1.9f32a_unstable
         </p>
       </div>
     </footer>

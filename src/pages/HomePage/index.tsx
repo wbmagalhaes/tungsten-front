@@ -91,7 +91,7 @@ export default function HomePage() {
 
   const { isAuthenticated } = useAuthStore();
   const { data: user, isLoading } = useGetProfile();
-  const { canInstall, install, needsInstructions } = usePwaInstall();
+  const { canInstall, install } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
 
   const randomOtherFont = (current: number) => {
@@ -151,6 +151,7 @@ export default function HomePage() {
           <LoadingShuffle
             isLoading={isLoading}
             target={`--- Welcome back, ${user?.fullname || user?.username || 'User'}! ---`}
+            speed={20}
           />
         </div>
       )}
@@ -242,7 +243,7 @@ export default function HomePage() {
 
         <div className='tg-divider' />
 
-        <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full mb-3'>
+        <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full'>
           <StackCard
             icon={<ReactIcon />}
             name='React'
@@ -271,7 +272,7 @@ export default function HomePage() {
 
         <div className='tg-divider' />
 
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mb-4'>
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md'>
           {isAuthenticated ? (
             <>
               <ButtonLink to='/root' size='lg' className='w-full sm:w-48'>
@@ -314,13 +315,6 @@ export default function HomePage() {
               >
                 Install App
               </Button>
-            )}
-            {needsInstructions && (
-              <div className='font-mono-tech text-xs tracking-widest uppercase text-muted-foreground/70 text-center border border-white/10 px-3 py-2 rounded-sm bg-white/2'>
-                iOS: Share {'->'} Add to Home Screen
-                <br />
-                Firefox: Browser menu {'->'} Add to Home Screen
-              </div>
             )}
           </div>
         )}

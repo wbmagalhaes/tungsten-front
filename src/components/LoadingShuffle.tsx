@@ -12,72 +12,61 @@ function randomChar() {
   return CHARS[Math.floor(Math.random() * CHARS.length)];
 }
 
+function randomArray(n: number) {
+  return Array.from({ length: n }, randomChar);
+}
+
 export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
   const n = target.length;
 
-  const [display, setDisplay] = useState<string[]>(() =>
-    Array.from({ length: n }, randomChar),
-  );
+  const [display, setDisplay] = useState<string[]>(() => randomArray(n));
 
-  const revealed = useRef<Set<number>>(new Set());
-
-  useEffect(() => {
-    revealed.current.clear();
-    setDisplay(Array.from({ length: n }, randomChar));
-  }, [target, n]);
+  const progress = useRef(0);
+  const timer = useRef<number | null>(null);
+  const lastTarget = useRef(target);
 
   useEffect(() => {
-    const iv = setInterval(() => {
+    function tick() {
       setDisplay((prev) => {
-        const next = [...prev];
+        let next = [...prev];
+
+        if (lastTarget.current !== target) {
+          lastTarget.current = target;
+          progress.current = 0;
+          next = randomArray(n);
+        }
 
         if (isLoading) {
-          const swaps = Math.max(1, Math.floor(n * (speed / 100)));
-
-          for (let i = 0; i < swaps; i++) {
-            const idx = Math.floor(Math.random() * n);
-            if (!revealed.current.has(idx)) {
-              next[idx] = randomChar();
-            }
+          for (let i = 0; i < n; i++) {
+            if (target[i] !== ' ') next[i] = randomChar();
           }
-
           return next;
         }
 
-        const remaining: number[] = [];
+        const revealStep = Math.max(1, Math.floor(speed / 15));
+        progress.current = Math.min(n, progress.current + revealStep);
+
+        const p = progress.current;
 
         for (let i = 0; i < n; i++) {
-          if (!revealed.current.has(i)) remaining.push(i);
-        }
-
-        if (remaining.length <= 4) {
-          revealed.current = new Set(Array.from({ length: n }, (_, i) => i));
-          return target.split('');
-        }
-
-        const revealsPerFrame = 2 + Math.floor(Math.random() * 3);
-
-        for (let r = 0; r < revealsPerFrame; r++) {
-          if (remaining.length === 0) break;
-
-          const idx = Math.floor(Math.random() * remaining.length);
-          const pick = remaining.splice(idx, 1)[0];
-
-          revealed.current.add(pick);
-          next[pick] = target[pick];
-        }
-
-        for (let i = 0; i < n; i++) {
-          if (!revealed.current.has(i) && target[i] !== ' ') {
+          if (i < p) {
+            next[i] = target[i];
+          } else if (target[i] !== ' ') {
             next[i] = randomChar();
           }
         }
 
         return next;
       });
-    }, 40);
 
-    return () => clearInterval(iv);
+      timer.current = window.setTimeout(tick, 900 / speed);
+    }
+
+    tick();
+
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
   }, [isLoading, target, speed, n]);
 
   return <span>{display.join('')}</span>;
