@@ -50,7 +50,7 @@ export default function PublicLayout() {
 
         <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
 
-        <main className='relative mt-22 mb-8'>
+        <main className='relative mt-16 mb-8'>
           <Outlet />
         </main>
 

@@ -43,7 +43,7 @@ export default function HelpPage() {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center mt-16'>
+    <div className='flex flex-col items-center justify-center pt-16'>
       <div className='max-w-4xl mx-auto text-center'>
         <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
           Help Center

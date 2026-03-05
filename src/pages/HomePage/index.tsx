@@ -151,13 +151,13 @@ export default function HomePage() {
   return (
     <div className='relative flex flex-col items-center justify-center'>
       <div className='text-sm font-black-ops text-foreground text-shadow-sm text-shadow-ring/50 pointer-events-none'>
-        <span className='absolute top-0 left-7'>
+        <span className='absolute top-6 left-7'>
           <span className='glitch' data-text='74'>
             74
           </span>
         </span>
 
-        <span className='absolute top-0 right-7'>
+        <span className='absolute top-6 right-7'>
           <span className='glitch' data-text='183.84u'>
             183.84u
           </span>
@@ -165,17 +165,17 @@ export default function HomePage() {
       </div>
 
       <div className='text-sm font-vt tracking-wide text-foreground/60 text-shadow-xs text-shadow-ring pointer-events-none'>
-        <span className='absolute top-px left-14'>
+        <span className='absolute top-6 left-14'>
           <span className='glitch'>
             [Xe] 4f<sup>14</sup> 5d<sup>4</sup> 6s<sup>2</sup>
           </span>
         </span>
       </div>
 
-      <div className='flex flex-col items-center justify-center px-4'>
-        <div className='flex flex-col items-center justify-center mt-20'>
+      <div className='flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center pt-18 md:pt-32 px-4 md:px-0'>
           {isAuthenticated && (
-            <div className='font-mono-tech font-semibold uppercase tracking-widest text-xs sm:text-sm text-ring border border-ring/30 px-3 sm:px-4 py-0.5 rounded-sm bg-ring/5 w-full sm:w-auto text-center'>
+            <div className='font-mono-tech font-semibold uppercase tracking-widest text-xs sm:text-sm text-ring border border-ring/30 px-3 sm:px-4 py-0.5 rounded-sm bg-ring/5 max-w-full w-auto text-center'>
               <span className='hidden sm:inline tracking-widest'>--- </span>
               <span>Welcome back, </span>
               <LoadingShuffle
@@ -199,7 +199,9 @@ export default function HomePage() {
               </ButtonLink>
             </span>
           )}
+        </div>
 
+        <div className='grid place-items-center w-screen'>
           <div className='relative inline-block cursor-default z-10 select-none'>
             <div
               className='tg-title-layer tg-title-red'
@@ -258,7 +260,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className='w-full max-w-4xl mx-auto flex flex-col items-center'>
+        <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 md:px-0'>
           <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none mb-8'>
             <div className='glitch' data-text='> personal self-hosted server'>
               &gt; personal self-hosted server
