@@ -15,7 +15,7 @@ const buttonVariants = cva(
         ghost: 'hover:bg-muted text-secondary-foreground',
         destructive:
           'bg-destructive/10 text-destructive hover:bg-destructive/30 border border-destructive/30',
-        link: 'text-blue-400 underline-offset-4 hover:text-blue-300 hover:underline',
+        link: 'text-ring-400 underline-offset-2 hover:text-ring-300 hover:underline',
         glitch:
           'group relative text-ring hover:text-ring/80 overflow-hidden transition-all duration-150 underline-offset-2 hover:underline',
       },
