@@ -230,7 +230,7 @@ export default function HomePage() {
       </div>
 
       <div className='w-full max-w-4xl mx-auto flex flex-col items-center'>
-        <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none'>
+        <div className='flex flex-col gap-2 mt-12 text-xs font-mono-tech uppercase tracking-[0.35em] text-ring/65 select-none mb-8'>
           <div className='glitch' data-text='> personal self-hosted server'>
             &gt; personal self-hosted server
           </div>
@@ -243,8 +243,6 @@ export default function HomePage() {
             &gt; <span className='cursor font-bold'>_</span>
           </div>
         </div>
-
-        <div className='tg-divider' />
 
         <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full'>
           <StackCard

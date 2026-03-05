@@ -4,7 +4,7 @@ import { cn } from '@utils/cn';
 import { Link } from 'react-router-dom';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none outline-none cursor-pointer',
+  'group inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none outline-none cursor-pointer',
   {
     variants: {
       variant: {
@@ -39,6 +39,7 @@ function Button({
   className,
   variant,
   size,
+  children,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (
@@ -46,7 +47,9 @@ function Button({
       data-slot='button'
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {variant === 'glitch' ? <GlitchText>{children}</GlitchText> : children}
+    </ButtonPrimitive>
   );
 }
 
