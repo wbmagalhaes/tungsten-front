@@ -5,7 +5,7 @@ import { ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
-import { RainColumn, type RainColumnProps } from '@pages/HomePage/RainColumn';
+import { RainColumn, type RainColumnProps } from '@components/RainColumn';
 import { ShuffleText } from '@components/ShuffleText';
 
 export default function PublicLayout() {
@@ -152,7 +152,7 @@ function PublicFooter() {
                   'font-mono-tech text-xs tracking-widest uppercase',
                   isActive
                     ? 'border-ring/50 bg-ring/5 text-ring/80'
-                    : 'border-white/6 bg-transparent text-white/20 hover:border-ring/25 hover:text-ring/45',
+                    : 'border-foreground/6 bg-transparent text-foreground/20 hover:border-ring/25 hover:text-ring/45',
                 ].join(' ')}
               >
                 <span>{meta.label}</span>

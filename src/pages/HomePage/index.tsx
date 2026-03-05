@@ -246,26 +246,26 @@ export default function HomePage() {
         <div className='grid grid-cols-4 max-sm:grid-cols-2 gap-3 w-full'>
           <StackCard
             icon={<ReactIcon />}
-            name='React'
-            label='Frontend'
+            title='React'
+            description='Frontend'
             color='blue'
           />
           <StackCard
             icon={<NginxIcon />}
-            name='Nginx'
-            label='Proxy'
+            title='Nginx'
+            description='Proxy'
             color='green'
           />
           <StackCard
             icon={<RustIcon />}
-            name='Rust'
-            label='Backend'
+            title='Rust'
+            description='Backend'
             color='orange'
           />
           <StackCard
             icon={<CloudflareIcon />}
-            name='Cloudflare'
-            label='Tunnel'
+            title='Cloudflare'
+            description='Tunnel'
             color='purple'
           />
         </div>
