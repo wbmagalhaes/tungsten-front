@@ -45,14 +45,14 @@ export default function PublicLayout() {
             config={[
               {
                 src: '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
-                opacity: 0.6,
+                opacity: 0.5,
                 dither: 0.3,
                 blackThreshold: 70,
                 speed: 9,
               },
               {
                 src: '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
-                opacity: 0.3,
+                opacity: 0.4,
                 dither: 0.2,
                 blackThreshold: 60,
                 speed: 4,

@@ -315,8 +315,8 @@ export function AsciiCanvas({
       const { data } = imageData;
 
       const mainCache = alphaCacheRef.current;
-      const redCache = glitchRedCacheRef.current;
-      const blueCache = glitchBlueCacheRef.current;
+      // const redCache = glitchRedCacheRef.current;
+      // const blueCache = glitchBlueCacheRef.current;
 
       canvas.style.opacity = String(cfg.opacity!);
 
@@ -325,27 +325,6 @@ export function AsciiCanvas({
       ctx.textBaseline = 'top';
 
       if (isGlitching) {
-        const shift = charW * (1 + Math.random() * 1.5);
-        ctx.globalCompositeOperation = 'screen';
-        drawPass(
-          ctx,
-          data,
-          true,
-          redCache,
-          -shift,
-          cfg.blackThreshold!,
-          cfg.dither!,
-        );
-        drawPass(
-          ctx,
-          data,
-          true,
-          blueCache,
-          shift,
-          cfg.blackThreshold!,
-          cfg.dither!,
-        );
-        ctx.globalCompositeOperation = 'source-over';
         drawPass(
           ctx,
           data,
@@ -406,7 +385,7 @@ export function AsciiCanvas({
               glitchRef.current = false;
               scheduleGlitch();
             },
-            250 + Math.random() * 500,
+            100 + Math.random() * 200,
           );
         },
         3000 + Math.random() * 7000,
