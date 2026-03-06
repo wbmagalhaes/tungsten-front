@@ -318,7 +318,6 @@ export function AsciiCanvas({
       const redCache = glitchRedCacheRef.current;
       const blueCache = glitchBlueCacheRef.current;
 
-      // Per-src opacity applied directly on the canvas element
       canvas.style.opacity = String(cfg.opacity!);
 
       ctx.clearRect(0, 0, canvasW, canvasH);
