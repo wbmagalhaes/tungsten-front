@@ -40,19 +40,27 @@ export default function PublicLayout() {
       <PublicHeader />
 
       <div className='relative flex-1 overflow-hidden min-h-full'>
-        <div className='fixed w-screen h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
+        <div className='absolute w-screen h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
           <AsciiCanvas
-            src={[
-              '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
-              '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
+            config={[
+              {
+                src: '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
+                opacity: 0.6,
+                dither: 0.3,
+                blackThreshold: 70,
+                speed: 9,
+              },
+              {
+                src: '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
+                opacity: 0.3,
+                dither: 0.2,
+                blackThreshold: 60,
+                speed: 4,
+              },
             ]}
+            fontSize={12}
             cols={90}
             rows={45}
-            fontSize={11}
-            opacity={0.33}
-            dither={0.3}
-            blackThreshold={70}
-            speed={9}
           />
         </div>
 
