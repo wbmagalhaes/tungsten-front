@@ -39,11 +39,13 @@ echo "[Post-Receive] Receiving push..."
 mkdir -p "$WORK_DIR"
 git --work-tree="$WORK_DIR" --git-dir="$REPO_DIR" checkout -f main
 
+GIT_HASH=$(git --git-dir="$REPO_DIR" rev-parse --short HEAD)
+
 chmod +x "$DEPLOY_SCRIPT"
 
 echo "[Post-Receive] Running deploy script..."
 cd "$WORK_DIR"
-"$DEPLOY_SCRIPT"
+"$DEPLOY_SCRIPT" "$GIT_HASH"
 
 echo "[Post-Receive] Deploy Finished."
 EOF

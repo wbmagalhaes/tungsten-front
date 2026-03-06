@@ -8,7 +8,7 @@ echo "[Deploy] Installing deps..."
 npm install
 
 echo "[Deploy] Building..."
-npm run build
+GIT_HASH="${1:-unknown}" npm run build
 
 echo "[Deploy] Moving dist..."
 rm -rf "$FRONT_DIR/dist"

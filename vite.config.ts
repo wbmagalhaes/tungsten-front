@@ -124,7 +124,9 @@ function buildVersionPlugin() {
 
       let hash = 'unknown';
       try {
-        hash = execSync('git rev-parse --short HEAD').toString().trim();
+        hash =
+          process.env.GIT_HASH ??
+          execSync('git rev-parse --short HEAD').toString().trim();
       } catch {
         /* not a git repo */
       }
