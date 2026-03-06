@@ -158,6 +158,7 @@ function PublicFooter() {
         <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
           &copy; 2026 - tungsten:{BUILD_VERSION}
         </p>
+
         <div className='flex items-center gap-1.5 ml-auto mr-2'>
           {THEMES.map((t) => {
             const meta = THEME_META[t];
