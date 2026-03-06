@@ -1,5 +1,6 @@
 import '@styles/hero.css';
 import '@styles/layout.css';
+import { BUILD_VERSION } from '@lib/version';
 import { useEffect, useState } from 'react';
 import { ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
@@ -155,9 +156,8 @@ function PublicFooter() {
     <footer className='tg-footer relative w-full border-t border-ring/8'>
       <div className='tg-footer-inner w-full max-w-7xl mx-auto px-6 py-3 flex flex-wrap-reverse items-center relative gap-4'>
         <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
-          &copy; 2026 - tungsten:v0.1.45.9f32a_unstable
+          &copy; 2026 - tungsten:{BUILD_VERSION}
         </p>
-
         <div className='flex items-center gap-1.5 ml-auto mr-2'>
           {THEMES.map((t) => {
             const meta = THEME_META[t];
@@ -176,7 +176,6 @@ function PublicFooter() {
                 ].join(' ')}
               >
                 <span>{meta.label}</span>
-
                 {isActive && (
                   <span className='tg-theme-active-dot absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-ring' />
                 )}
