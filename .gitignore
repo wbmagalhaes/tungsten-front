@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+.build-count
+lib/version.ts
