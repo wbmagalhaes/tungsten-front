@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-
-const CHARS =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§ΔΩΨλπ';
-
-function randomChar() {
-  return CHARS[Math.floor(Math.random() * CHARS.length)];
-}
+import { randomGlitchChar } from '@utils/ascii-pallet';
 
 interface ShuffleTextProps {
   text: string;
@@ -49,7 +43,7 @@ export function ShuffleText({
 
           for (let i = 0; i < swaps; i++) {
             const idx = Math.floor(Math.random() * n);
-            if (text[idx] !== ' ') next[idx] = randomChar();
+            if (text[idx] !== ' ') next[idx] = randomGlitchChar();
           }
 
           return next;
@@ -62,7 +56,7 @@ export function ShuffleText({
           if (i < p) {
             next[i] = text[i];
           } else if (text[i] !== ' ') {
-            next[i] = randomChar();
+            next[i] = randomGlitchChar();
           }
         }
 

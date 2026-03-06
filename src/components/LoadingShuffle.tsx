@@ -1,7 +1,5 @@
+import { randomGlitchChar, randomGlitchArray } from '@utils/ascii-pallet';
 import { useEffect, useRef, useState } from 'react';
-
-const CHARS =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§ΔΩΨλπ';
 
 interface Props {
   target: string;
@@ -9,18 +7,10 @@ interface Props {
   speed?: number;
 }
 
-function randomChar() {
-  return CHARS[Math.floor(Math.random() * CHARS.length)];
-}
-
-function randomArray(n: number) {
-  return Array.from({ length: n }, randomChar);
-}
-
 export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
   const n = target.length;
 
-  const [display, setDisplay] = useState<string[]>(() => randomArray(n));
+  const [display, setDisplay] = useState<string[]>(() => randomGlitchArray(n));
 
   const progress = useRef(0);
   const timer = useRef<number | null>(null);
@@ -34,12 +24,12 @@ export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
         if (lastTarget.current !== target) {
           lastTarget.current = target;
           progress.current = 0;
-          next = randomArray(n);
+          next = randomGlitchArray(n);
         }
 
         if (isLoading) {
           for (let i = 0; i < n; i++) {
-            if (target[i] !== ' ') next[i] = randomChar();
+            if (target[i] !== ' ') next[i] = randomGlitchChar();
           }
           return next;
         }
@@ -53,7 +43,7 @@ export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
           if (i < p) {
             next[i] = target[i];
           } else if (target[i] !== ' ') {
-            next[i] = randomChar();
+            next[i] = randomGlitchChar();
           }
         }
 

@@ -1,16 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { parseGIF, decompressFrames } from 'gifuct-js';
-
-const PALETTE_DENSE =
-  " `'.,:;~-_+<>!?i|/\\r(){}[]tfjlcxzuvwsnyeoaqJYCLUZXVODB80HKW#@$&%";
-
-const PALETTE_GLITCH =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§ΔΩΨλπ';
+import { brightnessToChar, randomGlitchChar } from '@utils/ascii-pallet';
 
 function lumaToChar(luma: number, blackThreshold: number): string {
   if (luma < blackThreshold) return ' ';
   const t = (luma - blackThreshold) / (255 - blackThreshold);
-  return PALETTE_DENSE[Math.floor(t * (PALETTE_DENSE.length - 1))];
+  return brightnessToChar(t);
 }
 
 const BAYER4 = [
@@ -227,7 +222,6 @@ export function AsciiCanvas({
       data: Uint8ClampedArray,
       isGlitching: boolean,
       palette: string[],
-      glitchPaletteRed: string[],
       offsetX: number,
       blackThresh: number,
       ditherAmt: number,
@@ -281,8 +275,7 @@ export function AsciiCanvas({
 
           let ch: string;
           if (isGlitching && Math.random() < 0.05) {
-            ch =
-              PALETTE_GLITCH[Math.floor(Math.random() * PALETTE_GLITCH.length)];
+            ch = randomGlitchChar();
           } else {
             const jitter = (Math.random() - 0.5) * 0.08 * 255;
             ch = lumaToChar(
@@ -319,7 +312,6 @@ export function AsciiCanvas({
 
       const resolvedColor = resolveColor(colorRef.current);
       const palette = buildFramePalette(resolvedColor);
-      const glitchPaletteRed = buildFramePalette('rgb(255,20,70)');
 
       const isGlitching = glitchRef.current;
       const { data } = imageData;
@@ -334,7 +326,6 @@ export function AsciiCanvas({
         data,
         isGlitching,
         palette,
-        glitchPaletteRed,
         0,
         cfg.blackThreshold ?? 30,
         cfg.dither ?? 0,

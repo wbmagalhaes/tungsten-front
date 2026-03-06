@@ -1,3 +1,4 @@
+import { randomGlitchChar } from '@utils/ascii-pallet';
 import { useState, useEffect, useRef } from 'react';
 
 const ORIGINAL = 'TUNGSTEN';
@@ -153,9 +154,6 @@ export function MainHeader() {
   );
 }
 
-const GLITCH_CHARS =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§ΔΩΨλπ';
-
 function useGlitchText(original: string, active: boolean): string {
   const [display, setDisplay] = useState(original);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
@@ -175,9 +173,7 @@ function useGlitchText(original: string, active: boolean): string {
           .split('')
           .map((char, i) => {
             const noise = Math.sin(frame * 0.3 + i * 1.7) * 0.5 + 0.5;
-            return noise > 0.78
-              ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
-              : char;
+            return noise > 0.78 ? randomGlitchChar() : char;
           })
           .join(''),
       );

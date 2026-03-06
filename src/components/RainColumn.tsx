@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const GLITCH_CHARS =
-  '!@#$%^&*<>[]{}|\\/?~`АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§ΔΩΨλπ';
+import { randomGlitchArray, randomGlitchChar } from '@utils/ascii-pallet';
 
 export interface RainColumnProps {
   x: number;
@@ -11,12 +9,7 @@ export interface RainColumnProps {
 
 export function RainColumn({ x, delay, speed }: RainColumnProps) {
   const [offset, setOffset] = useState(-100);
-  const [columnChars, setColumnChars] = useState(() =>
-    Array.from(
-      { length: 20 },
-      () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)],
-    ),
-  );
+  const [columnChars, setColumnChars] = useState(() => randomGlitchArray(20));
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -26,11 +19,7 @@ export function RainColumn({ x, delay, speed }: RainColumnProps) {
         if (pos > 110) pos = -100;
         setOffset(pos);
         setColumnChars((prev) =>
-          prev.map((c) =>
-            Math.random() > 0.85
-              ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
-              : c,
-          ),
+          prev.map((c) => (Math.random() > 0.85 ? randomGlitchChar() : c)),
         );
       }, 50);
       return () => clearInterval(iv);
