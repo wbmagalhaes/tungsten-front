@@ -28,13 +28,12 @@ export default function RegisterPage() {
   const passwordMismatch =
     confirmPassword.length > 0 && password !== confirmPassword;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-
     if (passwordMismatch || passwordError) return;
-
+    const cleanUsername = username.trim().toLowerCase();
     register.mutate(
-      { username, password, token },
+      { username: cleanUsername, password, token },
       {
         onSuccess: () => navigate('/root', { replace: true }),
         onError: () => {

@@ -55,7 +55,7 @@ export default function ProfilePage() {
   const passwordMismatch =
     confirmPassword.length > 0 && newPassword !== confirmPassword;
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = (e: React.SubmitEvent) => {
     e.preventDefault();
 
     if (passwordMismatch || passwordError) return;

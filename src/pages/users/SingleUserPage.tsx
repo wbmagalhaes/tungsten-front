@@ -111,7 +111,7 @@ export default function SingleUserPage() {
     setHasChanges(false);
   };
 
-  const handleForceSetPassword = (e: React.FormEvent) => {
+  const handleForceSetPassword = (e: React.SubmitEvent) => {
     e.preventDefault();
 
     if (passwordMismatch || passwordError) return;

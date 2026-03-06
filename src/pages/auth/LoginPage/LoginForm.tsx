@@ -36,18 +36,35 @@ export default function LoginForm() {
   const [recoverToken, setRecoverToken] = useState('');
   const recover = useRecoverPassword();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    await login.mutateAsync({ username, password, token: loginToken });
-    const params = new URLSearchParams(location.search);
-    navigate(params.get('cb_url') || '/root', { replace: true });
+
+    const cleanUsername = username.trim().toLowerCase();
+    login.mutate(
+      {
+        username: cleanUsername,
+        password,
+        token: loginToken,
+      },
+      {
+        onSuccess: () => {
+          const params = new URLSearchParams(location.search);
+          navigate(params.get('cb_url') || '/root', { replace: true });
+        },
+        onError: () => {
+          setLoginToken('');
+          loginTurnstileRef.current?.reset();
+        },
+      },
+    );
   };
 
-  const handleRecover = async (e: React.FormEvent) => {
+  const handleRecover = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
+    const cleanUsername = username.trim().toLowerCase();
     login.mutate(
-      { username, password, token: loginToken },
+      { username: cleanUsername, password, token: loginToken },
       {
         onSuccess: () => {
           const params = new URLSearchParams(location.search);
