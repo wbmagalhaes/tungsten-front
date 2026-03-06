@@ -24,7 +24,7 @@ function bayerThreshold(x: number, y: number): number {
   return (BAYER4[y % 4][x % 4] / 16) * 255;
 }
 
-export interface SrcConfig {
+interface SrcConfig {
   src: string;
   opacity?: number;
   dither?: number;
@@ -46,9 +46,8 @@ interface GifFrame {
   delay: number;
 }
 
-function normaliseConfig(config: AsciiCanvasProps['config']): SrcConfig[] {
-  const arr = Array.isArray(config) ? config : [config];
-  return arr;
+function normalizeConfig(config: AsciiCanvasProps['config']): SrcConfig[] {
+  return Array.isArray(config) ? config : [config];
 }
 
 async function decodeGif(
@@ -112,17 +111,36 @@ async function decodeGif(
   return decoded;
 }
 
-function buildAlphaCache(baseColor: string): Record<string, string> {
-  const cache: Record<string, string> = {};
-  for (let i = 0; i <= 20; i++) {
-    const alpha = parseFloat((i * 0.05).toFixed(2));
-    cache[alpha.toFixed(2)] = applyAlpha(baseColor, alpha);
-  }
-  return cache;
+function resolveColor(color: string): string {
+  if (!color.startsWith('var(')) return color;
+  const match = color.match(/var\((--[^)]+)\)/);
+  if (!match) return '#00ff88';
+  const val = getComputedStyle(document.documentElement)
+    .getPropertyValue(match[1])
+    .trim();
+  return val || '#00ff88';
 }
 
-function quantizeAlpha(alpha: number): string {
-  return (Math.round(alpha * 20) / 20).toFixed(2);
+function applyAlpha(color: string, alpha: number): string {
+  if (color.startsWith('#')) {
+    const c = color.replace('#', '');
+    return `rgba(${parseInt(c.slice(0, 2), 16)},${parseInt(c.slice(2, 4), 16)},${parseInt(c.slice(4, 6), 16)},${alpha})`;
+  }
+  if (color.startsWith('rgb('))
+    return color.replace('rgb(', 'rgba(').replace(')', `,${alpha})`);
+  if (color.startsWith('rgba('))
+    return color.replace(/,\s*[\d.]+\)$/, `,${alpha})`);
+  return `rgba(${color},${alpha})`;
+}
+
+function quantizeAlpha(alpha: number): number {
+  return Math.round(alpha * 20); // index 0-20
+}
+
+function buildFramePalette(resolvedColor: string): string[] {
+  return Array.from({ length: 21 }, (_, i) =>
+    applyAlpha(resolvedColor, i / 20),
+  );
 }
 
 export function AsciiCanvas({
@@ -144,10 +162,10 @@ export function AsciiCanvas({
   const activeSrcRef = useRef<SrcConfig | null>(null);
   const vignetteRef = useRef<HTMLCanvasElement | null>(null);
 
-  const resolvedColorRef = useRef<string>('');
-  const alphaCacheRef = useRef<Record<string, string>>({});
-  const glitchRedCacheRef = useRef<Record<string, string>>({});
-  const glitchBlueCacheRef = useRef<Record<string, string>>({});
+  const colorRef = useRef<string>(color);
+  useEffect(() => {
+    colorRef.current = color;
+  }, [color]);
 
   const charW = Math.ceil(fontSize * 0.6);
   const charH = fontSize;
@@ -155,18 +173,8 @@ export function AsciiCanvas({
   const canvasH = rows * charH;
 
   const srcKey = Array.isArray(config)
-    ? config.map((s) => (typeof s === 'string' ? s : s.src)).join('|')
-    : typeof config === 'string'
-      ? config
-      : (config as SrcConfig).src;
-
-  useEffect(() => {
-    const resolved = resolveColorOnce(color);
-    resolvedColorRef.current = resolved;
-    alphaCacheRef.current = buildAlphaCache(resolved);
-    glitchRedCacheRef.current = buildAlphaCache('rgb(255,20,70)');
-    glitchBlueCacheRef.current = buildAlphaCache('rgb(20,100,255)');
-  }, [color]);
+    ? config.map((s) => s.src).join('|')
+    : (config as SrcConfig).src;
 
   useEffect(() => {
     let cancelled = false;
@@ -188,15 +196,16 @@ export function AsciiCanvas({
     vctx.fillRect(0, 0, canvasW, canvasH);
     vignetteRef.current = vc;
 
-    const configs = normaliseConfig(config);
+    const configs = normalizeConfig(config);
 
     const loadAll = async () => {
       await Promise.all(
         configs.map(async (cfg) => {
-          const frames = await decodeGif(cfg.src, cols, rows, cfg.speed!);
+          const frames = await decodeGif(cfg.src, cols, rows, cfg.speed ?? 1);
           if (!cancelled) allFrames.current.set(cfg.src, frames);
         }),
       );
+
       if (cancelled) return;
 
       activeSrcRef.current = configs[0];
@@ -217,12 +226,13 @@ export function AsciiCanvas({
       ctx: CanvasRenderingContext2D,
       data: Uint8ClampedArray,
       isGlitching: boolean,
-      alphaCache: Record<string, string>,
+      palette: string[],
+      glitchPaletteRed: string[],
       offsetX: number,
       blackThresh: number,
       ditherAmt: number,
     ) => {
-      const batches: Map<string, Array<[number, number, string]>> = new Map();
+      const batches = new Map<number, Array<[number, number, string]>>();
 
       for (let row = 0; row < rows; row++) {
         if (isGlitching) {
@@ -248,8 +258,8 @@ export function AsciiCanvas({
             ctx.setTransform(1, 0, 0, 1, offsetX, 0);
           }
 
-          for (const [style, calls] of batches) {
-            ctx.fillStyle = style;
+          for (const [idx, calls] of batches) {
+            ctx.fillStyle = palette[idx];
             for (const [x, y, ch] of calls) ctx.fillText(ch, x, y);
           }
           batches.clear();
@@ -286,21 +296,17 @@ export function AsciiCanvas({
             ? 0.4 + Math.random() * 0.6
             : 0.25 + (luma / 255) * 0.75;
 
-          const alphaKey = quantizeAlpha(alpha);
-          const style =
-            alphaCache[alphaKey] ?? applyAlpha(resolvedColorRef.current, alpha);
-
-          if (!batches.has(style)) batches.set(style, []);
-          batches.get(style)!.push([col * charW, row * charH, ch]);
+          const idx = quantizeAlpha(alpha);
+          if (!batches.has(idx)) batches.set(idx, []);
+          batches.get(idx)!.push([col * charW, row * charH, ch]);
         }
       }
 
-      for (const [style, calls] of batches) {
-        ctx.fillStyle = style;
+      for (const [idx, calls] of batches) {
+        ctx.fillStyle = palette[idx];
         for (const [x, y, ch] of calls) ctx.fillText(ch, x, y);
       }
       batches.clear();
-
       ctx.setTransform(1, 0, 0, 1, 0, 0);
     };
 
@@ -311,40 +317,28 @@ export function AsciiCanvas({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
+      const resolvedColor = resolveColor(colorRef.current);
+      const palette = buildFramePalette(resolvedColor);
+      const glitchPaletteRed = buildFramePalette('rgb(255,20,70)');
+
       const isGlitching = glitchRef.current;
       const { data } = imageData;
 
-      const mainCache = alphaCacheRef.current;
-      // const redCache = glitchRedCacheRef.current;
-      // const blueCache = glitchBlueCacheRef.current;
-
-      canvas.style.opacity = String(cfg.opacity!);
-
+      canvas.style.opacity = String(cfg.opacity ?? 1);
       ctx.clearRect(0, 0, canvasW, canvasH);
       ctx.font = `${fontSize}px "Share Tech Mono", monospace`;
       ctx.textBaseline = 'top';
 
-      if (isGlitching) {
-        drawPass(
-          ctx,
-          data,
-          true,
-          mainCache,
-          0,
-          cfg.blackThreshold!,
-          cfg.dither!,
-        );
-      } else {
-        drawPass(
-          ctx,
-          data,
-          false,
-          mainCache,
-          0,
-          cfg.blackThreshold!,
-          cfg.dither!,
-        );
-      }
+      drawPass(
+        ctx,
+        data,
+        isGlitching,
+        palette,
+        glitchPaletteRed,
+        0,
+        cfg.blackThreshold ?? 30,
+        cfg.dither ?? 0,
+      );
 
       if (vignette) {
         ctx.globalCompositeOperation = 'destination-out';
@@ -391,22 +385,20 @@ export function AsciiCanvas({
         3000 + Math.random() * 7000,
       );
     };
-    scheduleGlitch();
 
+    scheduleGlitch();
     loadAll();
 
     const raf = rafRef.current;
 
     return () => {
       cancelled = true;
-      const fTimer = frameTimer.current;
-      const gTimer = glitchTimer.current;
       cancelAnimationFrame(raf);
-      if (fTimer) clearTimeout(fTimer);
-      if (gTimer) clearTimeout(gTimer);
+      if (frameTimer.current) clearTimeout(frameTimer.current);
+      if (glitchTimer.current) clearTimeout(glitchTimer.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [srcKey, cols, rows, fontSize, charW, charH, canvasW, canvasH, color]);
+  }, [srcKey, cols, rows, fontSize, charW, charH, canvasW, canvasH]);
 
   return (
     <canvas
@@ -416,28 +408,4 @@ export function AsciiCanvas({
       className={`pointer-events-none select-none ${className}`}
     />
   );
-}
-
-function resolveColorOnce(color: string): string {
-  if (!color.startsWith('var(')) return color;
-  const match = color.match(/var\((--[^)]+)\)/);
-  if (!match) return '#00ff88';
-  const val = getComputedStyle(document.documentElement)
-    .getPropertyValue(match[1])
-    .trim();
-  return val || '#00ff88';
-}
-
-function applyAlpha(color: string, alpha: number): string {
-  if (color.startsWith('#')) return hexToRgba(color, alpha);
-  if (color.startsWith('rgb('))
-    return color.replace('rgb(', 'rgba(').replace(')', `,${alpha})`);
-  if (color.startsWith('rgba('))
-    return color.replace(/,\s*[\d.]+\)$/, `,${alpha})`);
-  return `rgba(${color},${alpha})`;
-}
-
-function hexToRgba(hex: string, alpha: number): string {
-  const c = hex.replace('#', '');
-  return `rgba(${parseInt(c.slice(0, 2), 16)},${parseInt(c.slice(2, 4), 16)},${parseInt(c.slice(4, 6), 16)},${alpha})`;
 }

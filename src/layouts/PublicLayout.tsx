@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
 import { RainColumn, type RainColumnProps } from '@components/RainColumn';
 import { ShuffleText } from '@components/ShuffleText';
-import { AsciiCanvas } from '@components/AtomParticle';
+import { AsciiCanvas } from '@components/AsciiCanvas';
 
 export default function PublicLayout() {
   const [scanlinePos, setScanlinePos] = useState(-10);
@@ -132,11 +132,11 @@ function TgLogo() {
         <span className='tg-logo-w relative z-10 font-cyber text-base font-black text-ring leading-none'>
           W
         </span>
-        <span className='absolute top-0.5 right-0.5 z-10 font-mono-tech text-[7px] text-ring/80 leading-none'>
+        <span className='absolute top-0.5 right-0.5 z-10 font-cyber text-[8px] text-ring/80 leading-none'>
           74
         </span>
       </div>
-      <span className='tg-logo-name font-mono-tech font-bold text-base tracking-widest uppercase text-ring/70 transition-all duration-200'>
+      <span className='tg-logo-name font-cyber font-bold text-base tracking-widest uppercase text-ring/70 transition-all duration-200'>
         <ShuffleText
           text='TUNGSTEN'
           active={hover}

@@ -31,10 +31,10 @@ export function FeatureCard({
         {icon}
       </div>
       <div>
-        <div className='tg-feature-title font-mono-tech text-sm font-semibold tracking-[0.05em] text-foreground/85 mb-1 transition-[text-shadow,color] duration-150'>
+        <div className='tg-feature-title font-cyber text-sm font-semibold tracking-[0.05em] text-foreground/85 mb-1 transition-[text-shadow,color] duration-150'>
           {title}
         </div>
-        <div className='tg-feature-desc font-mono-tech text-xs text-foreground/30 group-hover:text-foreground/80 leading-relaxed tracking-[0.02em] transition-colors duration-150'>
+        <div className='tg-feature-desc font-chakra text-base text-foreground/40 group-hover:text-foreground/80 leading-relaxed tracking-[0.02em] transition-colors duration-150'>
           {description}
         </div>
       </div>

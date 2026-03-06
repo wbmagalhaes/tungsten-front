@@ -23,10 +23,10 @@ export function StackCard({ icon, title, description, color }: StackCardProps) {
       <div className='tg-card-icon transition-transform duration-100'>
         {icon}
       </div>
-      <div className='font-mono-tech font-bold text-sm tracking-[0.05em] transition-[text-shadow] duration-150'>
+      <div className='font-cyber font-bold text-sm tracking-[0.05em] transition-[text-shadow] duration-150'>
         {title}
       </div>
-      <div className='tg-card-label font-mono-tech text-xs tracking-widest uppercase text-foreground/30 group-hover:text-foreground/80 transition-colors duration-150'>
+      <div className='tg-card-label font-chakra text-sm tracking-widest uppercase text-foreground/40 group-hover:text-foreground/80 transition-colors duration-150'>
         {description}
       </div>
     </div>
