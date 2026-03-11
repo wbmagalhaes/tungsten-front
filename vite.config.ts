@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 const root = resolve(__dirname, 'src');
 
@@ -116,12 +116,6 @@ function buildVersionPlugin() {
       );
       const [major, minor] = pkg.version.split('.');
 
-      const counterFile = resolve(__dirname, '.build-count');
-      const count = existsSync(counterFile)
-        ? parseInt(readFileSync(counterFile, 'utf8').trim(), 10) + 1
-        : 1;
-      writeFileSync(counterFile, String(count));
-
       let hash = 'unknown';
       try {
         hash =
@@ -131,7 +125,7 @@ function buildVersionPlugin() {
         /* not a git repo */
       }
 
-      const version = `v${major}.${minor}.${count}.${hash}_unstable`;
+      const version = `v${major}.${minor}.${hash}_unstable`;
       const out = resolve(__dirname, 'lib/version.ts');
       writeFileSync(
         out,
