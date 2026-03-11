@@ -38,10 +38,17 @@ export default function PublicLayout() {
 
   return (
     <div className='flex flex-col min-h-screen'>
+      <div className='absolute inset-0 pointer-events-none'>
+        <div className='tg-grid-bg' />
+        <div className='tg-scanlines-static' />
+      </div>
+
+      <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
+
       <PublicHeader />
 
-      <div className='relative flex-1 overflow-hidden min-h-full'>
-        <div className='absolute w-screen h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
+      <div className='relative flex-1 overflow-hidden min-h-full max-w-7xl mx-auto container'>
+        <div className='absolute w-screen left-0 right-0 h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
           <AsciiCanvas
             config={[
               {
@@ -65,16 +72,9 @@ export default function PublicLayout() {
           />
         </div>
 
-        <div className='absolute inset-0 pointer-events-none'>
-          <div className='tg-grid-bg' />
-          <div className='tg-scanlines-static' />
-        </div>
-
         {rainColumns.map((col, i) => (
           <RainColumn key={i} {...col} />
         ))}
-
-        <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
 
         <main className='relative mt-16 mb-8 mx-4'>
           <Outlet />
@@ -94,7 +94,7 @@ function PublicHeader() {
 
   return (
     <header className='tg-header fixed top-0 inset-x-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/40'>
-      <div className='tg-header-inner w-full max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative'>
+      <div className='tg-header-inner w-full max-w-7xl mx-auto px-4 h-16 container flex items-center justify-between relative'>
         <ButtonLink to='/' render={<TgLogo />} />
 
         <div className='flex items-center gap-2'>
@@ -154,7 +154,7 @@ function PublicFooter() {
 
   return (
     <footer className='tg-footer relative w-full border-t border-ring/8'>
-      <div className='tg-footer-inner w-full max-w-7xl mx-auto px-6 py-3 flex flex-wrap-reverse items-center relative gap-4'>
+      <div className='tg-footer-inner w-full max-w-7xl mx-auto px-4 py-3 container flex flex-wrap-reverse items-center relative gap-4'>
         <p className='font-mono-tech text-xs tracking-widest text-ring/75 shrink-0'>
           &copy; 2026 - tungsten:{BUILD_VERSION}
         </p>
