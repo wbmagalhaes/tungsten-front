@@ -11,17 +11,22 @@ import { ShuffleText } from '@components/ShuffleText';
 import { AsciiCanvas } from '@components/AsciiCanvas';
 
 export default function PublicLayout() {
-  const [scanlinePos, setScanlinePos] = useState(-10);
-
-  useEffect(() => {
-    let pos = -10;
-    const iv = setInterval(() => {
-      pos += 0.6;
-      if (pos > 110) pos = -10;
-      setScanlinePos(pos);
-    }, 16);
-    return () => clearInterval(iv);
-  }, []);
+  const asciiConfig = [
+    {
+      src: '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
+      opacity: 0.5,
+      dither: 0.3,
+      blackThreshold: 70,
+      speed: 9,
+    },
+    {
+      src: '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
+      opacity: 0.4,
+      dither: 0.2,
+      blackThreshold: 60,
+      speed: 4,
+    },
+  ];
 
   const rainColumns: RainColumnProps[] = [
     { x: 2, delay: 0, speed: 1.2 },
@@ -38,38 +43,15 @@ export default function PublicLayout() {
 
   return (
     <div className='flex flex-col min-h-screen'>
-      <div className='absolute inset-0 pointer-events-none'>
-        <div className='tg-grid-bg' />
-        <div className='tg-scanlines-static' />
-      </div>
+      <Background />
 
-      <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
+      <ScanLine />
 
       <PublicHeader />
 
       <div className='relative flex-1 overflow-hidden min-h-full max-w-7xl mx-auto container'>
-        <div className='absolute w-screen left-0 right-0 h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
-          <AsciiCanvas
-            config={[
-              {
-                src: '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
-                opacity: 0.5,
-                dither: 0.3,
-                blackThreshold: 70,
-                speed: 9,
-              },
-              {
-                src: '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
-                opacity: 0.4,
-                dither: 0.2,
-                blackThreshold: 60,
-                speed: 4,
-              },
-            ]}
-            fontSize={12}
-            cols={90}
-            rows={45}
-          />
+        <div className='absolute w-full left-0 right-0 h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
+          <AsciiCanvas config={asciiConfig} fontSize={12} cols={90} rows={45} />
         </div>
 
         {rainColumns.map((col, i) => (
@@ -86,6 +68,33 @@ export default function PublicLayout() {
 
       <PublicFooter />
     </div>
+  );
+}
+
+function Background() {
+  return (
+    <div className='absolute inset-0 pointer-events-none'>
+      <div className='tg-grid-bg' />
+      <div className='tg-scanlines-static' />
+    </div>
+  );
+}
+
+function ScanLine() {
+  const [scanlinePos, setScanlinePos] = useState(-10);
+
+  useEffect(() => {
+    let pos = -10;
+    const iv = setInterval(() => {
+      pos += 0.6;
+      if (pos > 110) pos = -10;
+      setScanlinePos(pos);
+    }, 16);
+    return () => clearInterval(iv);
+  }, []);
+
+  return (
+    <div className='tg-scanline-beam' style={{ top: `${scanlinePos}%` }} />
   );
 }
 
