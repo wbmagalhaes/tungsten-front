@@ -31,6 +31,7 @@ import { TextField } from '@components/base/text-field';
 import { PasswordField } from '@components/base/password-field';
 import validateUsername from '@pages/auth/validateUsername';
 import { validatePassword } from '@pages/auth/validatePassword';
+import formatDate from '@utils/formatDate';
 
 type UserTarget = { id: string; username: string };
 
@@ -120,6 +121,9 @@ export default function UsersPage() {
                     Email
                   </th>
                   <th className='p-3 text-left text-foreground font-semibold'>
+                    Last Login
+                  </th>
+                  <th className='p-3 text-left text-foreground font-semibold'>
                     Sudo
                   </th>
                   <th className='p-3 text-right text-foreground font-semibold'>
@@ -136,6 +140,9 @@ export default function UsersPage() {
                     <td className='p-3 text-foreground'>{u.username}</td>
                     <td className='p-3 text-foreground'>{u.fullname || '-'}</td>
                     <td className='p-3 text-foreground'>{u.email || '-'}</td>
+                    <td className='p-3 text-foreground'>
+                      {formatDate(u.last_login)}
+                    </td>
                     <td className='p-3'>
                       {u.is_sudo ? (
                         <Badge variant='purple'>

@@ -8,6 +8,7 @@ export type User = {
   is_sudo: boolean;
   created_at: string;
   deleted_at?: string;
+  last_login?: string;
 };
 
 export function getInitials(user?: User) {
