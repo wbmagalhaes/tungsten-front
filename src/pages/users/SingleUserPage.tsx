@@ -408,6 +408,10 @@ export default function SingleUserPage() {
 }
 
 const ALL_SCOPES = [
+  'api-keys:*',
+  'api-keys:List',
+  'api-keys:Create',
+  'api-keys:Delete',
   'system:*',
   'system:Read',
   'system:Write',

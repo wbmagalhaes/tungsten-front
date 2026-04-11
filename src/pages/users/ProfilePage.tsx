@@ -29,6 +29,7 @@ import type { UpdateProfileRequest } from '@services/profile.service';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import { validatePassword } from '@pages/auth/validatePassword';
+import ApiKeysCard from '@components/ApiKeysCard';
 
 export default function ProfilePage() {
   const { data: me, isLoading, error } = useGetProfile();
@@ -244,6 +245,8 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      <ApiKeysCard />
     </div>
   );
 }
