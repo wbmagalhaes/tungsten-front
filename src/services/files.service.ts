@@ -13,6 +13,7 @@ export const uploadFile = async ({
   file,
   dir,
   visibility,
+  uploadedBy,
   onProgress,
 }: UploadFileParams) => {
   const formData = new FormData();
@@ -23,6 +24,10 @@ export const uploadFile = async ({
 
   if (visibility) {
     formData.append('visibility', visibility);
+  }
+
+  if (uploadedBy) {
+    formData.append('uploaded_by', uploadedBy);
   }
 
   formData.append('file', file);
@@ -120,6 +125,7 @@ export type UploadFileParams = {
   file: File;
   dir?: string;
   visibility?: string;
+  uploadedBy?: string;
   onProgress?: (percent: number) => void;
 };
 

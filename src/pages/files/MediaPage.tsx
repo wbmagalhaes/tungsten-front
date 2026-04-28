@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Trash2, Archive } from 'lucide-react';
+import { Upload, Trash2, Archive, Lock, Globe } from 'lucide-react';
 import { useDeleteFile } from '@hooks/files/use-delete-file';
 import { useListFiles } from '@hooks/files/use-list-files';
 import { useUploadFile } from '@hooks/files/use-upload-file';
+import { useListUsers } from '@hooks/users/use-list-users';
+import { useAuthStore } from '@stores/useAuthStore';
 import type { FileMetadata } from '@models/file-metadata';
 import {
   Card,
@@ -20,7 +22,236 @@ import { Badge } from '@components/base/badge';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@components/base/dialog';
+import { TextField } from '@components/base/text-field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
+import { cn } from '@utils/cn';
 import { FileIcon } from './FileIcon';
+
+type UploadDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+function UploadDialog({ open, onOpenChange }: UploadDialogProps) {
+  const uploadFile = useUploadFile();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isSudo = useAuthStore((s) => s.isSudo);
+  const usersQuery = useListUsers(
+    isSudo ? { page_size: 100 } : { page_size: 1 },
+  );
+
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [uploadDir, setUploadDir] = useState('');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [uploadedBy, setUploadedBy] = useState('');
+  const [progress, setProgress] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const reset = () => {
+    setPendingFile(null);
+    setUploadDir('');
+    setVisibility('public');
+    setUploadedBy('');
+    setProgress(null);
+  };
+
+  const handleOpenChange = (o: boolean) => {
+    if (!o && progress === null) {
+      reset();
+      onOpenChange(false);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setPendingFile(file);
+    e.target.value = '';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) setPendingFile(file);
+  };
+
+  const handleSubmit = (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (!pendingFile) return;
+    setProgress(0);
+    uploadFile.mutate(
+      {
+        file: pendingFile,
+        dir: uploadDir || undefined,
+        visibility,
+        uploadedBy: uploadedBy || undefined,
+        onProgress: setProgress,
+      },
+      {
+        onSuccess: () => {
+          reset();
+          onOpenChange(false);
+        },
+        onSettled: () => setProgress(null),
+        onError: () => setProgress(null),
+      },
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className='max-w-sm'>
+        <DialogHeader>
+          <DialogTitle className='flex items-center gap-2'>
+            <Upload className='w-5 h-5' />
+            Upload File
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <input
+            ref={fileInputRef}
+            type='file'
+            className='hidden'
+            onChange={handleFileInputChange}
+          />
+
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+            onClick={() => !pendingFile && fileInputRef.current?.click()}
+            className={cn(
+              'flex flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed px-4 py-6 text-sm transition-colors',
+              dragging
+                ? 'border-primary bg-primary/10'
+                : 'border-border text-muted-foreground',
+              !pendingFile &&
+                'cursor-pointer hover:border-primary/50 hover:bg-muted/50',
+            )}
+          >
+            {pendingFile ? (
+              <>
+                <span className='font-medium text-foreground truncate max-w-full'>
+                  {pendingFile.name}
+                </span>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                >
+                  Change file
+                </Button>
+              </>
+            ) : (
+              <>
+                <Upload className='w-6 h-6' />
+                <span>Drop a file here or click to browse</span>
+              </>
+            )}
+          </div>
+
+          <TextField
+            label='Directory (optional)'
+            placeholder='e.g. images/avatars'
+            value={uploadDir}
+            onChange={(e) => setUploadDir(e.target.value)}
+          />
+
+          <div className='space-y-1.5'>
+            <p className='text-sm font-medium'>Visibility</p>
+            <div className='flex gap-2'>
+              {(['public', 'private'] as const).map((v) => (
+                <button
+                  key={v}
+                  type='button'
+                  onClick={() => setVisibility(v)}
+                  className={cn(
+                    'flex-1 flex items-center justify-center gap-2 rounded-sm border px-3 py-2 text-sm transition-colors cursor-pointer capitalize',
+                    visibility === v
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:border-primary/50',
+                  )}
+                >
+                  {v === 'public' ? (
+                    <Globe className='w-4 h-4' />
+                  ) : (
+                    <Lock className='w-4 h-4' />
+                  )}
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {isSudo && (
+            <div className='space-y-1.5'>
+              <p className='text-sm font-medium'>Upload as</p>
+              <Select
+                value={uploadedBy}
+                onValueChange={(v) => setUploadedBy(v ?? '')}
+              >
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Myself (default)' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value=''>Myself (default)</SelectItem>
+                  {usersQuery.data?.results.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.username}
+                      {u.fullname ? ` — ${u.fullname}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {uploadFile.isError && (
+            <p className='text-sm text-destructive'>
+              {uploadFile.error.message}
+            </p>
+          )}
+
+          <DialogFooter>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => handleOpenChange(false)}
+              disabled={progress !== null}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={!pendingFile || progress !== null}>
+              <Upload className='w-4 h-4' />
+              {progress !== null ? `${progress}%` : 'Upload'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 interface FileCardProps {
   file: FileMetadata;
@@ -101,30 +332,9 @@ function FileCard({ file, onDelete }: FileCardProps) {
 export default function MediaPage() {
   const { data, isLoading, error } = useListFiles({});
   const deleteFile = useDeleteFile();
-  const uploadFile = useUploadFile();
 
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<FileMetadata | null>(null);
-
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadProgress(0);
-    uploadFile.mutate(
-      {
-        file,
-        dir: '',
-        visibility: 'public',
-        onProgress: (p) => setUploadProgress(p),
-      },
-      {
-        onSuccess: () => setUploadProgress(null),
-        onSettled: () => setUploadProgress(null),
-        onError: () => setUploadProgress(null),
-      },
-    );
-    e.target.value = '';
-  };
 
   const handleDelete = () => {
     if (!deleteTarget) return;
@@ -149,26 +359,9 @@ export default function MediaPage() {
         title='Media Files'
         icon={<Archive className='w-5 h-5' />}
         action={
-          <>
-            <input
-              type='file'
-              id='file-upload'
-              className='hidden'
-              onChange={handleUpload}
-            />
-            <Button
-              size='icon'
-              render={(props) => <label {...props} htmlFor='file-upload' />}
-              disabled={uploadProgress !== null}
-              nativeButton={false}
-            >
-              {uploadProgress === null ? (
-                <Upload className='w-4 h-4' />
-              ) : (
-                <span>{uploadProgress}%</span>
-              )}
-            </Button>
-          </>
+          <Button size='icon' onClick={() => setShowUploadDialog(true)}>
+            <Upload className='w-4 h-4' />
+          </Button>
         }
       />
 
@@ -184,6 +377,11 @@ export default function MediaPage() {
           ))}
         </div>
       )}
+
+      <UploadDialog
+        open={showUploadDialog}
+        onOpenChange={setShowUploadDialog}
+      />
 
       <ConfirmationDialog
         open={!!deleteTarget}
