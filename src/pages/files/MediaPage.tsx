@@ -212,7 +212,18 @@ function UploadDialog({ open, onOpenChange }: UploadDialogProps) {
                 onValueChange={(v) => setUploadedBy(v ?? '')}
               >
                 <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Myself (default)' />
+                  <SelectValue>
+                    {(value) => {
+                      if (!value) return 'Myself (default)';
+                      const u = usersQuery.data?.results.find(
+                        (x) => x.id === value,
+                      );
+                      if (!u) return value;
+                      return u.fullname
+                        ? `${u.username} — ${u.fullname}`
+                        : u.username;
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value=''>Myself (default)</SelectItem>
