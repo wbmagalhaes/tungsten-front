@@ -84,7 +84,6 @@ export default defineConfig({
   build: {
     target: 'esnext',
     minify: 'terser',
-    cssCodeSplit: false,
     modulePreload: true,
     rollupOptions: {
       output: {
@@ -96,8 +95,14 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
-            if (id.includes('react')) {
+            if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) {
               return 'vendor-react';
+            }
+            if (id.includes('@tanstack')) {
+              return 'vendor-query';
+            }
+            if (id.includes('@base-ui') || id.includes('cmdk')) {
+              return 'vendor-ui';
             }
             return 'vendor';
           }

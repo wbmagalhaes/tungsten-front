@@ -6,7 +6,6 @@ import { ButtonLink } from '@components/base/button';
 import { useAuthStore } from '@stores/useAuthStore';
 import { Outlet } from 'react-router-dom';
 import { THEME_META, THEMES, useTheme } from '@hooks/use-theme';
-import { RainColumn, type RainColumnProps } from '@components/RainColumn';
 import { ShuffleText } from '@components/ShuffleText';
 import { AsciiCanvas } from '@components/AsciiCanvas';
 
@@ -14,31 +13,18 @@ export default function PublicLayout() {
   const asciiConfig = [
     {
       src: '/assets/fd9b08e79a97bc2cb48bb5c53a739074.gif',
-      opacity: 0.5,
+      opacity: 0.7,
       dither: 0.3,
       blackThreshold: 70,
       speed: 9,
     },
     {
       src: '/assets/aeb52f40ecf9d7b01da4860e74068e97.gif',
-      opacity: 0.4,
+      opacity: 0.5,
       dither: 0.2,
       blackThreshold: 60,
       speed: 4,
     },
-  ];
-
-  const rainColumns: RainColumnProps[] = [
-    { x: 2, delay: 0, speed: 1.2 },
-    { x: 8, delay: 800, speed: 0.9 },
-    { x: 15, delay: 300, speed: 1.5 },
-    { x: 22, delay: 1200, speed: 0.7 },
-    { x: 78, delay: 500, speed: 1.1 },
-    { x: 85, delay: 0, speed: 0.8 },
-    { x: 91, delay: 900, speed: 1.4 },
-    { x: 97, delay: 400, speed: 1.0 },
-    { x: 35, delay: 600, speed: 0.6 },
-    { x: 65, delay: 1100, speed: 1.3 },
   ];
 
   return (
@@ -53,10 +39,6 @@ export default function PublicLayout() {
         <div className='absolute w-full left-0 right-0 h-60 md:h-120 mt-30 md:mt-12 flex justify-center'>
           <AsciiCanvas config={asciiConfig} fontSize={12} cols={90} rows={45} />
         </div>
-
-        {rainColumns.map((col, i) => (
-          <RainColumn key={i} {...col} />
-        ))}
 
         <main className='relative mt-16 mb-8 mx-4'>
           <Outlet />
