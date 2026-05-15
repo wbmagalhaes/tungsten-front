@@ -10,6 +10,7 @@ import {
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import { Switch } from '@components/base/switch';
 import PageHeader from '@components/PageHeader';
 import {
   Dialog,
@@ -171,11 +172,7 @@ export default function LanguagesAdminPage() {
               }
             />
             <label className='flex items-center gap-2 text-sm'>
-              <input
-                type='checkbox'
-                checked={enabled}
-                onChange={(e) => setEnabled(e.target.checked)}
-              />
+              <Switch checked={enabled} onCheckedChange={setEnabled} />
               Enabled
             </label>
           </div>

@@ -10,10 +10,8 @@ import {
   MessageCircleMore,
   Terminal,
   Layers,
-  Bell,
   Megaphone,
-  Compass,
-  Send,
+  Mail,
   Gauge,
 } from 'lucide-react';
 
@@ -26,7 +24,7 @@ export interface SidebarItem {
 
 export const sidebarItems: SidebarItem[] = [
   { label: 'Root', to: '/root', icon: Terminal },
-  { label: 'Inbox', to: '/inbox', icon: Bell },
+  { label: 'Inbox', to: '/inbox', icon: Mail },
   {
     label: 'Notes',
     to: '/notes',
@@ -51,16 +49,6 @@ export const sidebarItems: SidebarItem[] = [
     scope: 'wss:bucket:List',
   },
   {
-    label: 'ChatBot',
-    to: '/chat-bot',
-    icon: BotMessageSquare,
-  },
-  {
-    label: 'Image Generation',
-    to: '/image-generation',
-    icon: ImagePlus,
-  },
-  {
     label: 'Background Jobs',
     to: '/background-jobs',
     icon: ServerCog,
@@ -73,28 +61,20 @@ export const sidebarItems: SidebarItem[] = [
     scope: 'wqs:queue:List',
   },
   {
-    label: 'Topics',
-    to: '/topics',
+    label: 'Notifications',
+    to: '/notifications',
     icon: Megaphone,
     scope: 'was:topic:List',
   },
   {
-    label: 'Discover',
-    to: '/topics/discover',
-    icon: Compass,
-    scope: 'was:topic:List',
+    label: 'ChatBot',
+    to: '/chat-bot',
+    icon: BotMessageSquare,
   },
   {
-    label: 'Notifications',
-    to: '/notifications',
-    icon: Send,
-    scope: 'was:notification:List',
-  },
-  {
-    label: 'Recipients',
-    to: '/recipients',
-    icon: Send,
-    scope: 'was:recipient:List',
+    label: 'Image Generation',
+    to: '/image-generation',
+    icon: ImagePlus,
   },
   {
     label: 'Quotas',

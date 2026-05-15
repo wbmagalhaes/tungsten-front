@@ -13,6 +13,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
         'disabled:bg-background disabled:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
         'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
         'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
+        '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none',
         className,
       )}
       {...props}

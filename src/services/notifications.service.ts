@@ -18,14 +18,21 @@ export interface Recipient {
   created_at: string;
 }
 
+export const SYSTEM_OWNER_ID = '00000000-0000-0000-0000-000000000000';
+
 export interface Topic {
   id: string;
+  owner_id: string;
   name: string;
   description?: string;
-  is_system: boolean;
+  is_system?: boolean;
   discoverable: boolean;
+  rate_limit_per_minute?: number | null;
   created_at: string;
 }
+
+export const isSystemTopic = (t: Pick<Topic, 'owner_id' | 'is_system'>) =>
+  t.owner_id === SYSTEM_OWNER_ID || !!t.is_system;
 
 export interface Subscription {
   recipient_id: string;
@@ -290,6 +297,36 @@ export const ensureInappRecipient = async (userId: string) => {
 
 export const runCleanup = async () => {
   const res = await api.post<CleanupReport>(`${base}/admin/cleanup`);
+  return res.data;
+};
+
+export type PreferenceEntry = {
+  id: string;
+  enabled: boolean;
+  address: string;
+  verified: boolean;
+} | null;
+
+export interface NotificationPreferences {
+  in_app: PreferenceEntry;
+  email: PreferenceEntry;
+  push: PreferenceEntry;
+}
+
+export const getNotificationPreferences = async () => {
+  const res = await api.get<NotificationPreferences>(`${base}/preferences`);
+  return res.data;
+};
+
+export const updateNotificationPreferences = async (body: {
+  in_app?: boolean;
+  email?: boolean;
+  push?: boolean;
+}) => {
+  const res = await api.patch<NotificationPreferences>(
+    `${base}/preferences`,
+    body,
+  );
   return res.data;
 };
 

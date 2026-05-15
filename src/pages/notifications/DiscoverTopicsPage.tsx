@@ -14,6 +14,18 @@ import { LoadingState } from '@components/LoadingState';
 import { useDiscoverableTopics } from '@hooks/notifications/use-topics';
 
 export default function DiscoverTopicsPage() {
+  return (
+    <div className='space-y-4'>
+      <PageHeader
+        title='Discover Topics'
+        icon={<Compass className='w-5 h-5' />}
+      />
+      <DiscoverTopicsSection />
+    </div>
+  );
+}
+
+export function DiscoverTopicsSection() {
   const { data, isLoading } = useDiscoverableTopics();
 
   if (isLoading) return <LoadingState message='Loading topics…' />;
@@ -22,11 +34,6 @@ export default function DiscoverTopicsPage() {
 
   return (
     <div className='space-y-4'>
-      <PageHeader
-        title='Discover Topics'
-        icon={<Compass className='w-5 h-5' />}
-      />
-
       {topics.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>

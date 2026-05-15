@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import BaseLayout from '@layouts/BaseLayout';
 import PublicLayout from '@layouts/PublicLayout';
 import AuthenticatedLayout from '@layouts/AuthenticatedLayout';
@@ -33,15 +33,12 @@ import BucketContentsPage from '@pages/files/BucketContentsPage';
 import QueuesPage from '@pages/queues/QueuesPage';
 import SingleQueuePage from '@pages/queues/SingleQueuePage';
 import InboxPage from '@pages/notifications/InboxPage';
-import TopicsPage from '@pages/notifications/TopicsPage';
 import SingleTopicPage from '@pages/notifications/SingleTopicPage';
-import NotificationsPage from '@pages/notifications/NotificationsPage';
+import NotificationsHubPage from '@pages/notifications/NotificationsHubPage';
 import AdminNotificationsPage from '@pages/notifications/AdminNotificationsPage';
 import SystemTopicsPage from '@pages/notifications/SystemTopicsPage';
-import DiscoverTopicsPage from '@pages/notifications/DiscoverTopicsPage';
 import FailedExecutionsPage from '@pages/jobs/FailedExecutionsPage';
 import LanguagesAdminPage from '@pages/jobs/LanguagesAdminPage';
-import RecipientsPage from '@pages/notifications/RecipientsPage';
 import QuotasPage from '@pages/quotas/QuotasPage';
 import FailedEventsPage from '@pages/events/FailedEventsPage';
 
@@ -223,12 +220,24 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path='topics'
+            path='notifications'
             element={
-              <ProtectedPage requireScope='was:topic:List'>
-                <TopicsPage />
+              <ProtectedPage>
+                <NotificationsHubPage />
               </ProtectedPage>
             }
+          />
+          <Route
+            path='topics'
+            element={<Navigate to='/notifications?tab=topics' replace />}
+          />
+          <Route
+            path='topics/discover'
+            element={<Navigate to='/notifications?tab=discover' replace />}
+          />
+          <Route
+            path='recipients'
+            element={<Navigate to='/notifications?tab=recipients' replace />}
           />
           <Route
             path='topics/system'
@@ -239,34 +248,10 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path='topics/discover'
-            element={
-              <ProtectedPage requireScope='was:topic:List'>
-                <DiscoverTopicsPage />
-              </ProtectedPage>
-            }
-          />
-          <Route
             path='topics/:id'
             element={
               <ProtectedPage requireScope='was:topic:Get'>
                 <SingleTopicPage />
-              </ProtectedPage>
-            }
-          />
-          <Route
-            path='recipients'
-            element={
-              <ProtectedPage requireScope='was:recipient:List'>
-                <RecipientsPage />
-              </ProtectedPage>
-            }
-          />
-          <Route
-            path='notifications'
-            element={
-              <ProtectedPage requireScope='was:notification:List'>
-                <NotificationsPage />
               </ProtectedPage>
             }
           />

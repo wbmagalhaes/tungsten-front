@@ -25,8 +25,20 @@ import {
   useCreateTopic,
   useDeleteTopic,
 } from '@hooks/notifications/use-topics';
+import { isSystemTopic } from '@services/notifications.service';
+import { useAuthStore } from '@stores/useAuthStore';
 
 export default function TopicsPage() {
+  return (
+    <div className='space-y-4'>
+      <PageHeader title='Topics' icon={<Megaphone className='w-5 h-5' />} />
+      <TopicsSection />
+    </div>
+  );
+}
+
+export function TopicsSection() {
+  const { isSudo } = useAuthStore();
   const { data, isLoading } = useTopics();
   const create = useCreateTopic();
   const del = useDeleteTopic();
@@ -36,8 +48,12 @@ export default function TopicsPage() {
 
   const topics = data?.results ?? [];
 
+  const nameError = name.trim().toLowerCase().startsWith('system:')
+    ? 'Names starting with "system:" are reserved.'
+    : null;
+
   const handleCreate = () => {
-    if (!name.trim()) return;
+    if (!name.trim() || nameError) return;
     create.mutate(
       { name, description },
       {
@@ -52,17 +68,14 @@ export default function TopicsPage() {
 
   return (
     <div className='space-y-4'>
-      <PageHeader
-        title='Topics'
-        icon={<Megaphone className='w-5 h-5' />}
-        action={
-          <ProtectedComponent requireScope='was:topic:Create'>
-            <Button onClick={() => setOpen(true)} size='icon'>
-              <Plus className='w-4 h-4' />
-            </Button>
-          </ProtectedComponent>
-        }
-      />
+      <ProtectedComponent requireScope='was:topic:Create'>
+        <div className='flex justify-end'>
+          <Button onClick={() => setOpen(true)} size='sm'>
+            <Plus className='w-4 h-4' />
+            New Topic
+          </Button>
+        </div>
+      </ProtectedComponent>
 
       {isLoading && <p className='text-sm text-muted-foreground'>Loading…</p>}
 
@@ -76,7 +89,9 @@ export default function TopicsPage() {
               <div className='flex-1 min-w-0'>
                 <CardTitle className='flex items-center gap-2'>
                   {t.name}
-                  {t.is_system && <Badge variant='secondary'>system</Badge>}
+                  {isSystemTopic(t) && (
+                    <Badge variant='secondary'>system</Badge>
+                  )}
                   {t.discoverable && (
                     <Badge variant='outline'>discoverable</Badge>
                   )}
@@ -97,16 +112,18 @@ export default function TopicsPage() {
               >
                 Open
               </ButtonLink>
-              <ProtectedComponent requireScope='was:topic:Delete'>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='text-destructive'
-                  onClick={() => del.mutate(t.id)}
-                >
-                  <Trash2 className='w-4 h-4' />
-                </Button>
-              </ProtectedComponent>
+              {(!isSystemTopic(t) || isSudo) && (
+                <ProtectedComponent requireScope='was:topic:Delete'>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='text-destructive'
+                    onClick={() => del.mutate(t.id)}
+                  >
+                    <Trash2 className='w-4 h-4' />
+                  </Button>
+                </ProtectedComponent>
+              )}
             </CardFooter>
           </Card>
         ))}
@@ -122,6 +139,7 @@ export default function TopicsPage() {
               label='Name'
               value={name}
               onChange={(e) => setName(e.target.value)}
+              error={nameError ?? undefined}
               required
             />
             <TextField
@@ -136,7 +154,7 @@ export default function TopicsPage() {
             </Button>
             <Button
               onClick={handleCreate}
-              disabled={!name.trim() || create.isPending}
+              disabled={!name.trim() || !!nameError || create.isPending}
             >
               {create.isPending ? (
                 <Loader2 className='w-4 h-4 animate-spin' />

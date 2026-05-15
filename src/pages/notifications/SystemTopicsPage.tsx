@@ -36,10 +36,16 @@ export default function SystemTopicsPage() {
 
   const topics = data?.results ?? [];
 
+  const trimmedName = name.trim();
+  const nameError =
+    trimmedName && !trimmedName.toLowerCase().startsWith('system:')
+      ? 'System topic names must start with "system:".'
+      : null;
+
   const handleCreate = () => {
-    if (!name.trim()) return;
+    if (!trimmedName || nameError) return;
     create.mutate(
-      { name, description: description || undefined },
+      { name: trimmedName, description: description || undefined },
       {
         onSuccess: () => {
           setName('');
@@ -131,6 +137,9 @@ export default function SystemTopicsPage() {
               label='Name'
               value={name}
               onChange={(e) => setName(e.target.value)}
+              error={nameError ?? undefined}
+              description='Must start with "system:"'
+              placeholder='system:my-topic'
               required
             />
             <TextField
@@ -145,7 +154,7 @@ export default function SystemTopicsPage() {
             </Button>
             <Button
               onClick={handleCreate}
-              disabled={!name.trim() || create.isPending}
+              disabled={!trimmedName || !!nameError || create.isPending}
             >
               {create.isPending ? (
                 <Loader2 className='w-4 h-4 animate-spin' />

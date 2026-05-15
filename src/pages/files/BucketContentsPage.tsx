@@ -27,6 +27,13 @@ import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -406,17 +413,21 @@ function GrantsSection({ bucketId }: { bucketId: string }) {
           </div>
           <div>
             <label className='text-sm font-medium block mb-1'>Permission</label>
-            <select
-              className='bg-background border border-border rounded-sm px-3 py-2 text-sm'
+            <Select
               value={grantPerm}
-              onChange={(e) => setGrantPerm(e.target.value)}
+              onValueChange={(v) => v && setGrantPerm(v)}
             >
-              {BUCKET_PERMS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {BUCKET_PERMS.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {p}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <Button
             onClick={handleAdd}
@@ -500,17 +511,21 @@ function SettingsSection({
           <label className='text-sm font-medium block mb-1'>
             Default visibility
           </label>
-          <select
-            className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
-            defaultValue={bucket.default_visibility}
-            onChange={(e) =>
-              setDefaultVisibility(Number(e.target.value) as BucketVisibility)
+          <Select
+            defaultValue={String(bucket.default_visibility)}
+            onValueChange={(v) =>
+              v && setDefaultVisibility(Number(v) as BucketVisibility)
             }
           >
-            <option value={0}>0 — private</option>
-            <option value={1}>1 — public</option>
-            <option value={2}>2 — unlisted</option>
-          </select>
+            <SelectTrigger className='w-full'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='0'>0 — private</SelectItem>
+              <SelectItem value='1'>1 — public</SelectItem>
+              <SelectItem value='2'>2 — unlisted</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <TextField
           label='Archive after days (empty = never)'

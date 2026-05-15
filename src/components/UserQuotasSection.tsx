@@ -10,6 +10,14 @@ import {
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import { Input } from '@components/base/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
 import {
   useUserQuotas,
   useUpdateUserQuotas,
@@ -122,10 +130,10 @@ export function UserQuotasSection({ userId }: Props) {
                         <span className='font-mono text-xs flex-1 truncate'>
                           {key}
                         </span>
-                        <input
+                        <Input
                           type='number'
                           defaultValue={current}
-                          className='w-32 bg-background border border-border rounded-sm px-2 py-1 text-xs font-mono'
+                          className='w-32 h-8 py-1 text-xs font-mono'
                           onChange={(e) => {
                             const v = Number(e.target.value);
                             if (Number.isFinite(v)) stage(flat, v);
@@ -179,31 +187,39 @@ export function UserQuotasSection({ userId }: Props) {
           <div className='flex flex-wrap items-end gap-2'>
             <div>
               <label className='text-xs block mb-1'>Module</label>
-              <select
-                className='bg-background border border-border rounded-sm px-2 py-1 text-sm'
+              <Select
                 value={newModule}
-                onChange={(e) => setNewModule(e.target.value as QuotaModule)}
+                onValueChange={(v) => setNewModule(v as QuotaModule)}
               >
-                {MODULES.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger size='sm'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MODULES.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className='text-xs block mb-1'>Key</label>
-              <select
-                className='bg-background border border-border rounded-sm px-2 py-1 font-mono text-xs'
+              <Select
                 value={newKey}
-                onChange={(e) => setNewKey(e.target.value as QuotaKey)}
+                onValueChange={(v) => setNewKey(v as QuotaKey)}
               >
-                {KEYS.map((k) => (
-                  <option key={k} value={k}>
-                    {k}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger size='sm' className='font-mono'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KEYS.map((k) => (
+                    <SelectItem key={k} value={k} className='font-mono'>
+                      {k}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className='flex-1 min-w-32'>
               <TextField

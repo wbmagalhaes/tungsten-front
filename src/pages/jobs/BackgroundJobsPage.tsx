@@ -19,6 +19,14 @@ import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
 import { Textarea } from '@components/base/text-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
+import { Switch } from '@components/base/switch';
 import PageHeader from '@components/PageHeader';
 import {
   Dialog,
@@ -209,20 +217,24 @@ function CreateDialog({ open, onOpenChange }: CreateDialogProps) {
           />
           <div>
             <label className='text-sm font-medium block mb-1'>Language</label>
-            <select
-              className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+            <Select
               value={language}
-              onChange={(e) => setLanguage(e.target.value)}
+              onValueChange={(v) => v && setLanguage(v)}
             >
-              {(langs?.results.length
-                ? langs.results.map((l) => l.language)
-                : ['python']
-              ).map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className='w-full'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(langs?.results.length
+                  ? langs.results.map((l) => l.language)
+                  : ['python']
+                ).map((l) => (
+                  <SelectItem key={l} value={l}>
+                    {l}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <TextField
             label='Priority (-10..10)'
@@ -235,16 +247,22 @@ function CreateDialog({ open, onOpenChange }: CreateDialogProps) {
 
           <div>
             <label className='text-sm font-medium block mb-1'>Trigger</label>
-            <select
-              className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+            <Select
               value={triggerType}
-              onChange={(e) => setTriggerType(e.target.value as TriggerType)}
+              onValueChange={(v) => v && setTriggerType(v as TriggerType)}
             >
-              <option value='eager'>Eager (run once now)</option>
-              <option value='timestamp'>Timestamp (run once at)</option>
-              <option value='cron'>Cron (schedule)</option>
-              <option value='queue'>Queue (on message)</option>
-            </select>
+              <SelectTrigger className='w-full'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='eager'>Eager (run once now)</SelectItem>
+                <SelectItem value='timestamp'>
+                  Timestamp (run once at)
+                </SelectItem>
+                <SelectItem value='cron'>Cron (schedule)</SelectItem>
+                <SelectItem value='queue'>Queue (on message)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {triggerType === 'timestamp' && (
@@ -319,11 +337,7 @@ function CreateDialog({ open, onOpenChange }: CreateDialogProps) {
             onChange={(e) => setMaxAttempts(e.target.value)}
           />
           <label className='flex items-center gap-2 text-sm'>
-            <input
-              type='checkbox'
-              checked={enabled}
-              onChange={(e) => setEnabled(e.target.checked)}
-            />
+            <Switch checked={enabled} onCheckedChange={setEnabled} />
             Enabled
           </label>
 

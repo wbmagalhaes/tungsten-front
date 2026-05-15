@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import AppRoutes from './routes/AppRoutes';
+import { Toaster } from '@components/base/sonner';
 
 import '@styles/global.css';
 
@@ -33,6 +34,7 @@ export default function App() {
   return (
     <QueryClientProvider client={qc}>
       <AppRoutes />
+      <Toaster position='top-right' />
     </QueryClientProvider>
   );
 }
