@@ -29,6 +29,13 @@ import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
 import { Textarea } from '@components/base/text-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import ProtectedComponent from '@components/ProtectedComponent';
@@ -415,17 +422,21 @@ export default function SingleQueuePage() {
                 <label className='text-sm font-medium block mb-1'>
                   Permission
                 </label>
-                <select
-                  className='bg-background border border-border rounded-sm px-3 py-2 text-sm'
+                <Select
                   value={grantPerm}
-                  onChange={(e) => setGrantPerm(e.target.value)}
+                  onValueChange={(v) => v && setGrantPerm(v)}
                 >
-                  {QUEUE_PERMS.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {QUEUE_PERMS.map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 onClick={handleAddGrant}

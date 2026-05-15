@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { ensureFreshToken } from '@services/ensure-fresh-token';
+import { listInbox } from '@services/notifications.service';
 
 const baseURL =
   import.meta.env.VITE_API_BASE_URL ?? 'https://api.tungsten.rocks';
@@ -12,6 +14,7 @@ export const useInboxStream = (
 ) => {
   const { enabled = true, topicId } = options;
   const qc = useQueryClient();
+  const seenIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!enabled) return;
@@ -21,15 +24,37 @@ export const useInboxStream = (
     let es: EventSource | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const invalidate = (event: Event) => {
-      if (import.meta.env.DEV) {
-        console.debug(
-          '[inbox-stream] event',
-          (event as MessageEvent).type,
-          (event as MessageEvent).data,
-        );
+    const seenIds = seenIdsRef.current;
+
+    const primeBaseline = async () => {
+      try {
+        const page = await listInbox();
+        (page.results ?? []).forEach((it) => seenIds.add(it.id));
+      } catch {
+        // ignore — diff will just toast everything that comes in
       }
-      qc.invalidateQueries({ queryKey: ['inbox'] });
+    };
+
+    const invalidate = async (event: Event) => {
+      if (import.meta.env.DEV) {
+        const me = event as MessageEvent;
+        console.debug('[inbox-stream] event', me.type, me.data);
+      }
+      try {
+        const page = await listInbox();
+        qc.setQueryData(['inbox'], page);
+        qc.invalidateQueries({ queryKey: ['inbox', 'unread'] });
+
+        for (const it of page.results ?? []) {
+          if (seenIds.has(it.id)) continue;
+          seenIds.add(it.id);
+          toast.info(it.subject || 'New notification', {
+            description: it.body,
+          });
+        }
+      } catch {
+        qc.invalidateQueries({ queryKey: ['inbox'] });
+      }
     };
 
     const connect = async () => {
@@ -70,14 +95,13 @@ export const useInboxStream = (
     const scheduleReconnect = () => {
       if (destroyed) return;
       attempts += 1;
-      const delay = Math.min(
-        MAX_BACKOFF_MS,
-        1000 * 2 ** Math.min(attempts, 5),
-      );
+      const delay = Math.min(MAX_BACKOFF_MS, 1000 * 2 ** Math.min(attempts, 5));
       reconnectTimer = setTimeout(connect, delay);
     };
 
-    connect();
+    primeBaseline().then(() => {
+      if (!destroyed) connect();
+    });
 
     return () => {
       destroyed = true;

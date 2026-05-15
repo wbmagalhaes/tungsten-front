@@ -22,6 +22,13 @@ import {
 import { Button } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
 import PageHeader from '@components/PageHeader';
 import {
   Dialog,
@@ -160,6 +167,15 @@ function RotatedSecretDialog({
 }
 
 export default function RecipientsPage() {
+  return (
+    <div className='space-y-4'>
+      <PageHeader title='Recipients' icon={<Send className='w-5 h-5' />} />
+      <RecipientsSection />
+    </div>
+  );
+}
+
+export function RecipientsSection() {
   const { data, isLoading } = useRecipients();
   const create = useCreateRecipient();
   const del = useDeleteRecipient();
@@ -199,17 +215,14 @@ export default function RecipientsPage() {
 
   return (
     <div className='space-y-4'>
-      <PageHeader
-        title='Recipients'
-        icon={<Send className='w-5 h-5' />}
-        action={
-          <ProtectedComponent requireScope='was:recipient:Create'>
-            <Button onClick={() => setOpen(true)} size='icon'>
-              <Plus className='w-4 h-4' />
-            </Button>
-          </ProtectedComponent>
-        }
-      />
+      <ProtectedComponent requireScope='was:recipient:Create'>
+        <div className='flex justify-end'>
+          <Button onClick={() => setOpen(true)} size='sm'>
+            <Plus className='w-4 h-4' />
+            New Recipient
+          </Button>
+        </div>
+      </ProtectedComponent>
 
       {isPushSupported() && (
         <ProtectedComponent requireScope='was:recipient:Create'>
@@ -340,17 +353,21 @@ export default function RecipientsPage() {
           <div className='space-y-4'>
             <div>
               <label className='text-sm font-medium block mb-1'>Channel</label>
-              <select
-                className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+              <Select
                 value={channel}
-                onChange={(e) => setChannel(e.target.value as RecipientKind)}
+                onValueChange={(v) => v && setChannel(v as RecipientKind)}
               >
-                {CHANNELS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className='w-full'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CHANNELS.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <TextField
               label='Address'

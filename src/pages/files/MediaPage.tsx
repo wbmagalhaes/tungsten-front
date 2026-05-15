@@ -12,6 +12,13 @@ import {
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
 import PageHeader from '@components/PageHeader';
 import {
   Dialog,
@@ -30,7 +37,10 @@ import { useListBuckets } from '@hooks/buckets/use-list-buckets';
 import { useCreateBucket } from '@hooks/buckets/use-create-bucket';
 import { useDeleteBucket } from '@hooks/buckets/use-delete-bucket';
 import { EventRouteSelector } from '@components/EventRouteSelector';
-import type { BucketVisibility } from '@services/buckets.service';
+import {
+  BUCKET_VISIBILITY_LABELS,
+  type BucketVisibility,
+} from '@services/buckets.service';
 
 function CreateDialog({
   open,
@@ -110,19 +120,21 @@ function CreateDialog({
             <label className='text-sm font-medium block mb-1'>
               Default visibility
             </label>
-            <select
-              className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
-              value={defaultVisibility}
-              onChange={(e) =>
-                setDefaultVisibility(
-                  Number(e.target.value) as BucketVisibility,
-                )
+            <Select
+              value={String(defaultVisibility)}
+              onValueChange={(v) =>
+                v && setDefaultVisibility(Number(v) as BucketVisibility)
               }
             >
-              <option value={0}>0 — private</option>
-              <option value={1}>1 — public</option>
-              <option value={2}>2 — unlisted</option>
-            </select>
+              <SelectTrigger className='w-full'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='0'>0 — private</SelectItem>
+                <SelectItem value='1'>1 — public</SelectItem>
+                <SelectItem value='2'>2 — unlisted</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <TextField
             label='Archive after days (empty = never)'
@@ -225,7 +237,7 @@ export default function MediaPage() {
             </CardHeader>
             <CardContent className='flex gap-2 flex-wrap'>
               <Badge variant='outline' className='text-xs'>
-                visibility {b.default_visibility}
+                default visibility: {BUCKET_VISIBILITY_LABELS[b.default_visibility]}
               </Badge>
               {b.archive_after_days != null && (
                 <Badge variant='outline' className='text-xs'>

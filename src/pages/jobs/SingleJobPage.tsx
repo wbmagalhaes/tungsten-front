@@ -26,6 +26,14 @@ import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
 import { Textarea } from '@components/base/text-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
+import { Switch } from '@components/base/switch';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
@@ -230,20 +238,21 @@ function EditSection({
         />
         <div>
           <label className='text-sm font-medium block mb-1'>Language</label>
-          <select
-            className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-          >
-            {(langs?.results.length
-              ? langs.results.map((l) => l.language)
-              : [job.language]
-            ).map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <Select value={language} onValueChange={(v) => v && setLanguage(v)}>
+            <SelectTrigger className='w-full'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(langs?.results.length
+                ? langs.results.map((l) => l.language)
+                : [job.language]
+              ).map((l) => (
+                <SelectItem key={l} value={l}>
+                  {l}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <TextField
           label='Priority (-10..10)'
@@ -256,16 +265,20 @@ function EditSection({
 
         <div>
           <label className='text-sm font-medium block mb-1'>Trigger</label>
-          <select
-            className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+          <Select
             value={triggerType}
-            onChange={(e) => setTriggerType(e.target.value as TriggerType)}
+            onValueChange={(v) => v && setTriggerType(v as TriggerType)}
           >
-            <option value='eager'>Eager (run once now)</option>
-            <option value='timestamp'>Timestamp (run once at)</option>
-            <option value='cron'>Cron (schedule)</option>
-            <option value='queue'>Queue (on message)</option>
-          </select>
+            <SelectTrigger className='w-full'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='eager'>Eager (run once now)</SelectItem>
+              <SelectItem value='timestamp'>Timestamp (run once at)</SelectItem>
+              <SelectItem value='cron'>Cron (schedule)</SelectItem>
+              <SelectItem value='queue'>Queue (on message)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         {triggerType === 'timestamp' && (
           <TextField
@@ -327,11 +340,7 @@ function EditSection({
           onChange={(e) => setMaxAttempts(e.target.value)}
         />
         <label className='flex items-center gap-2 text-sm'>
-          <input
-            type='checkbox'
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />
+          <Switch checked={enabled} onCheckedChange={setEnabled} />
           Enabled
         </label>
 

@@ -53,6 +53,18 @@ const STATUS_CONFIG: Record<
 };
 
 export default function NotificationsPage() {
+  return (
+    <div className='space-y-4'>
+      <PageHeader
+        title='Sent Notifications'
+        icon={<Send className='w-5 h-5' />}
+      />
+      <NotificationsSection />
+    </div>
+  );
+}
+
+export function NotificationsSection() {
   const { data, isLoading, isError, isFetching, refetch } = useNotifications();
 
   if (isLoading) return <LoadingState message='Loading notifications…' />;
@@ -69,25 +81,21 @@ export default function NotificationsPage() {
 
   return (
     <div className='space-y-4'>
-      <PageHeader
-        title='Sent Notifications'
-        icon={<Send className='w-5 h-5' />}
-        action={
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => refetch()}
-            disabled={isFetching}
-          >
-            {isFetching ? (
-              <Loader2 className='w-4 h-4 animate-spin' />
-            ) : (
-              <RefreshCcw className='w-4 h-4' />
-            )}
-            Refresh
-          </Button>
-        }
-      />
+      <div className='flex justify-end'>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          {isFetching ? (
+            <Loader2 className='w-4 h-4 animate-spin' />
+          ) : (
+            <RefreshCcw className='w-4 h-4' />
+          )}
+          Refresh
+        </Button>
+      </div>
 
       {items.length === 0 ? (
         <Card>

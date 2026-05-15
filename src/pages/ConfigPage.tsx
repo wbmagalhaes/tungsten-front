@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { Settings, Bell, Palette, Save, Check } from 'lucide-react';
+import { Settings, Bell, Palette, Check, Loader2 } from 'lucide-react';
 import {
   Card,
   CardHeader,
   CardIcon,
   CardTitle,
   CardContent,
-  CardFooter,
 } from '@components/base/card';
 import { Button } from '@components/base/button';
+import { Switch } from '@components/base/switch';
 import PageHeader from '@components/PageHeader';
 import {
   Tabs,
@@ -18,6 +17,19 @@ import {
 } from '@components/base/tabs';
 import { cn } from '@utils/cn';
 import { useTheme, THEMES, THEME_META } from '@hooks/use-theme';
+import {
+  useNotificationPreferences,
+  useUpdateNotificationPreferences,
+} from '@hooks/notifications/use-notification-preferences';
+import {
+  isPushSupported,
+  useEnablePushSubscription,
+} from '@hooks/notifications/use-push-subscription';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import { isAxiosError } from 'axios';
+import { toast } from 'sonner';
+import type { NotificationPreferences } from '@services/notifications.service';
 
 export default function ConfigPage() {
   return (
@@ -29,36 +41,155 @@ export default function ConfigPage() {
 
       <Tabs defaultValue='appearance'>
         <TabsList>
-          <TabsTrigger value='notifications'>
-            <Bell className='w-4 h-4' />
-            Notifications
-          </TabsTrigger>
           <TabsTrigger value='appearance'>
             <Palette className='w-4 h-4' />
             Appearance
           </TabsTrigger>
+          <TabsTrigger value='notifications'>
+            <Bell className='w-4 h-4' />
+            Notifications
+          </TabsTrigger>
         </TabsList>
-
-        <TabsContent value='notifications'>
-          <NotificationSettings />
-        </TabsContent>
 
         <TabsContent value='appearance'>
           <AppearanceSettings />
+        </TabsContent>
+
+        <TabsContent value='notifications'>
+          <NotificationSettings />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function NotificationSettings() {
-  const [emailNotifs, setEmailNotifs] = useState(true);
-  const [pushNotifs, setPushNotifs] = useState(false);
+type PrefKind = keyof NotificationPreferences;
 
-  const handleSave = () => {
-    // TODO: Implement endpoint PATCH /api/config/notifications
-    console.log('Saving notifications:', { emailNotifs, pushNotifs });
+const LABELS: Record<PrefKind, string> = {
+  in_app: 'In-app notifications',
+  email: 'Email notifications',
+  push: 'Push notifications',
+};
+
+type RowState = {
+  enabled: boolean;
+  description: string;
+  error?: string | null;
+  disabledReason?: string;
+  action?: React.ReactNode;
+};
+
+function extract422(err: unknown, field: string): string | null {
+  if (!isAxiosError(err) || err.response?.status !== 422) return null;
+  const errors = err.response.data?.errors as
+    | Record<string, string[]>
+    | undefined;
+  return errors?.[field]?.[0] ?? null;
+}
+
+function NotificationSettings() {
+  const {
+    data: prefs,
+    isLoading,
+    isError,
+    refetch,
+  } = useNotificationPreferences();
+  const update = useUpdateNotificationPreferences();
+  const enablePush = useEnablePushSubscription();
+
+  if (isLoading)
+    return <LoadingState message='Loading notification preferences…' />;
+  if (isError || !prefs)
+    return (
+      <ErrorState
+        title='Failed to load preferences'
+        message='Could not reach the server.'
+        onRetry={refetch}
+      />
+    );
+
+  const toggle = (kind: PrefKind, next: boolean) => {
+    update.mutate(
+      { [kind]: next },
+      {
+        onSuccess: () => {
+          toast.success(
+            `${LABELS[kind]} ${next ? 'enabled' : 'disabled'}.`,
+          );
+        },
+        onError: (err) => {
+          const fieldErr = extract422(err, kind);
+          toast.error(
+            fieldErr ?? `Failed to update ${LABELS[kind].toLowerCase()}.`,
+          );
+        },
+      },
+    );
   };
+
+  const pendingKind = update.isPending
+    ? (Object.keys(update.variables ?? {})[0] as PrefKind | undefined)
+    : undefined;
+
+  const emailErr = extract422(update.error, 'email');
+  const pushErr = extract422(update.error, 'push');
+
+  const rows: { kind: PrefKind; title: string; row: RowState }[] = [
+    {
+      kind: 'in_app',
+      title: 'In-App Notifications',
+      row: {
+        enabled: prefs.in_app?.enabled ?? false,
+        description: 'Toast notifications inside the app.',
+      },
+    },
+    {
+      kind: 'email',
+      title: 'Email Notifications',
+      row: {
+        enabled: prefs.email?.enabled ?? false,
+        description: prefs.email
+          ? prefs.email.address
+          : 'Will be created using the email on your profile.',
+        error:
+          pendingKind !== 'email' && update.error
+            ? (emailErr ?? undefined)
+            : undefined,
+      },
+    },
+    {
+      kind: 'push',
+      title: 'Push Notifications',
+      row: {
+        enabled: prefs.push?.enabled ?? false,
+        description: prefs.push
+          ? 'Browser / device push.'
+          : 'Register this device first to enable push.',
+        error:
+          pendingKind !== 'push' && update.error
+            ? (pushErr ?? undefined)
+            : undefined,
+        disabledReason:
+          !prefs.push && !isPushSupported()
+            ? 'Push not supported in this browser.'
+            : undefined,
+        action:
+          !prefs.push && isPushSupported() ? (
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => enablePush.mutate()}
+              disabled={enablePush.isPending}
+            >
+              {enablePush.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : null}
+              Register device
+            </Button>
+          ) : undefined,
+      },
+    },
+  ];
 
   return (
     <Card>
@@ -69,46 +200,40 @@ function NotificationSettings() {
         <CardTitle>Notification Preferences</CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>
-        <div className='flex items-center justify-between p-4 rounded-sm bg-muted/30 border border-border'>
-          <div>
-            <h4 className='font-medium text-foreground'>Email Notifications</h4>
-            <p className='text-sm text-muted-foreground'>
-              Receive updates via email
-            </p>
-          </div>
-          <Button
-            className='min-w-20'
-            variant={emailNotifs ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => setEmailNotifs(!emailNotifs)}
-          >
-            {emailNotifs ? 'Enabled' : 'Disabled'}
-          </Button>
-        </div>
-
-        <div className='flex items-center justify-between p-4 rounded-sm bg-muted/30 border border-border'>
-          <div>
-            <h4 className='font-medium text-foreground'>Push Notifications</h4>
-            <p className='text-sm text-muted-foreground'>
-              Browser push notifications
-            </p>
-          </div>
-          <Button
-            className='min-w-20'
-            variant={pushNotifs ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => setPushNotifs(!pushNotifs)}
-          >
-            {pushNotifs ? 'Enabled' : 'Disabled'}
-          </Button>
-        </div>
+        {rows.map(({ kind, title, row }) => {
+          const isPending = pendingKind === kind;
+          const buttonDisabled = !!row.disabledReason || update.isPending;
+          return (
+            <div
+              key={kind}
+              className='flex items-center justify-between gap-4 p-4 rounded-sm bg-muted/30 border border-border'
+            >
+              <div className='min-w-0'>
+                <h4 className='font-medium text-foreground'>{title}</h4>
+                <p className='text-sm text-muted-foreground truncate'>
+                  {row.description}
+                </p>
+                {(row.error || row.disabledReason) && (
+                  <p className='text-xs text-destructive mt-1'>
+                    {row.error ?? row.disabledReason}
+                  </p>
+                )}
+              </div>
+              <div className='flex items-center gap-4 shrink-0'>
+                {row.action}
+                {isPending ? (
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                ) : null}
+                <Switch
+                  checked={row.enabled}
+                  onCheckedChange={(v) => toggle(kind, v)}
+                  disabled={buttonDisabled}
+                />
+              </div>
+            </div>
+          );
+        })}
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleSave} className='ml-auto'>
-          <Save className='w-4 h-4' />
-          Save Changes
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

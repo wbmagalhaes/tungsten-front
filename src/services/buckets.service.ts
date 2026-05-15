@@ -3,6 +3,12 @@ import type { Paginated } from '@models/paginated';
 
 export type BucketVisibility = 0 | 1 | 2;
 
+export const BUCKET_VISIBILITY_LABELS: Record<BucketVisibility, string> = {
+  0: 'private',
+  1: 'public',
+  2: 'unlisted',
+};
+
 export interface Bucket {
   id: string;
   owner_id: string;

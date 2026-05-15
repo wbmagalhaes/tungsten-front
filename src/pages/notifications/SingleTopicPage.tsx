@@ -44,8 +44,19 @@ import {
   useDeleteTopicPermission,
 } from '@hooks/notifications/use-topic-permissions';
 import { useRecipients } from '@hooks/notifications/use-recipients';
+import { isSystemTopic } from '@services/notifications.service';
+import { useAuthStore } from '@stores/useAuthStore';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/base/select';
+import { Switch } from '@components/base/switch';
 
 export default function SingleTopicPage() {
+  const { isSudo } = useAuthStore();
   const { id = '' } = useParams();
   const { data: topic, isLoading, error } = useGetTopic(id);
   const { data: subscriptions } = useTopicSubscriptions(id);
@@ -135,7 +146,9 @@ export default function SingleTopicPage() {
           <div className='flex flex-col items-start gap-1 flex-1'>
             <CardTitle className='flex items-center gap-2'>
               {topic.name}
-              {topic.is_system && <Badge variant='secondary'>system</Badge>}
+              {isSystemTopic(topic) && (
+                <Badge variant='secondary'>system</Badge>
+              )}
               {topic.discoverable && (
                 <Badge variant='outline'>discoverable</Badge>
               )}
@@ -149,25 +162,40 @@ export default function SingleTopicPage() {
               {topic.id}
             </span>
           </div>
-          <ProtectedComponent requireScope='was:topic:Edit'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => {
-                setEditName(topic.name);
-                setEditDescription(topic.description ?? '');
-                setEditDiscoverable(topic.discoverable);
-                setEditing(true);
-              }}
-            >
-              <Pencil className='w-4 h-4' />
-              Edit
-            </Button>
-          </ProtectedComponent>
+          {(!isSystemTopic(topic) || isSudo) && (
+            <ProtectedComponent requireScope='was:topic:Edit'>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() => {
+                  setEditName(topic.name);
+                  setEditDescription(topic.description ?? '');
+                  setEditDiscoverable(topic.discoverable);
+                  setEditing(true);
+                }}
+              >
+                <Pencil className='w-4 h-4' />
+                Edit
+              </Button>
+            </ProtectedComponent>
+          )}
         </CardHeader>
       </Card>
 
-      {editing && (
+      {editing && (() => {
+        const isSystem = isSystemTopic(topic);
+        const startsWithSystem = editName
+          .trim()
+          .toLowerCase()
+          .startsWith('system:');
+        const nameError = isSystem
+          ? !startsWithSystem
+            ? 'System topic names must start with "system:".'
+            : null
+          : startsWithSystem
+            ? 'Names starting with "system:" are reserved.'
+            : null;
+        return (
         <Card>
           <CardHeader>
             <CardIcon>
@@ -180,6 +208,7 @@ export default function SingleTopicPage() {
               label='Name'
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
+              error={nameError ?? undefined}
             />
             <TextField
               label='Description'
@@ -187,10 +216,9 @@ export default function SingleTopicPage() {
               onChange={(e) => setEditDescription(e.target.value)}
             />
             <label className='flex items-center gap-2 text-sm'>
-              <input
-                type='checkbox'
+              <Switch
                 checked={editDiscoverable}
-                onChange={(e) => setEditDiscoverable(e.target.checked)}
+                onCheckedChange={setEditDiscoverable}
               />
               Discoverable (visible to all users)
             </label>
@@ -207,7 +235,7 @@ export default function SingleTopicPage() {
                   { onSuccess: () => setEditing(false) },
                 )
               }
-              disabled={update.isPending}
+              disabled={!!nameError || update.isPending}
             >
               {update.isPending ? (
                 <Loader2 className='w-4 h-4 animate-spin' />
@@ -221,7 +249,8 @@ export default function SingleTopicPage() {
             </Button>
           </CardContent>
         </Card>
-      )}
+        );
+      })()}
 
       <ProtectedComponent requireScope='was:topic:Send'>
         <Card>
@@ -326,18 +355,21 @@ export default function SingleTopicPage() {
                     <label className='text-sm font-medium block mb-1'>
                       Subscribe recipient
                     </label>
-                    <select
-                      className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+                    <Select
                       value={recipientId}
-                      onChange={(e) => setRecipientId(e.target.value)}
+                      onValueChange={(v) => setRecipientId(v ?? '')}
                     >
-                      <option value=''>Select a recipient…</option>
-                      {availableRecipients.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.kind}: {r.address}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className='w-full'>
+                        <SelectValue placeholder='Select a recipient…' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableRecipients.map((r) => (
+                          <SelectItem key={r.id} value={r.id}>
+                            {r.kind}: {r.address}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <Button
                     onClick={handleSubscribe}
@@ -412,17 +444,21 @@ export default function SingleTopicPage() {
                 <label className='text-sm font-medium block mb-1'>
                   Permission
                 </label>
-                <select
-                  className='bg-background border border-border rounded-sm px-3 py-2 text-sm'
+                <Select
                   value={permName}
-                  onChange={(e) => setPermName(e.target.value)}
+                  onValueChange={(v) => setPermName(v ?? '')}
                 >
-                  {['Send', 'Get', 'Edit', 'Delete'].map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Send', 'Get', 'Edit', 'Delete'].map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 onClick={handleAddPermission}
