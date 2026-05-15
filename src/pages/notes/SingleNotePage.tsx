@@ -127,7 +127,7 @@ export default function SingleNotePage() {
               className='min-h-48'
             />
           </div>
-          <ProtectedComponent requireScope='notes:Edit'>
+          <ProtectedComponent requireScope='wnt:note:Edit'>
             <Button
               className='w-full'
               onClick={handleSave}
@@ -140,7 +140,7 @@ export default function SingleNotePage() {
         </CardContent>
       </Card>
 
-      <ProtectedComponent requireScope='notes:Delete'>
+      <ProtectedComponent requireScope='wnt:note:Delete'>
         <Card className='border-destructive/50'>
           <CardHeader>
             <CardIcon className='bg-destructive/10 text-destructive'>

@@ -287,7 +287,7 @@ export default function ChatRoomPage() {
 
           <div className='p-4 border-t border-border'>
             <ProtectedComponent
-              requireScope='chat-rooms:Join'
+              requireScope='wct:room:Join'
               fallback={
                 <p className='text-sm text-muted-foreground text-center py-2'>
                   You don't have permission to send messages.
@@ -352,7 +352,7 @@ export default function ChatRoomPage() {
                       {name}
                     </span>
                     <ProtectedComponent
-                      requireScope='chat-rooms:Moderate'
+                      requireScope='wct:room:Edit'
                       fallback={null}
                     >
                       <Button

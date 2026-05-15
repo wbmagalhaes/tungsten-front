@@ -172,7 +172,7 @@ function NoteCard({ note, onDelete }: NoteCardProps) {
             className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0'
             onClick={(e) => e.stopPropagation()}
           >
-            <ProtectedComponent requireScope='notes:Get'>
+            <ProtectedComponent requireScope='wnt:note:Get'>
               <ButtonLink
                 to={`/notes/${note.id}`}
                 variant='ghost'
@@ -182,7 +182,7 @@ function NoteCard({ note, onDelete }: NoteCardProps) {
                 <PencilLine className='w-3 h-3' />
               </ButtonLink>
             </ProtectedComponent>
-            <ProtectedComponent requireScope='notes:Delete'>
+            <ProtectedComponent requireScope='wnt:note:Delete'>
               <Button
                 variant='destructive'
                 size='icon-sm'
@@ -254,7 +254,7 @@ export default function NotesPage() {
         title='Notes'
         icon={<StickyNote className='w-5 h-5' />}
         action={
-          <ProtectedComponent requireScope='notes:Create'>
+          <ProtectedComponent requireScope='wnt:note:Create'>
             <Button onClick={() => setCreateOpen(true)} size='icon'>
               <PencilLine className='w-4 h-4' />
             </Button>
@@ -291,7 +291,7 @@ export default function NotesPage() {
             <p className='text-muted-foreground mb-4'>
               No notes yet. Create your first note!
             </p>
-            <ProtectedComponent requireScope='notes:Create'>
+            <ProtectedComponent requireScope='wnt:note:Create'>
               <Button onClick={() => setCreateOpen(true)}>
                 <Plus className='w-4 h-4' />
                 New Note

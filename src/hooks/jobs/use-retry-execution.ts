@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { retryJob } from '@services/jobs.service';
+import { retryExecution } from '@services/jobs.service';
 
-export const useRetryJob = () => {
+export const useRetryExecution = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (jobId: string) => retryJob(jobId),
+    mutationFn: (executionId: string) => retryExecution(executionId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['jobs'] }),
   });
 };

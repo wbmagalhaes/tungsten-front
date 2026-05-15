@@ -1,5 +1,6 @@
 export type FileMetadata = {
   id: string;
+  bucket_id: string;
   basename: string;
   filepath: string;
   size: number;

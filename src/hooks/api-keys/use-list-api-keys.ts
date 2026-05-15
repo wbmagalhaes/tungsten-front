@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { listApiKeys } from '@services/api-keys.service';
+import {
+  listApiKeys,
+  type ListApiKeysParams,
+} from '@services/api-keys.service';
 
-export const useListApiKeys = () => {
+export const useListApiKeys = (params?: ListApiKeysParams) => {
   return useQuery({
-    queryKey: ['api-keys'],
-    queryFn: listApiKeys,
+    queryKey: ['api-keys', params],
+    queryFn: () => listApiKeys(params),
   });
 };

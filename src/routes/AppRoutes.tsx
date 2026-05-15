@@ -13,8 +13,6 @@ import SingleNotePage from '@pages/notes/SingleNotePage';
 import UsersPage from '@pages/users/UsersPage';
 import SingleUserPage from '@pages/users/SingleUserPage';
 import TemplatesPage from '@pages/templates/TemplatesPage';
-import SandboxPage from '@pages/sandbox/SandboxPage';
-import SingleRunnerPage from '@pages/sandbox/SingleRunnerPage';
 import ChatBotPage from '@pages/chat-bot/ChatBotPage';
 import ImageGenerationPage from '@pages/img-gen/ImageGenerationPage';
 import BackgroundJobsPage from '@pages/jobs/BackgroundJobsPage';
@@ -31,6 +29,21 @@ import AccessDeniedPage from '@pages/AccessDeniedPage';
 import LogoutPage from '@pages/auth/LogoutPage';
 import ChatPage from '@pages/chat/ChatPage';
 import ChatRoomPage from '@pages/chat/ChatRoomPage';
+import BucketContentsPage from '@pages/files/BucketContentsPage';
+import QueuesPage from '@pages/queues/QueuesPage';
+import SingleQueuePage from '@pages/queues/SingleQueuePage';
+import InboxPage from '@pages/notifications/InboxPage';
+import TopicsPage from '@pages/notifications/TopicsPage';
+import SingleTopicPage from '@pages/notifications/SingleTopicPage';
+import NotificationsPage from '@pages/notifications/NotificationsPage';
+import AdminNotificationsPage from '@pages/notifications/AdminNotificationsPage';
+import SystemTopicsPage from '@pages/notifications/SystemTopicsPage';
+import DiscoverTopicsPage from '@pages/notifications/DiscoverTopicsPage';
+import FailedExecutionsPage from '@pages/jobs/FailedExecutionsPage';
+import LanguagesAdminPage from '@pages/jobs/LanguagesAdminPage';
+import RecipientsPage from '@pages/notifications/RecipientsPage';
+import QuotasPage from '@pages/quotas/QuotasPage';
+import FailedEventsPage from '@pages/events/FailedEventsPage';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -59,7 +72,7 @@ export default function AppRoutes() {
           <Route
             path='system-health'
             element={
-              <ProtectedPage requireScope='system:Read'>
+              <ProtectedPage requireScope='w74:system:Read'>
                 <SystemHealthPage />
               </ProtectedPage>
             }
@@ -68,7 +81,7 @@ export default function AppRoutes() {
           <Route
             path='users'
             element={
-              <ProtectedPage requireScope='users:List'>
+              <ProtectedPage requireScope='iam:user:List'>
                 <UsersPage />
               </ProtectedPage>
             }
@@ -76,7 +89,7 @@ export default function AppRoutes() {
           <Route
             path='users/:id'
             element={
-              <ProtectedPage requireScope='users:Get'>
+              <ProtectedPage requireScope='iam:user:Get'>
                 <SingleUserPage />
               </ProtectedPage>
             }
@@ -85,7 +98,7 @@ export default function AppRoutes() {
           <Route
             path='notes'
             element={
-              <ProtectedPage requireScope='notes:List'>
+              <ProtectedPage requireScope='wnt:note:List'>
                 <NotesPage />
               </ProtectedPage>
             }
@@ -93,7 +106,7 @@ export default function AppRoutes() {
           <Route
             path='notes/:id'
             element={
-              <ProtectedPage requireScope='notes:Get'>
+              <ProtectedPage requireScope='wnt:note:Get'>
                 <SingleNotePage />
               </ProtectedPage>
             }
@@ -102,15 +115,23 @@ export default function AppRoutes() {
           <Route
             path='media'
             element={
-              <ProtectedPage requireScope='files:List'>
+              <ProtectedPage requireScope='wss:bucket:List'>
                 <MediaPage />
               </ProtectedPage>
             }
           />
           <Route
-            path='media/:id'
+            path='media/:bucketId'
             element={
-              <ProtectedPage requireScope='files:Get'>
+              <ProtectedPage requireScope='wss:bucket:Get'>
+                <BucketContentsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='media/:bucketId/files/:id'
+            element={
+              <ProtectedPage requireScope='wss:file:Get'>
                 <SingleFilePage />
               </ProtectedPage>
             }
@@ -119,25 +140,8 @@ export default function AppRoutes() {
           <Route
             path='templates'
             element={
-              <ProtectedPage requireScope='templates:List'>
+              <ProtectedPage>
                 <TemplatesPage />
-              </ProtectedPage>
-            }
-          />
-
-          <Route
-            path='sandbox'
-            element={
-              <ProtectedPage requireScope='sandbox:List'>
-                <SandboxPage />
-              </ProtectedPage>
-            }
-          />
-          <Route
-            path='sandbox/:id'
-            element={
-              <ProtectedPage requireScope='jobs:Get'>
-                <SingleRunnerPage />
               </ProtectedPage>
             }
           />
@@ -145,7 +149,7 @@ export default function AppRoutes() {
           <Route
             path='chat-bot'
             element={
-              <ProtectedPage requireScope='chat-bot:List'>
+              <ProtectedPage>
                 <ChatBotPage />
               </ProtectedPage>
             }
@@ -154,7 +158,7 @@ export default function AppRoutes() {
           <Route
             path='image-generation'
             element={
-              <ProtectedPage requireScope='img-gen:List'>
+              <ProtectedPage>
                 <ImageGenerationPage />
               </ProtectedPage>
             }
@@ -163,7 +167,7 @@ export default function AppRoutes() {
           <Route
             path='background-jobs'
             element={
-              <ProtectedPage requireScope='jobs:List'>
+              <ProtectedPage requireScope='wjb:job:List'>
                 <BackgroundJobsPage />
               </ProtectedPage>
             }
@@ -171,8 +175,124 @@ export default function AppRoutes() {
           <Route
             path='background-jobs/:id'
             element={
-              <ProtectedPage requireScope='jobs:Get'>
+              <ProtectedPage requireScope='wjb:job:Get'>
                 <SingleJobPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='background-jobs/admin/failed'
+            element={
+              <ProtectedPage requireScope='sudo'>
+                <FailedExecutionsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='background-jobs/admin/languages'
+            element={
+              <ProtectedPage requireScope='wjb:job:List'>
+                <LanguagesAdminPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='queues'
+            element={
+              <ProtectedPage requireScope='wqs:queue:List'>
+                <QueuesPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='queues/:id'
+            element={
+              <ProtectedPage requireScope='wqs:queue:Get'>
+                <SingleQueuePage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='inbox'
+            element={
+              <ProtectedPage>
+                <InboxPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='topics'
+            element={
+              <ProtectedPage requireScope='was:topic:List'>
+                <TopicsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='topics/system'
+            element={
+              <ProtectedPage requireScope='sudo'>
+                <SystemTopicsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='topics/discover'
+            element={
+              <ProtectedPage requireScope='was:topic:List'>
+                <DiscoverTopicsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='topics/:id'
+            element={
+              <ProtectedPage requireScope='was:topic:Get'>
+                <SingleTopicPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='recipients'
+            element={
+              <ProtectedPage requireScope='was:recipient:List'>
+                <RecipientsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='notifications'
+            element={
+              <ProtectedPage requireScope='was:notification:List'>
+                <NotificationsPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='notifications/admin'
+            element={
+              <ProtectedPage requireScope='sudo'>
+                <AdminNotificationsPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='quotas'
+            element={
+              <ProtectedPage>
+                <QuotasPage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='events/failed'
+            element={
+              <ProtectedPage requireScope='sudo'>
+                <FailedEventsPage />
               </ProtectedPage>
             }
           />

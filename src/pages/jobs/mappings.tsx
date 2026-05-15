@@ -1,7 +1,11 @@
 import { Badge } from '@components/base/badge';
 import { CheckCircle, Clock, Loader2, StopCircle, XCircle } from 'lucide-react';
+import type { JobStatus } from '@services/jobs.service';
 
-export const STATUS_CONFIG = {
+export const STATUS_CONFIG: Record<
+  JobStatus,
+  { badge: React.ReactNode; icon: React.ReactNode }
+> = {
   queued: {
     badge: (
       <Badge variant='secondary'>
@@ -42,4 +46,23 @@ export const STATUS_CONFIG = {
     badge: <Badge variant='outline'>Cancelled</Badge>,
     icon: <StopCircle className='w-5 h-5 text-muted-foreground' />,
   },
-} as const;
+};
+
+export function formatTimestamp(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+
+export function formatDuration(ms: number | null): string {
+  if (ms == null) return '—';
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(2)}s`;
+}

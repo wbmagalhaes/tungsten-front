@@ -1,6 +1,24 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, Download, ExternalLink, Trash2, Info } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  ExternalLink,
+  Trash2,
+  Info,
+  Pencil,
+  FolderInput,
+  Archive,
+  Eye,
+  EyeOff,
+  Link as LinkIcon,
+  Copy,
+  Check,
+  Loader2,
+  Eye as ViewIcon,
+  FileArchive,
+  PackageOpen,
+} from 'lucide-react';
 import {
   Card,
   CardHeader,
@@ -11,13 +29,33 @@ import {
 } from '@components/base/card';
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
+import { TextField } from '@components/base/text-field';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@components/base/dialog';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import ProtectedComponent from '@components/ProtectedComponent';
 
 import { useGetFile } from '@hooks/files/use-get-file';
 import { useDeleteFile } from '@hooks/files/use-delete-file';
 import { useDownloadFile } from '@hooks/files/use-download-file';
+import {
+  useRenameFile,
+  useMoveFile,
+  useArchiveFile,
+  useSetFileVisibility,
+  useSignFile,
+  useCompressFile,
+  useDecompressFile,
+  useViewFile,
+} from '@hooks/files/use-file-actions';
 import formatBytes from '@utils/formatBytes';
 import { FileIcon } from './FileIcon';
 
@@ -28,8 +66,23 @@ export default function SingleFilePage() {
   const { data: file, isLoading, error } = useGetFile(id);
   const deleteFile = useDeleteFile();
   const downloadFile = useDownloadFile();
+  const rename = useRenameFile(id);
+  const move = useMoveFile(id);
+  const archive = useArchiveFile(id);
+  const setVisibility = useSetFileVisibility(id);
+  const sign = useSignFile(id);
+  const compress = useCompressFile(id);
+  const decompress = useDecompressFile(id);
+  const view = useViewFile();
 
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
+  const [moveValue, setMoveValue] = useState('');
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
@@ -61,14 +114,59 @@ export default function SingleFilePage() {
   };
 
   const handleDelete = () => {
-    deleteFile.mutate(file.id, { onSuccess: () => navigate('/media') });
+    deleteFile.mutate(file.id, {
+      onSuccess: () => navigate(`/media/${file.bucket_id}`),
+    });
+  };
+
+  const handleRename = () => {
+    if (!renameValue.trim()) return;
+    rename.mutate(
+      { to: renameValue },
+      { onSuccess: () => setRenameOpen(false) },
+    );
+  };
+
+  const handleMove = () => {
+    if (!moveValue.trim()) return;
+    move.mutate({ to: moveValue }, { onSuccess: () => setMoveOpen(false) });
+  };
+
+  const handleToggleVisibility = () => {
+    setVisibility.mutate({
+      visibility: file.visibility === 'public' ? 'private' : 'public',
+    });
+  };
+
+  const handleSign = () => {
+    sign.mutate(undefined, {
+      onSuccess: (data) => setSignedUrl(data.url),
+    });
+  };
+
+  const handleView = () => {
+    view.mutate(id, {
+      onSuccess: (blobUrl) => window.open(blobUrl, '_blank', 'noopener'),
+    });
+  };
+
+  const handleCopySigned = () => {
+    if (!signedUrl) return;
+    navigator.clipboard.writeText(signedUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className='space-y-4 max-w-3xl mx-auto'>
-      <ButtonLink to='/media' variant='link' className='p-0' size='sm'>
+      <ButtonLink
+        to={`/media/${file.bucket_id}`}
+        variant='link'
+        className='p-0'
+        size='sm'
+      >
         <ArrowLeft className='w-4 h-4' />
-        Back to media
+        Back to bucket
       </ButtonLink>
 
       <Card>
@@ -79,6 +177,12 @@ export default function SingleFilePage() {
           <div className='flex flex-col items-start gap-1'>
             <CardTitle>{file.basename}</CardTitle>
             <CardDescription>{file.filepath}</CardDescription>
+            {file.is_archived && (
+              <Badge variant='warning'>
+                <Archive className='w-3 h-3' />
+                archived
+              </Badge>
+            )}
           </div>
         </CardHeader>
       </Card>
@@ -140,59 +244,137 @@ export default function SingleFilePage() {
         </CardHeader>
         <CardContent>
           <div className='flex flex-wrap gap-2'>
-            <Button
-              onClick={handleDownload}
-              disabled={isDownloading}
-              className='flex-1'
-            >
+            <Button onClick={handleDownload} disabled={isDownloading}>
               <Download className='w-4 h-4' />
               {isDownloading ? `Downloading ${downloadProgress}%` : 'Download'}
             </Button>
-            {file.canonical_uri && (
+            <Button
+              variant='secondary'
+              onClick={handleView}
+              disabled={view.isPending}
+            >
+              {view.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <ViewIcon className='w-4 h-4' />
+              )}
+              View
+            </Button>
+            <ProtectedComponent requireScope='wss:file:Edit'>
+              <>
+                <Button
+                  variant='secondary'
+                  onClick={() => {
+                    setRenameValue(file.basename);
+                    setRenameOpen(true);
+                  }}
+                >
+                  <Pencil className='w-4 h-4' />
+                  Rename
+                </Button>
+                <Button
+                  variant='secondary'
+                  onClick={() => {
+                    setMoveValue(file.filepath);
+                    setMoveOpen(true);
+                  }}
+                >
+                  <FolderInput className='w-4 h-4' />
+                  Move
+                </Button>
+                <Button
+                  variant='secondary'
+                  onClick={handleToggleVisibility}
+                  disabled={setVisibility.isPending}
+                >
+                  {file.visibility === 'public' ? (
+                    <EyeOff className='w-4 h-4' />
+                  ) : (
+                    <Eye className='w-4 h-4' />
+                  )}
+                  Make {file.visibility === 'public' ? 'private' : 'public'}
+                </Button>
+              </>
+            </ProtectedComponent>
+            <ProtectedComponent requireScope='wss:file:Get'>
               <Button
-                nativeButton={false}
-                render={(props) => (
-                  <a
-                    {...props}
-                    href={file.canonical_uri}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  />
-                )}
                 variant='secondary'
-                size='icon'
-                title='Open in new tab'
+                onClick={handleSign}
+                disabled={sign.isPending}
               >
-                <ExternalLink className='w-4 h-4' />
+                {sign.isPending ? (
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                ) : (
+                  <LinkIcon className='w-4 h-4' />
+                )}
+                Signed URL
               </Button>
-            )}
+            </ProtectedComponent>
+            <ProtectedComponent requireScope='wss:file:Edit'>
+              <>
+                <Button
+                  variant='outline'
+                  onClick={() => compress.mutate()}
+                  disabled={compress.isPending}
+                >
+                  {compress.isPending ? (
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                  ) : (
+                    <FileArchive className='w-4 h-4' />
+                  )}
+                  Compress
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={() => decompress.mutate()}
+                  disabled={decompress.isPending}
+                >
+                  {decompress.isPending ? (
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                  ) : (
+                    <PackageOpen className='w-4 h-4' />
+                  )}
+                  Decompress
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={() => setArchiveOpen(true)}
+                  disabled={archive.isPending || file.is_archived}
+                >
+                  <Archive className='w-4 h-4' />
+                  Archive
+                </Button>
+              </>
+            </ProtectedComponent>
           </div>
         </CardContent>
       </Card>
 
-      <Card className='border-destructive/50'>
-        <CardHeader>
-          <CardIcon className='bg-destructive/10 text-destructive'>
-            <Trash2 className='w-5 h-5' />
-          </CardIcon>
-          <div>
-            <CardTitle>Delete File</CardTitle>
-            <CardDescription>
-              Permanently remove this file. This action cannot be undone.
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant='destructive'
-            onClick={() => setDeleteOpen(true)}
-            disabled={deleteFile.isPending}
-          >
-            <Trash2 className='w-4 h-4' />
-            Delete File
-          </Button>
-        </CardContent>
-      </Card>
+      <ProtectedComponent requireScope='wss:file:Delete'>
+        <Card className='border-destructive/50'>
+          <CardHeader>
+            <CardIcon className='bg-destructive/10 text-destructive'>
+              <Trash2 className='w-5 h-5' />
+            </CardIcon>
+            <div>
+              <CardTitle>Delete File</CardTitle>
+              <CardDescription>
+                Permanently remove this file. This action cannot be undone.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant='destructive'
+              onClick={() => setDeleteOpen(true)}
+              disabled={deleteFile.isPending}
+            >
+              <Trash2 className='w-4 h-4' />
+              Delete File
+            </Button>
+          </CardContent>
+        </Card>
+      </ProtectedComponent>{' '}
 
       <ConfirmationDialog
         open={deleteOpen}
@@ -206,6 +388,114 @@ export default function SingleFilePage() {
         isLoading={deleteFile.isPending}
         loadingText='Deleting…'
       />
+
+      <ConfirmationDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        title='Archive file'
+        description='Archived files are hidden from listings by default but kept in storage.'
+        icon={<Archive className='w-5 h-5 text-warning' />}
+        confirmText='Archive'
+        onConfirm={() =>
+          archive.mutate(undefined, {
+            onSuccess: () => setArchiveOpen(false),
+          })
+        }
+        isLoading={archive.isPending}
+        loadingText='Archiving…'
+      />
+
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename file</DialogTitle>
+          </DialogHeader>
+          <TextField
+            label='New basename'
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            required
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setRenameOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRename}
+              disabled={!renameValue.trim() || rename.isPending}
+            >
+              {rename.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <Pencil className='w-4 h-4' />
+              )}
+              Rename
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={moveOpen} onOpenChange={setMoveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Move file</DialogTitle>
+            <DialogDescription>
+              Enter the new full filepath.
+            </DialogDescription>
+          </DialogHeader>
+          <TextField
+            label='New filepath'
+            value={moveValue}
+            onChange={(e) => setMoveValue(e.target.value)}
+            required
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setMoveOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMove}
+              disabled={!moveValue.trim() || move.isPending}
+            >
+              {move.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <FolderInput className='w-4 h-4' />
+              )}
+              Move
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!signedUrl}
+        onOpenChange={(o) => !o && setSignedUrl(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Signed URL</DialogTitle>
+            <DialogDescription>
+              Anyone with this link can access the file until it expires.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='flex items-center gap-2 bg-muted rounded-sm p-3 font-mono text-xs break-all'>
+            <span className='flex-1 select-all'>{signedUrl}</span>
+            <Button variant='ghost' size='icon' onClick={handleCopySigned}>
+              {copied ? (
+                <Check className='w-4 h-4 text-success' />
+              ) : (
+                <Copy className='w-4 h-4' />
+              )}
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setSignedUrl(null)}>Done</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

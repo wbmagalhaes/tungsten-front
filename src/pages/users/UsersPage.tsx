@@ -90,7 +90,7 @@ export default function UsersPage() {
         title='Users'
         icon={<Users className='w-5 h-5' />}
         action={
-          <ProtectedComponent requireScope='users:Create'>
+          <ProtectedComponent requireScope='iam:user:Create'>
             <Button onClick={handleCreateOpen} size='icon'>
               <UserPlus className='w-4 h-4' />
             </Button>
@@ -158,7 +158,7 @@ export default function UsersPage() {
                     </td>
                     <td className='p-3 text-right'>
                       <div className='flex items-center justify-end gap-2'>
-                        <ProtectedComponent requireScope='users:Get'>
+                        <ProtectedComponent requireScope='iam:user:Get'>
                           <ButtonLink
                             to={`/users/${u.id}`}
                             variant='secondary'
@@ -167,7 +167,7 @@ export default function UsersPage() {
                             Open
                           </ButtonLink>
                         </ProtectedComponent>
-                        <ProtectedComponent requireScope='users:Delete'>
+                        <ProtectedComponent requireScope='iam:user:Delete'>
                           <Button
                             variant='destructive'
                             size='sm'
@@ -235,7 +235,7 @@ export default function UsersPage() {
                   </div>
 
                   <div className='flex gap-2'>
-                    <ProtectedComponent requireScope='users:Get'>
+                    <ProtectedComponent requireScope='iam:user:Get'>
                       <ButtonLink
                         to={`/users/${u.id}`}
                         variant='secondary'
@@ -244,7 +244,7 @@ export default function UsersPage() {
                         Open Profile
                       </ButtonLink>
                     </ProtectedComponent>
-                    <ProtectedComponent requireScope='users:Delete'>
+                    <ProtectedComponent requireScope='iam:user:Delete'>
                       <Button
                         variant='destructive'
                         onClick={() =>

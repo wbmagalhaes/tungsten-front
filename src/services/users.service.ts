@@ -14,8 +14,8 @@ export async function getUser(id: string) {
   return data;
 }
 
-export async function getProfile() {
-  const { data } = await api.get<User>('/api/users/profile');
+export async function listAvailableScopes() {
+  const { data } = await api.get<string[]>('/api/users/scopes');
   return data;
 }
 

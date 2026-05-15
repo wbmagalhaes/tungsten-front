@@ -7,9 +7,12 @@ import { useUpdateUser } from '@hooks/users/use-update-user';
 import { useGetUser } from '@hooks/users/use-get-user';
 import { useDeleteUser } from '@hooks/users/use-delete-user';
 import { useUpdatePermissions } from '@hooks/users/use-update-permissions';
+import { useAvailableScopes } from '@hooks/users/use-available-scopes';
 import { useForceSetPassword } from '@hooks/auth/use-force-set-password';
 import ProtectedComponent from '@components/ProtectedComponent';
 import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import { UserQuotasSection } from '@components/UserQuotasSection';
+import { UserRecipientsSection } from '@components/UserRecipientsSection';
 import {
   ArrowLeft,
   User,
@@ -52,6 +55,7 @@ export default function SingleUserPage() {
   const updateSudo = useUpdateSudo(id);
   const deleteUser = useDeleteUser();
   const forceSetPassword = useForceSetPassword(id);
+  const { data: scopes = [] } = useAvailableScopes();
   const form = useForm<UpdateUserRequest>({ values: user ?? {} });
 
   const [pendingScopes, setPendingScopes] = useState<string[]>([]);
@@ -197,7 +201,7 @@ export default function SingleUserPage() {
               description='URL of your profile picture'
               {...form.register('avatar')}
             />
-            <ProtectedComponent requireScope='users:Edit'>
+            <ProtectedComponent requireScope='iam:user:Edit'>
               <Button type='submit' className='w-full'>
                 <Save className='w-4 h-4' />
                 Save Profile
@@ -282,7 +286,7 @@ export default function SingleUserPage() {
         </CardHeader>
         <CardContent>
           <div className='flex flex-wrap gap-2'>
-            {ALL_SCOPES.map((scope) => {
+            {scopes.map((scope) => {
               const active = displayScopes.includes(scope);
               return (
                 <Badge
@@ -352,7 +356,7 @@ export default function SingleUserPage() {
               <ShieldCheck className='w-3 h-3' />
               {user.is_sudo ? 'Enabled' : 'Disabled'}
             </Badge>
-            <ProtectedComponent requireScope='scope:GiveSudo'>
+            <ProtectedComponent requireScope='iam:scope:GiveSudo'>
               <Button
                 onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
                 variant='secondary'
@@ -365,7 +369,15 @@ export default function SingleUserPage() {
         </CardContent>
       </Card>
 
-      <ProtectedComponent requireScope='users:Delete'>
+      <ProtectedComponent requireScope='sudo'>
+        <UserQuotasSection userId={id} />
+      </ProtectedComponent>
+
+      <ProtectedComponent requireScope='sudo'>
+        <UserRecipientsSection userId={id} />
+      </ProtectedComponent>
+
+      <ProtectedComponent requireScope='iam:user:Delete'>
         <Card className='border-destructive/50'>
           <CardHeader>
             <CardIcon className='bg-destructive/10 text-destructive'>
@@ -406,55 +418,3 @@ export default function SingleUserPage() {
     </div>
   );
 }
-
-const ALL_SCOPES = [
-  'api-keys:*',
-  'api-keys:List',
-  'api-keys:Create',
-  'api-keys:Delete',
-  'system:*',
-  'system:Read',
-  'system:Write',
-  'users:*',
-  'users:List',
-  'users:Get',
-  'users:Create',
-  'users:Edit',
-  'users:Delete',
-  'scope:*',
-  'scope:Modify',
-  'scope:GiveSudo',
-  'files:*',
-  'files:List',
-  'files:Get',
-  'files:Upload',
-  'files:Download',
-  'files:Edit',
-  'files:Delete',
-  'chat-rooms:*',
-  'chat-rooms:List',
-  'chat-rooms:Get',
-  'chat-rooms:Create',
-  'chat-rooms:Edit',
-  'chat-rooms:Moderate',
-  'chat-rooms:Join',
-  'chat-rooms:Delete',
-  'notes:*',
-  'notes:List',
-  'notes:Get',
-  'notes:Create',
-  'notes:Edit',
-  'notes:Delete',
-  'templates:*',
-  'jobs:*',
-  'jobs:List',
-  'jobs:Get',
-  'jobs:Cancel',
-  'jobs:Retry',
-  'sandbox:*',
-  'sandbox:Run',
-  'chat-bot:*',
-  'img-gen:*',
-] as const;
-
-export type ScopeValue = (typeof ALL_SCOPES)[number];

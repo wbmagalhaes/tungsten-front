@@ -1,14 +1,17 @@
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import {
   ArrowLeft,
   ServerCog,
-  FlaskConical,
-  Terminal,
+  Code,
   Clock,
   StopCircle,
   RotateCcw,
+  Pencil,
+  Save,
   Loader2,
-  Dot,
+  Trash2,
+  Play,
 } from 'lucide-react';
 import {
   Card,
@@ -17,65 +20,351 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
+  CardDescription,
 } from '@components/base/card';
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
+import { TextField } from '@components/base/text-field';
+import { Textarea } from '@components/base/text-area';
 import { LoadingState } from '@components/LoadingState';
 import { ErrorState } from '@components/ErrorState';
+import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import ProtectedComponent from '@components/ProtectedComponent';
+import { EventRouteSelector } from '@components/EventRouteSelector';
 
 import { useGetJob } from '@hooks/jobs/use-get-job';
-import { useCancelJob } from '@hooks/jobs/use-cancel-job';
-import { useRetryJob } from '@hooks/jobs/use-retry-job';
-import type { JobKind, JobStatus } from '@services/jobs.service';
+import { useUpdateJob } from '@hooks/jobs/use-update-job';
+import { useDeleteJob } from '@hooks/jobs/use-delete-job';
+import { useRunJob } from '@hooks/jobs/use-run-job';
+import { useJobLanguages } from '@hooks/jobs/use-job-languages';
+import { useListExecutions } from '@hooks/jobs/use-list-executions';
+import { useCancelExecution } from '@hooks/jobs/use-cancel-execution';
+import { useRetryExecution } from '@hooks/jobs/use-retry-execution';
+import {
+  normalizeTrigger,
+  type Job,
+  type JobExecution,
+  type JobTrigger,
+} from '@services/jobs.service';
+import { STATUS_CONFIG, formatTimestamp, formatDuration } from './mappings';
 
-function formatTimestamp(iso: string | null): string {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString([], {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+function ExecutionRow({ execution }: { execution: JobExecution }) {
+  const cancel = useCancelExecution();
+  const retry = useRetryExecution();
+  const cfg = STATUS_CONFIG[execution.status];
+  const isActive =
+    execution.status === 'queued' || execution.status === 'running';
+  const canRetry =
+    execution.status === 'failed' || execution.status === 'cancelled';
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardIcon>{cfg.icon}</CardIcon>
+        <div className='flex-1 min-w-0'>
+          <CardTitle className='font-mono text-sm truncate'>
+            {execution.id.slice(0, 8)}
+          </CardTitle>
+          <div className='flex gap-2 mt-1 flex-wrap text-xs text-muted-foreground'>
+            <span>Started {formatTimestamp(execution.started_at)}</span>
+            {execution.duration_ms != null && (
+              <span>· {formatDuration(execution.duration_ms)}</span>
+            )}
+            {execution.exit_code != null && (
+              <span>· exit {execution.exit_code}</span>
+            )}
+          </div>
+        </div>
+        {cfg.badge}
+      </CardHeader>
+      {(execution.stdout || execution.stderr || execution.error) && (
+        <CardContent className='space-y-2'>
+          {execution.stdout && (
+            <pre className='text-xs font-mono whitespace-pre-wrap bg-success/5 border border-success/20 p-2 rounded-sm max-h-32 overflow-auto'>
+              {execution.stdout}
+            </pre>
+          )}
+          {execution.stderr && (
+            <pre className='text-xs font-mono whitespace-pre-wrap bg-warning/5 border border-warning/20 p-2 rounded-sm max-h-32 overflow-auto'>
+              {execution.stderr}
+            </pre>
+          )}
+          {execution.error && (
+            <pre className='text-xs font-mono whitespace-pre-wrap text-destructive bg-destructive/5 border border-destructive/20 p-2 rounded-sm'>
+              {execution.error}
+            </pre>
+          )}
+        </CardContent>
+      )}
+      {(isActive || canRetry) && (
+        <CardFooter className='gap-2'>
+          {isActive && (
+            <ProtectedComponent requireScope='wjb:job:Cancel'>
+              <Button
+                variant='destructive'
+                size='sm'
+                onClick={() => cancel.mutate(execution.id)}
+                disabled={cancel.isPending}
+              >
+                <StopCircle className='w-4 h-4' />
+                Cancel
+              </Button>
+            </ProtectedComponent>
+          )}
+          {canRetry && (
+            <ProtectedComponent requireScope='wjb:job:Retry'>
+              <Button
+                variant='secondary'
+                size='sm'
+                onClick={() => retry.mutate(execution.id)}
+                disabled={retry.isPending}
+              >
+                <RotateCcw className='w-4 h-4' />
+                Retry
+              </Button>
+            </ProtectedComponent>
+          )}
+        </CardFooter>
+      )}
+    </Card>
+  );
 }
 
-const TYPE_CONFIG: Record<
-  JobKind,
-  { icon: React.ReactNode; label: string; color: string }
-> = {
-  sandbox: {
-    icon: <FlaskConical className='w-5 h-5' />,
-    label: 'Sandbox',
-    color: 'text-purple-400',
-  },
-};
+type TriggerType = JobTrigger['type'];
 
-const STATUS_BADGE: Record<JobStatus, React.ReactNode> = {
-  queued: (
-    <Badge variant='secondary'>
-      <Clock className='w-3 h-3' />
-      Queued
-    </Badge>
-  ),
-  running: (
-    <Badge variant='warning'>
-      <Loader2 className='w-3 h-3 animate-spin' />
-      Running
-    </Badge>
-  ),
-  done: <Badge variant='success'>Done</Badge>,
-  failed: <Badge variant='destructive'>Failed</Badge>,
-  cancelled: <Badge variant='outline'>Cancelled</Badge>,
-};
+function EditSection({
+  job,
+  onSaved,
+}: {
+  job: Job;
+  onSaved: () => void;
+}) {
+  const update = useUpdateJob(job.id);
+  const { data: langs } = useJobLanguages();
+  const trigger = normalizeTrigger(job);
+
+  const [name, setName] = useState(job.name);
+  const [language, setLanguage] = useState(job.language);
+  const [code, setCode] = useState(job.code);
+  const [stdin, setStdin] = useState(job.stdin ?? '');
+  const [priority, setPriority] = useState(job.priority);
+  const [timeoutSeconds, setTimeoutSeconds] = useState(
+    job.timeout_seconds?.toString() ?? '',
+  );
+  const [maxAttempts, setMaxAttempts] = useState(
+    job.max_attempts?.toString() ?? '',
+  );
+  const [enabled, setEnabled] = useState(job.enabled);
+  const [resultTopics, setResultTopics] = useState(job.result_topics ?? []);
+  const [resultQueues, setResultQueues] = useState(job.result_queues ?? []);
+
+  const [triggerType, setTriggerType] = useState<TriggerType>(trigger.type);
+  const [timestampAt, setTimestampAt] = useState(
+    trigger.type === 'timestamp' && trigger.at
+      ? new Date(trigger.at).toISOString().slice(0, 16)
+      : '',
+  );
+  const [cronExpr, setCronExpr] = useState(
+    trigger.type === 'cron' ? trigger.expr : '*/5 * * * *',
+  );
+  const [cronTz, setCronTz] = useState(
+    trigger.type === 'cron'
+      ? (trigger.tz ?? '')
+      : Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+  );
+  const [queueId, setQueueId] = useState(
+    trigger.type === 'queue' ? trigger.queue_id : '',
+  );
+
+  const buildTrigger = (): JobTrigger => {
+    switch (triggerType) {
+      case 'eager':
+        return { type: 'eager' };
+      case 'timestamp':
+        return { type: 'timestamp', at: new Date(timestampAt).toISOString() };
+      case 'cron':
+        return { type: 'cron', expr: cronExpr, tz: cronTz || undefined };
+      case 'queue':
+        return { type: 'queue', queue_id: queueId };
+    }
+  };
+
+  const parseNullableNumber = (v: string) => {
+    if (!v) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const handleSave = () => {
+    update.mutate(
+      {
+        name,
+        language,
+        code,
+        stdin: stdin || null,
+        priority,
+        trigger: buildTrigger(),
+        timeout_seconds: parseNullableNumber(timeoutSeconds),
+        max_attempts: parseNullableNumber(maxAttempts),
+        enabled,
+        result_topics: resultTopics,
+        result_queues: resultQueues,
+      },
+      { onSuccess: () => onSaved() },
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardIcon>
+          <Pencil className='w-5 h-5' />
+        </CardIcon>
+        <CardTitle>Edit Job</CardTitle>
+      </CardHeader>
+      <CardContent className='space-y-4'>
+        <TextField
+          label='Name'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <div>
+          <label className='text-sm font-medium block mb-1'>Language</label>
+          <select
+            className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            {(langs?.results.length
+              ? langs.results.map((l) => l.language)
+              : [job.language]
+            ).map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </div>
+        <TextField
+          label='Priority (-10..10)'
+          type='number'
+          value={priority}
+          min={-10}
+          max={10}
+          onChange={(e) => setPriority(Number(e.target.value) || 0)}
+        />
+
+        <div>
+          <label className='text-sm font-medium block mb-1'>Trigger</label>
+          <select
+            className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+            value={triggerType}
+            onChange={(e) => setTriggerType(e.target.value as TriggerType)}
+          >
+            <option value='eager'>Eager (run once now)</option>
+            <option value='timestamp'>Timestamp (run once at)</option>
+            <option value='cron'>Cron (schedule)</option>
+            <option value='queue'>Queue (on message)</option>
+          </select>
+        </div>
+        {triggerType === 'timestamp' && (
+          <TextField
+            label='Run at'
+            type='datetime-local'
+            value={timestampAt}
+            onChange={(e) => setTimestampAt(e.target.value)}
+          />
+        )}
+        {triggerType === 'cron' && (
+          <>
+            <TextField
+              label='Cron expression'
+              value={cronExpr}
+              onChange={(e) => setCronExpr(e.target.value)}
+            />
+            <TextField
+              label='Timezone'
+              value={cronTz}
+              onChange={(e) => setCronTz(e.target.value)}
+            />
+          </>
+        )}
+        {triggerType === 'queue' && (
+          <TextField
+            label='Queue ID'
+            value={queueId}
+            onChange={(e) => setQueueId(e.target.value)}
+          />
+        )}
+
+        <div>
+          <label className='text-sm font-medium block mb-1'>Code</label>
+          <Textarea
+            className='min-h-64 font-mono text-sm'
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className='text-sm font-medium block mb-1'>Stdin</label>
+          <Textarea
+            className='min-h-20 font-mono text-sm'
+            value={stdin}
+            onChange={(e) => setStdin(e.target.value)}
+          />
+        </div>
+
+        <TextField
+          label='Timeout (seconds)'
+          type='number'
+          value={timeoutSeconds}
+          onChange={(e) => setTimeoutSeconds(e.target.value)}
+        />
+        <TextField
+          label='Max attempts'
+          type='number'
+          value={maxAttempts}
+          onChange={(e) => setMaxAttempts(e.target.value)}
+        />
+        <label className='flex items-center gap-2 text-sm'>
+          <input
+            type='checkbox'
+            checked={enabled}
+            onChange={(e) => setEnabled(e.target.checked)}
+          />
+          Enabled
+        </label>
+
+        <EventRouteSelector
+          topics={resultTopics}
+          queues={resultQueues}
+          onTopicsChange={setResultTopics}
+          onQueuesChange={setResultQueues}
+          label={{ topics: 'Result topics', queues: 'Result queues' }}
+        />
+      </CardContent>
+      <CardFooter>
+        <Button onClick={handleSave} disabled={update.isPending}>
+          {update.isPending ? (
+            <Loader2 className='w-4 h-4 animate-spin' />
+          ) : (
+            <Save className='w-4 h-4' />
+          )}
+          Save
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
 
 export default function SingleJobPage() {
   const { id = '' } = useParams();
   const { data: job, isLoading, error } = useGetJob(id);
-  const cancelJob = useCancelJob();
-  const retryJob = useRetryJob();
+  const { data: executions } = useListExecutions(id, { page_size: 20 });
+  const deleteJob = useDeleteJob();
+  const runJob = useRunJob(id);
+  const [showEdit, setShowEdit] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   if (isLoading) return <LoadingState message='Loading job…' />;
   if (error || !job) {
@@ -86,15 +375,6 @@ export default function SingleJobPage() {
       />
     );
   }
-
-  const typeCfg = TYPE_CONFIG[job.kind] ?? {
-    icon: <ServerCog className='w-5 h-5' />,
-    label: job.kind,
-    color: 'text-muted-foreground',
-  };
-
-  const isActive = job.status === 'queued' || job.status === 'running';
-  const canRetry = job.status === 'failed' || job.status === 'cancelled';
 
   return (
     <div className='space-y-4 max-w-3xl mx-auto'>
@@ -110,172 +390,132 @@ export default function SingleJobPage() {
 
       <Card>
         <CardHeader className='gap-3'>
-          <CardIcon className={typeCfg.color}>{typeCfg.icon}</CardIcon>
-          <div className='flex flex-col items-start gap-1'>
-            <div className='flex items-center gap-2 flex-wrap'>
+          <CardIcon>
+            <ServerCog className='w-5 h-5' />
+          </CardIcon>
+          <div className='flex flex-col items-start gap-1 flex-1'>
+            <CardTitle>{job.name}</CardTitle>
+            <div className='flex gap-2 flex-wrap'>
               <Badge variant='outline' className='text-xs'>
-                {typeCfg.label}
+                {job.language}
               </Badge>
-              {STATUS_BADGE[job.status]}
+              <Badge variant='secondary' className='text-xs'>
+                priority {job.priority}
+              </Badge>
+              <Badge variant='outline' className='text-xs'>
+                trigger {normalizeTrigger(job).type}
+              </Badge>
+              {!job.enabled && (
+                <Badge variant='warning' className='text-xs'>
+                  disabled
+                </Badge>
+              )}
             </div>
             <span className='text-xs text-muted-foreground font-mono'>
               {job.id}
             </span>
           </div>
+          <ProtectedComponent requireScope='wjb:job:Enqueue'>
+            <>
+              <Button
+                size='sm'
+                onClick={() => runJob.mutate()}
+                disabled={runJob.isPending}
+              >
+                {runJob.isPending ? (
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                ) : (
+                  <Play className='w-4 h-4' />
+                )}
+                Run now
+              </Button>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() => setShowEdit((v) => !v)}
+              >
+                <Pencil className='w-4 h-4' />
+                Edit
+              </Button>
+            </>
+          </ProtectedComponent>
         </CardHeader>
       </Card>
 
-      {job.kind === 'sandbox' && (
-        <Card>
-          <CardHeader>
-            <CardIcon>
-              <FlaskConical className='w-5 h-5' />
-            </CardIcon>
-            <CardTitle>Script</CardTitle>
-            <span className='ml-auto text-xs text-muted-foreground font-mono'>
-              {job.payload.language}
-            </span>
-          </CardHeader>
-          <CardContent>
-            <pre className='text-sm font-mono whitespace-pre-wrap bg-muted/30 rounded-sm border border-border p-4 overflow-x-auto max-h-96'>
-              {job.payload.code}
-            </pre>
-          </CardContent>
-          {(isActive || canRetry) && (
-            <CardFooter className='gap-2'>
-              {isActive && (
-                <ProtectedComponent requireScope='jobs:Cancel'>
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    onClick={() => cancelJob.mutate(job.id)}
-                    disabled={cancelJob.isPending}
-                  >
-                    {cancelJob.isPending ? (
-                      <Loader2 className='w-4 h-4 animate-spin' />
-                    ) : (
-                      <StopCircle className='w-4 h-4' />
-                    )}
-                    Cancel
-                  </Button>
-                </ProtectedComponent>
-              )}
-              {canRetry && (
-                <ProtectedComponent requireScope='sandbox:Run'>
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    onClick={() => retryJob.mutate(job.id)}
-                    disabled={retryJob.isPending}
-                  >
-                    {retryJob.isPending ? (
-                      <Loader2 className='w-4 h-4 animate-spin' />
-                    ) : (
-                      <RotateCcw className='w-4 h-4' />
-                    )}
-                    Retry
-                  </Button>
-                </ProtectedComponent>
-              )}
-            </CardFooter>
-          )}
-        </Card>
+      {showEdit && (
+        <EditSection job={job} onSaved={() => setShowEdit(false)} />
       )}
 
-      {job.result?.stdout && (
-        <Card>
-          <CardHeader>
-            <CardIcon className='bg-success/10 text-success'>
-              <Terminal className='w-5 h-5' />
-            </CardIcon>
-            <CardTitle>stdout</CardTitle>
-            {job.result && (
-              <span className='ml-auto text-xs text-muted-foreground font-mono'>
-                exit {job.result.exit_code}
-                {job.result.duration_ms != null && (
-                  <>
-                    {' '}
-                    <Dot className='inline' />
-                    {job.result.duration_ms < 1000
-                      ? `${job.result.duration_ms}ms`
-                      : `${(job.result.duration_ms / 1000).toFixed(2)}s`}
-                  </>
-                )}
-              </span>
-            )}
-          </CardHeader>
-          <CardContent>
-            <pre className='text-sm font-mono whitespace-pre-wrap bg-success/5 rounded-sm border border-success/20 p-4 overflow-x-auto max-h-96'>
-              {job.result.stdout}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
-
-      {job.result?.stderr && (
-        <Card>
-          <CardHeader>
-            <CardIcon className='bg-warning/10 text-warning'>
-              <Terminal className='w-5 h-5' />
-            </CardIcon>
-            <CardTitle>stderr</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <pre className='text-sm font-mono whitespace-pre-wrap bg-warning/5 rounded-sm border border-warning/20 p-4 overflow-x-auto max-h-64'>
-              {job.result.stderr}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
-
-      {job.error && (
-        <Card>
-          <CardHeader>
-            <CardIcon className='bg-destructive/10 text-destructive'>
-              <ServerCog className='w-5 h-5' />
-            </CardIcon>
-            <CardTitle>Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <pre className='text-sm font-mono whitespace-pre-wrap text-destructive bg-destructive/5 rounded-sm border border-destructive/20 p-4'>
-              {job.error}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardIcon>
+            <Code className='w-5 h-5' />
+          </CardIcon>
+          <CardTitle>Code</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <pre className='text-sm font-mono whitespace-pre-wrap bg-muted/30 rounded-sm border border-border p-4 overflow-x-auto max-h-96'>
+            {job.code}
+          </pre>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
           <CardIcon>
             <Clock className='w-5 h-5' />
           </CardIcon>
-          <CardTitle>Timeline</CardTitle>
+          <CardTitle>Executions ({executions?.count ?? 0})</CardTitle>
         </CardHeader>
-        <CardContent className='space-y-2 text-sm'>
-          <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Created</span>
-            <span className='text-foreground font-mono text-xs'>
-              {formatTimestamp(job.created_at)}
-            </span>
-          </div>
-          {job.started_at && (
-            <div className='flex justify-between'>
-              <span className='text-muted-foreground'>Started</span>
-              <span className='text-foreground font-mono text-xs'>
-                {formatTimestamp(job.started_at)}
-              </span>
-            </div>
-          )}
-          {job.finished_at && (
-            <div className='flex justify-between'>
-              <span className='text-muted-foreground'>Finished</span>
-              <span className='text-foreground font-mono text-xs'>
-                {formatTimestamp(job.finished_at)}
-              </span>
-            </div>
+        <CardContent className='space-y-3'>
+          {executions?.results.length ? (
+            executions.results.map((e) => (
+              <ExecutionRow key={e.id} execution={e} />
+            ))
+          ) : (
+            <p className='text-sm text-muted-foreground text-center py-4'>
+              No executions yet.
+            </p>
           )}
         </CardContent>
       </Card>
+
+      <ProtectedComponent requireScope='wjb:job:Enqueue'>
+        <Card className='border-destructive/50'>
+          <CardHeader>
+            <CardIcon className='bg-destructive/10 text-destructive'>
+              <Trash2 className='w-5 h-5' />
+            </CardIcon>
+            <div>
+              <CardTitle>Delete Job</CardTitle>
+              <CardDescription>
+                Permanently remove this job definition.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant='destructive'
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className='w-4 h-4' />
+              Delete Job
+            </Button>
+          </CardContent>
+        </Card>
+      </ProtectedComponent>
+
+      <ConfirmationDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title='Delete Job'
+        description='This will permanently delete the job definition and all its executions history.'
+        confirmText='Delete'
+        confirmVariant='destructive'
+        onConfirm={() => deleteJob.mutate(job.id)}
+        isLoading={deleteJob.isPending}
+        loadingText='Deleting…'
+      />
     </div>
   );
 }

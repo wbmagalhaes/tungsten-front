@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { cancelJob } from '@services/jobs.service';
+import { updateJob, type UpdateJobRequest } from '@services/jobs.service';
 
-export const useCancelJob = () => {
+export const useUpdateJob = (id: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (jobId: string) => cancelJob(jobId),
+    mutationFn: (req: UpdateJobRequest) => updateJob(id, req),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['jobs'] }),
   });
 };

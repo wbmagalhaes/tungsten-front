@@ -5,6 +5,7 @@ import { useAuthStore } from '@stores/useAuthStore';
 import { cn } from '@utils/cn';
 import { useSidebarStore } from '@stores/useSidebarStore';
 import { useIsDesktop } from '@hooks/use-is-desktop';
+import { useInboxStream } from '@hooks/notifications/use-inbox-stream';
 
 export default function AuthenticatedLayout() {
   const { isAuthenticated, isSudo } = useAuthStore();
@@ -12,6 +13,8 @@ export default function AuthenticatedLayout() {
   const desktop = useIsDesktop();
 
   const location = useLocation();
+
+  useInboxStream({ enabled: isAuthenticated });
 
   if (!isAuthenticated) {
     const redirectTo = `/login?cb_url=${encodeURIComponent(

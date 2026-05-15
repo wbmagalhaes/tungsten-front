@@ -71,7 +71,7 @@ function RoomCard({
             className='ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'
             onClick={(e) => e.stopPropagation()}
           >
-            <ProtectedComponent requireScope='chat-rooms:Edit'>
+            <ProtectedComponent requireScope='wct:room:Edit'>
               <Button
                 variant='ghost'
                 size='icon'
@@ -81,7 +81,7 @@ function RoomCard({
                 <Pencil className='w-3.5 h-3.5' />
               </Button>
             </ProtectedComponent>
-            <ProtectedComponent requireScope='chat-rooms:Delete'>
+            <ProtectedComponent requireScope='wct:room:Delete'>
               <Button
                 variant='ghost'
                 size='icon'
@@ -225,7 +225,7 @@ export default function ChatPage() {
         title='Chat'
         icon={<MessageSquare className='w-5 h-5' />}
         action={
-          <ProtectedComponent requireScope='chat-rooms:Create'>
+          <ProtectedComponent requireScope='wct:room:Create'>
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className='w-4 h-4 mr-2' />
               New Room
@@ -259,7 +259,7 @@ export default function ChatPage() {
       {!roomsLoading && !roomsError && rooms.length === 0 && (
         <div className='text-center py-16 text-muted-foreground'>
           No rooms found.{' '}
-          <ProtectedComponent requireScope='chat-rooms:Create' fallback={null}>
+          <ProtectedComponent requireScope='wct:room:Create' fallback={null}>
             <Button
               className='underline p-0'
               variant='link'

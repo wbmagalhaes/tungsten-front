@@ -11,12 +11,17 @@ export const listFiles = async (params: ListFilesParams) => {
 
 export const uploadFile = async ({
   file,
+  bucketId,
   dir,
   visibility,
   uploadedBy,
   onProgress,
 }: UploadFileParams) => {
   const formData = new FormData();
+
+  if (bucketId) {
+    formData.append('bucket_id', bucketId);
+  }
 
   if (dir) {
     formData.append('dir', dir);
@@ -84,27 +89,56 @@ export const deleteFile = async (id: string) => {
 };
 
 export const renameFile = async (id: string, body: RenameRequest) => {
-  const res = await api.post<FileMetadata>(`/api/files/${id}/rename`, body);
+  const res = await api.patch<FileMetadata>(
+    `/api/files/${id}/actions/rename`,
+    body,
+  );
   return res.data;
 };
 
 export const moveFile = async (id: string, body: MoveRequest) => {
-  const res = await api.post<FileMetadata>(`/api/files/${id}/move`, body);
+  const res = await api.patch<FileMetadata>(
+    `/api/files/${id}/actions/move`,
+    body,
+  );
   return res.data;
 };
 
 export const archiveFile = async (id: string) => {
-  const res = await api.post<void>(`/api/files/${id}/archive`);
+  const res = await api.patch<void>(`/api/files/${id}/actions/archive`);
+  return res.data;
+};
+
+export const setFileVisibility = async (
+  id: string,
+  body: VisibilityRequest,
+) => {
+  const res = await api.patch<FileMetadata>(
+    `/api/files/${id}/actions/visibility`,
+    body,
+  );
   return res.data;
 };
 
 export const compressFile = async (id: string) => {
-  const res = await api.post<FileMetadata>(`/api/files/${id}/compress`);
+  const res = await api.post<FileMetadata>(
+    `/api/files/${id}/actions/compress`,
+  );
   return res.data;
 };
 
 export const decompressFile = async (id: string) => {
-  const res = await api.post<FileMetadata>(`/api/files/${id}/decompress`);
+  const res = await api.post<FileMetadata>(
+    `/api/files/${id}/actions/decompress`,
+  );
+  return res.data;
+};
+
+export const updateFileMetadata = async (
+  id: string,
+  body: Record<string, unknown>,
+) => {
+  const res = await api.patch<FileMetadata>(`/api/files/${id}/metadata`, body);
   return res.data;
 };
 
@@ -113,7 +147,25 @@ export const streamFile = async (id: string) => {
   return res.data;
 };
 
+export const viewFile = async (id: string) => {
+  const res = await api.get<Blob>(`/api/files/${id}/view`, {
+    responseType: 'blob',
+  });
+  return URL.createObjectURL(res.data);
+};
+
+export const viewFileUrl = (id: string) => `/api/files/${id}/view`;
+
+export const signFile = async (id: string, body?: SignFileRequest) => {
+  const res = await api.post<{ token: string; url: string }>(
+    `/api/files/${id}/sign`,
+    body ?? {},
+  );
+  return res.data;
+};
+
 export type ListFilesParams = {
+  bucket_id?: string;
   search?: string;
   dir_prefix?: string;
   page?: number;
@@ -123,6 +175,7 @@ export type ListFilesParams = {
 
 export type UploadFileParams = {
   file: File;
+  bucketId?: string;
   dir?: string;
   visibility?: string;
   uploadedBy?: string;
@@ -140,4 +193,12 @@ export type RenameRequest = {
 
 export type MoveRequest = {
   to: string;
+};
+
+export type VisibilityRequest = {
+  visibility: 'public' | 'private' | 'unlisted';
+};
+
+export type SignFileRequest = {
+  expires_in?: number;
 };

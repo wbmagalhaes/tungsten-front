@@ -2,7 +2,6 @@ import {
   Activity,
   StickyNote,
   HardDrive,
-  FlaskConical,
   UsersRound,
   ImagePlus,
   ServerCog,
@@ -10,6 +9,12 @@ import {
   BotMessageSquare,
   MessageCircleMore,
   Terminal,
+  Layers,
+  Bell,
+  Megaphone,
+  Compass,
+  Send,
+  Gauge,
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -21,64 +26,91 @@ export interface SidebarItem {
 
 export const sidebarItems: SidebarItem[] = [
   { label: 'Root', to: '/root', icon: Terminal },
+  { label: 'Inbox', to: '/inbox', icon: Bell },
   {
     label: 'Notes',
     to: '/notes',
     icon: StickyNote,
-    scope: 'notes:List',
+    scope: 'wnt:note:List',
   },
   {
     label: 'Templates',
     to: '/templates',
     icon: LucideBookDashed,
-    scope: 'templates:List',
   },
   {
     label: 'Chat',
     to: '/chat',
     icon: MessageCircleMore,
-    scope: 'chat-rooms:List',
+    scope: 'wct:room:List',
   },
   {
     label: 'Media',
     to: '/media',
     icon: HardDrive,
-    scope: 'files:List',
+    scope: 'wss:bucket:List',
   },
   {
     label: 'ChatBot',
     to: '/chat-bot',
     icon: BotMessageSquare,
-    scope: 'chat-bot:List',
   },
   {
     label: 'Image Generation',
     to: '/image-generation',
     icon: ImagePlus,
-    scope: 'img-gen:List',
-  },
-  {
-    label: 'Sandbox',
-    to: '/sandbox',
-    icon: FlaskConical,
-    scope: 'sandbox:List',
   },
   {
     label: 'Background Jobs',
     to: '/background-jobs',
     icon: ServerCog,
-    scope: 'jobs:List',
+    scope: 'wjb:job:List',
+  },
+  {
+    label: 'Queues',
+    to: '/queues',
+    icon: Layers,
+    scope: 'wqs:queue:List',
+  },
+  {
+    label: 'Topics',
+    to: '/topics',
+    icon: Megaphone,
+    scope: 'was:topic:List',
+  },
+  {
+    label: 'Discover',
+    to: '/topics/discover',
+    icon: Compass,
+    scope: 'was:topic:List',
+  },
+  {
+    label: 'Notifications',
+    to: '/notifications',
+    icon: Send,
+    scope: 'was:notification:List',
+  },
+  {
+    label: 'Recipients',
+    to: '/recipients',
+    icon: Send,
+    scope: 'was:recipient:List',
+  },
+  {
+    label: 'Quotas',
+    to: '/quotas',
+    icon: Gauge,
   },
   {
     label: 'System Health',
     to: '/system-health',
     icon: Activity,
-    scope: 'system:*',
+    scope: 'w74:system:*',
   },
   {
     label: 'Users',
     to: '/users',
     icon: UsersRound,
-    scope: 'users:List',
+    scope: 'iam:user:List',
   },
 ];

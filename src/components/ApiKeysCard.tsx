@@ -26,64 +26,41 @@ import {
   Check,
   Loader2,
   AlertTriangle,
+  Pencil,
 } from 'lucide-react';
 import { useListApiKeys } from '@hooks/api-keys/use-list-api-keys';
 import { useCreateApiKey } from '@hooks/api-keys/use-create-api-key';
 import { useDeleteApiKey } from '@hooks/api-keys/use-delete-api-key';
+import { useUpdateApiKey } from '@hooks/api-keys/use-update-api-key';
+import { useAvailableScopes } from '@hooks/users/use-available-scopes';
 import { useAuthStore } from '@stores/useAuthStore';
-import type { ApiKeyWithPlaintext } from '@services/api-keys.service';
+import type { ApiKey, ApiKeyWithPlaintext } from '@services/api-keys.service';
 import ProtectedComponent from '@components/ProtectedComponent';
-
-const ALL_SCOPES = [
-  'api-keys:Create',
-  'api-keys:List',
-  'api-keys:Delete',
-  'files:List',
-  'files:Get',
-  'files:Upload',
-  'files:Download',
-  'files:Edit',
-  'files:Delete',
-  'notes:List',
-  'notes:Get',
-  'notes:Create',
-  'notes:Edit',
-  'notes:Delete',
-  'users:List',
-  'users:Get',
-  'users:Create',
-  'users:Edit',
-  'users:Delete',
-  'system:Read',
-  'system:Write',
-  'jobs:List',
-  'jobs:Get',
-  'jobs:Cancel',
-  'jobs:Retry',
-  'sandbox:Run',
-  'chat-rooms:List',
-];
+import formatDate from '@utils/formatDate';
 
 export default function ApiKeysCard() {
   return (
-    <ProtectedComponent requireScope='api-keys:List'>
+    <ProtectedComponent requireScope='wks:key:List'>
       <ApiKeysCardInner />
     </ProtectedComponent>
   );
 }
 
 function ApiKeysCardInner() {
-  const { data: keys, isLoading } = useListApiKeys();
+  const { data, isLoading } = useListApiKeys({ page_size: 50 });
+  const keys = data?.results;
   const deleteKey = useDeleteApiKey();
+  const { data: scopes = [] } = useAvailableScopes();
   const { userScope } = useAuthStore();
 
   const [showCreate, setShowCreate] = useState(false);
   const [createdKey, setCreatedKey] = useState<ApiKeyWithPlaintext | null>(
     null,
   );
+  const [editingKey, setEditingKey] = useState<ApiKey | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const availableScopes = ALL_SCOPES.filter((s) =>
+  const availableScopes = scopes.filter((s) =>
     userScope?.some((us) => {
       if (us === s) return true;
       const [uRes, uAct] = us.split(':');
@@ -111,7 +88,7 @@ function ApiKeysCardInner() {
               <CardTitle>API Keys</CardTitle>
               <CardDescription>Manage your personal API keys</CardDescription>
             </div>
-            <ProtectedComponent requireScope='api-keys:Create'>
+            <ProtectedComponent requireScope='wks:key:Create'>
               <Button
                 size='sm'
                 className='ml-auto'
@@ -147,7 +124,7 @@ function ApiKeysCardInner() {
                       </span>
                       {k.expires_at && (
                         <Badge variant='warning' className='text-xs'>
-                          expires {new Date(k.expires_at).toLocaleDateString()}
+                          expires {formatDate(k.expires_at)}
                         </Badge>
                       )}
                     </div>
@@ -159,12 +136,22 @@ function ApiKeysCardInner() {
                       ))}
                     </div>
                     <p className='text-xs text-muted-foreground mt-1'>
-                      Created {new Date(k.created_at).toLocaleDateString()}
+                      Created {formatDate(k.created_at)}
                       {k.last_used_at &&
-                        ` · Last used ${new Date(k.last_used_at).toLocaleDateString()}`}
+                        ` · Last used ${formatDate(k.last_used_at)}`}
                     </p>
                   </div>
-                  <ProtectedComponent requireScope='api-keys:Delete'>
+                  <ProtectedComponent requireScope='wks:key:Edit'>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='shrink-0'
+                      onClick={() => setEditingKey(k)}
+                    >
+                      <Pencil className='w-4 h-4' />
+                    </Button>
+                  </ProtectedComponent>
+                  <ProtectedComponent requireScope='wks:key:Delete'>
                     <Button
                       variant='ghost'
                       size='icon'
@@ -190,6 +177,15 @@ function ApiKeysCardInner() {
           setCreatedKey(key);
         }}
       />
+
+      {editingKey && (
+        <EditApiKeyDialog
+          key={editingKey.id}
+          apiKey={editingKey}
+          availableScopes={availableScopes}
+          onClose={() => setEditingKey(null)}
+        />
+      )}
 
       <PlaintextKeyDialog
         apiKey={createdKey}
@@ -366,6 +362,117 @@ function CreateApiKeyDialog({
                 <Key className='w-4 h-4' />
               )}
               Create
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+type EditApiKeyDialogProps = {
+  apiKey: ApiKey | null;
+  availableScopes: string[];
+  onClose: () => void;
+};
+
+function EditApiKeyDialog({
+  apiKey,
+  availableScopes,
+  onClose,
+}: EditApiKeyDialogProps) {
+  const updateKey = useUpdateApiKey(apiKey?.id ?? '');
+  const [selectedScopes, setSelectedScopes] = useState<string[]>(
+    apiKey?.scope ?? [],
+  );
+
+  const allScopes = Array.from(
+    new Set([...availableScopes, ...(apiKey?.scope ?? [])]),
+  );
+
+  const toggleScope = (scope: string) => {
+    setSelectedScopes((prev) =>
+      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope],
+    );
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!apiKey || selectedScopes.length === 0) return;
+    updateKey.mutate({ scope: selectedScopes }, { onSuccess: () => onClose() });
+  };
+
+  return (
+    <Dialog open={!!apiKey} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className='max-w-lg'>
+        <DialogHeader>
+          <DialogTitle>Edit API Key Scopes</DialogTitle>
+          <DialogDescription>
+            {apiKey?.name} — adjust the scopes attached to this key.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <div className='space-y-2'>
+            <p className='text-sm font-medium'>Scopes</p>
+            <div className='flex flex-wrap gap-2 max-h-64 overflow-y-auto p-1'>
+              {allScopes.map((scope) => {
+                const active = selectedScopes.includes(scope);
+                const unavailable = !availableScopes.includes(scope);
+                return (
+                  <button
+                    key={scope}
+                    type='button'
+                    onClick={() => toggleScope(scope)}
+                    className='cursor-pointer'
+                    title={
+                      unavailable
+                        ? 'You no longer hold this permission'
+                        : undefined
+                    }
+                  >
+                    <Badge
+                      variant={
+                        active
+                          ? unavailable
+                            ? 'warning'
+                            : 'default'
+                          : 'outline'
+                      }
+                    >
+                      {scope}
+                    </Badge>
+                  </button>
+                );
+              })}
+            </div>
+            {allScopes.length === 0 && (
+              <p className='text-sm text-muted-foreground'>
+                No scopes available.
+              </p>
+            )}
+          </div>
+
+          {updateKey.isError && (
+            <p className='text-sm text-destructive'>
+              {updateKey.error.message}
+            </p>
+          )}
+
+          <DialogFooter>
+            <Button type='button' variant='outline' onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              disabled={updateKey.isPending || selectedScopes.length === 0}
+            >
+              {updateKey.isPending ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <Pencil className='w-4 h-4' />
+              )}
+              Save
             </Button>
           </DialogFooter>
         </form>

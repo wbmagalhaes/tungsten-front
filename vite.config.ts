@@ -34,6 +34,10 @@ export default defineConfig({
     VitePWA({
       injectRegister: 'auto',
       registerType: 'prompt',
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       workbox: {
         clientsClaim: true,
         skipWaiting: true,

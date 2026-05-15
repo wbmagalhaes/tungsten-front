@@ -1,410 +1,284 @@
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Upload, Trash2, Archive, Lock, Globe } from 'lucide-react';
-import { useDeleteFile } from '@hooks/files/use-delete-file';
-import { useListFiles } from '@hooks/files/use-list-files';
-import { useUploadFile } from '@hooks/files/use-upload-file';
-import { useListUsers } from '@hooks/users/use-list-users';
-import { useAuthStore } from '@stores/useAuthStore';
-import type { FileMetadata } from '@models/file-metadata';
+import { useState } from 'react';
+import { Container, Plus, Loader2, Trash2, HardDrive } from 'lucide-react';
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardIcon,
   CardTitle,
+  CardContent,
+  CardDescription,
+  CardFooter,
 } from '@components/base/card';
-import formatBytes from '@utils/formatBytes';
-import PageHeader from '@components/PageHeader';
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
-import { LoadingState } from '@components/LoadingState';
-import { ErrorState } from '@components/ErrorState';
-import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import { TextField } from '@components/base/text-field';
+import PageHeader from '@components/PageHeader';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@components/base/dialog';
-import { TextField } from '@components/base/text-field';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@components/base/select';
-import { cn } from '@utils/cn';
-import { FileIcon } from './FileIcon';
+import { LoadingState } from '@components/LoadingState';
+import { ErrorState } from '@components/ErrorState';
+import { ConfirmationDialog } from '@components/ConfirmationDialog';
+import ProtectedComponent from '@components/ProtectedComponent';
 
-type UploadDialogProps = {
+import { useListBuckets } from '@hooks/buckets/use-list-buckets';
+import { useCreateBucket } from '@hooks/buckets/use-create-bucket';
+import { useDeleteBucket } from '@hooks/buckets/use-delete-bucket';
+import { EventRouteSelector } from '@components/EventRouteSelector';
+import type { BucketVisibility } from '@services/buckets.service';
+
+function CreateDialog({
+  open,
+  onOpenChange,
+}: {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
-
-function UploadDialog({ open, onOpenChange }: UploadDialogProps) {
-  const uploadFile = useUploadFile();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const isSudo = useAuthStore((s) => s.isSudo);
-  const usersQuery = useListUsers(
-    isSudo ? { page_size: 100 } : { page_size: 1 },
-  );
-
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [uploadDir, setUploadDir] = useState('');
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-  const [uploadedBy, setUploadedBy] = useState('');
-  const [progress, setProgress] = useState<number | null>(null);
-  const [dragging, setDragging] = useState(false);
+  onOpenChange: (v: boolean) => void;
+}) {
+  const create = useCreateBucket();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [defaultVisibility, setDefaultVisibility] =
+    useState<BucketVisibility>(0);
+  const [archiveAfter, setArchiveAfter] = useState('');
+  const [deleteAfter, setDeleteAfter] = useState('');
+  const [eventTopics, setEventTopics] = useState<string[]>([]);
+  const [eventQueues, setEventQueues] = useState<string[]>([]);
 
   const reset = () => {
-    setPendingFile(null);
-    setUploadDir('');
-    setVisibility('public');
-    setUploadedBy('');
-    setProgress(null);
+    setName('');
+    setDescription('');
+    setDefaultVisibility(0);
+    setArchiveAfter('');
+    setDeleteAfter('');
+    setEventTopics([]);
+    setEventQueues([]);
   };
 
-  const handleOpenChange = (o: boolean) => {
-    if (!o && progress === null) {
-      reset();
-      onOpenChange(false);
-    }
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setPendingFile(file);
-    e.target.value = '';
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) setPendingFile(file);
-  };
-
-  const handleSubmit = (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (!pendingFile) return;
-    setProgress(0);
-    uploadFile.mutate(
+  const handleSubmit = () => {
+    if (!name.trim()) return;
+    const parseDays = (v: string) => {
+      if (!v) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+    create.mutate(
       {
-        file: pendingFile,
-        dir: uploadDir || undefined,
-        visibility,
-        uploadedBy: uploadedBy || undefined,
-        onProgress: setProgress,
+        name,
+        description: description || undefined,
+        default_visibility: defaultVisibility,
+        archive_after_days: parseDays(archiveAfter),
+        delete_after_days: parseDays(deleteAfter),
+        event_topics: eventTopics,
+        event_queues: eventQueues,
       },
       {
         onSuccess: () => {
           reset();
           onOpenChange(false);
         },
-        onSettled: () => setProgress(null),
-        onError: () => setProgress(null),
       },
     );
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className='max-w-sm'>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='max-w-lg max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
-            <Upload className='w-5 h-5' />
-            Upload File
-          </DialogTitle>
+          <DialogTitle>New Bucket</DialogTitle>
+          <DialogDescription>
+            A bucket groups files with shared grants.
+          </DialogDescription>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          <input
-            ref={fileInputRef}
-            type='file'
-            className='hidden'
-            onChange={handleFileInputChange}
-          />
-
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={handleDrop}
-            onClick={() => !pendingFile && fileInputRef.current?.click()}
-            className={cn(
-              'flex flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed px-4 py-6 text-sm transition-colors',
-              dragging
-                ? 'border-primary bg-primary/10'
-                : 'border-border text-muted-foreground',
-              !pendingFile &&
-                'cursor-pointer hover:border-primary/50 hover:bg-muted/50',
-            )}
-          >
-            {pendingFile ? (
-              <>
-                <span className='font-medium text-foreground truncate max-w-full'>
-                  {pendingFile.name}
-                </span>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='sm'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  Change file
-                </Button>
-              </>
-            ) : (
-              <>
-                <Upload className='w-6 h-6' />
-                <span>Drop a file here or click to browse</span>
-              </>
-            )}
-          </div>
-
+        <div className='space-y-4'>
           <TextField
-            label='Directory (optional)'
-            placeholder='e.g. images/avatars'
-            value={uploadDir}
-            onChange={(e) => setUploadDir(e.target.value)}
+            label='Name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
-
-          <div className='space-y-1.5'>
-            <p className='text-sm font-medium'>Visibility</p>
-            <div className='flex gap-2'>
-              {(['public', 'private'] as const).map((v) => (
-                <button
-                  key={v}
-                  type='button'
-                  onClick={() => setVisibility(v)}
-                  className={cn(
-                    'flex-1 flex items-center justify-center gap-2 rounded-sm border px-3 py-2 text-sm transition-colors cursor-pointer capitalize',
-                    visibility === v
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border text-muted-foreground hover:border-primary/50',
-                  )}
-                >
-                  {v === 'public' ? (
-                    <Globe className='w-4 h-4' />
-                  ) : (
-                    <Lock className='w-4 h-4' />
-                  )}
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {isSudo && (
-            <div className='space-y-1.5'>
-              <p className='text-sm font-medium'>Upload as</p>
-              <Select
-                value={uploadedBy}
-                onValueChange={(v) => setUploadedBy(v ?? '')}
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue>
-                    {(value) => {
-                      if (!value) return 'Myself (default)';
-                      const u = usersQuery.data?.results.find(
-                        (x) => x.id === value,
-                      );
-                      if (!u) return value;
-                      return u.fullname
-                        ? `${u.username} — ${u.fullname}`
-                        : u.username;
-                    }}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value=''>Myself (default)</SelectItem>
-                  {usersQuery.data?.results.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.username}
-                      {u.fullname ? ` — ${u.fullname}` : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {uploadFile.isError && (
-            <p className='text-sm text-destructive'>
-              {uploadFile.error.message}
-            </p>
-          )}
-
-          <DialogFooter>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => handleOpenChange(false)}
-              disabled={progress !== null}
+          <TextField
+            label='Description'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <div>
+            <label className='text-sm font-medium block mb-1'>
+              Default visibility
+            </label>
+            <select
+              className='w-full bg-background border border-border rounded-sm px-3 py-2 text-sm'
+              value={defaultVisibility}
+              onChange={(e) =>
+                setDefaultVisibility(
+                  Number(e.target.value) as BucketVisibility,
+                )
+              }
             >
-              Cancel
-            </Button>
-            <Button type='submit' disabled={!pendingFile || progress !== null}>
-              <Upload className='w-4 h-4' />
-              {progress !== null ? `${progress}%` : 'Upload'}
-            </Button>
-          </DialogFooter>
-        </form>
+              <option value={0}>0 — private</option>
+              <option value={1}>1 — public</option>
+              <option value={2}>2 — unlisted</option>
+            </select>
+          </div>
+          <TextField
+            label='Archive after days (empty = never)'
+            type='number'
+            value={archiveAfter}
+            onChange={(e) => setArchiveAfter(e.target.value)}
+          />
+          <TextField
+            label='Delete after days (empty = never)'
+            type='number'
+            value={deleteAfter}
+            onChange={(e) => setDeleteAfter(e.target.value)}
+          />
+          <EventRouteSelector
+            topics={eventTopics}
+            queues={eventQueues}
+            onTopicsChange={setEventTopics}
+            onQueuesChange={setEventQueues}
+          />
+        </div>
+        <DialogFooter>
+          <Button variant='outline' onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!name.trim() || create.isPending}
+          >
+            {create.isPending ? (
+              <Loader2 className='w-4 h-4 animate-spin' />
+            ) : (
+              <Plus className='w-4 h-4' />
+            )}
+            Create
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-interface FileCardProps {
-  file: FileMetadata;
-  onDelete: (file: FileMetadata) => void;
-}
-
-function FileCard({ file, onDelete }: FileCardProps) {
-  const navigate = useNavigate();
-
-  return (
-    <Card
-      className='hover:shadow-xl transition-shadow cursor-pointer group'
-      onClick={() => navigate(`/media/${file.id}`)}
-    >
-      <CardHeader className='pb-4'>
-        <CardIcon>
-          <FileIcon mime={file.mime} />
-        </CardIcon>
-        <div className='flex-1 min-w-0'>
-          <CardTitle className='truncate' title={file.basename}>
-            {file.basename}
-          </CardTitle>
-          <CardDescription className='truncate' title={file.filepath}>
-            {file.filepath}
-          </CardDescription>
-        </div>
-      </CardHeader>
-
-      <CardContent className='space-y-2 text-sm'>
-        <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Type</span>
-          <span
-            className='text-foreground truncate ml-2'
-            title={file.mime || 'Unknown'}
-          >
-            {file.mime || 'Unknown'}
-          </span>
-        </div>
-        <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Size</span>
-          <span className='text-foreground text-nowrap'>
-            {formatBytes(file.size)}
-          </span>
-        </div>
-        <div className='flex justify-between'>
-          <span className='text-muted-foreground'>Visibility</span>
-          <Badge
-            variant={file.visibility === 'public' ? 'success' : 'warning'}
-            className='py-0'
-          >
-            {file.visibility}
-          </Badge>
-        </div>
-
-        <div className='flex gap-2 pt-2' onClick={(e) => e.stopPropagation()}>
-          <ButtonLink
-            to={`/media/${file.id}`}
-            variant='secondary'
-            className='flex-1'
-            size='sm'
-          >
-            Open
-          </ButtonLink>
-          <Button
-            variant='destructive'
-            size='sm'
-            onClick={() => onDelete(file)}
-            title='Delete file'
-          >
-            <Trash2 className='w-4 h-4' />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function MediaPage() {
-  const { data, isLoading, error } = useListFiles({});
-  const deleteFile = useDeleteFile();
+  const { data, isLoading, isError, refetch } = useListBuckets({
+    page_size: 50,
+  });
+  const deleteBucket = useDeleteBucket();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<FileMetadata | null>(null);
-
-  const handleDelete = () => {
-    if (!deleteTarget) return;
-    deleteFile.mutate(deleteTarget.id, {
-      onSuccess: () => setDeleteTarget(null),
-    });
-  };
-
-  if (isLoading) return <LoadingState message='Loading files...' />;
-  if (error || !data) {
+  if (isLoading) return <LoadingState message='Loading buckets…' />;
+  if (isError)
     return (
       <ErrorState
-        title='Error loading files'
-        message={error?.message || 'Unable to fetch files information'}
+        title='Failed to load buckets'
+        message='Could not reach the server.'
+        onRetry={refetch}
       />
     );
-  }
+
+  const buckets = data?.results ?? [];
 
   return (
     <div className='space-y-4'>
       <PageHeader
-        title='Media Files'
-        icon={<Archive className='w-5 h-5' />}
+        title='Media'
+        icon={<HardDrive className='w-5 h-5' />}
         action={
-          <Button size='icon' onClick={() => setShowUploadDialog(true)}>
-            <Upload className='w-4 h-4' />
-          </Button>
+          <ProtectedComponent requireScope='wss:bucket:Create'>
+            <Button onClick={() => setCreateOpen(true)} size='icon'>
+              <Plus className='w-4 h-4' />
+            </Button>
+          </ProtectedComponent>
         }
       />
 
-      {data.results.length === 0 ? (
-        <div className='bg-background border border-border rounded-sm p-12 text-center'>
-          <Archive className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-          <p className='text-muted-foreground'>No files uploaded yet</p>
-        </div>
-      ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-          {data.results.map((file) => (
-            <FileCard key={file.id} file={file} onDelete={setDeleteTarget} />
-          ))}
-        </div>
+      {buckets.length === 0 && (
+        <Card>
+          <CardContent className='p-12 text-center'>
+            <Container className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
+            <p className='text-muted-foreground'>No buckets yet.</p>
+          </CardContent>
+        </Card>
       )}
 
-      <UploadDialog
-        open={showUploadDialog}
-        onOpenChange={setShowUploadDialog}
-      />
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        {buckets.map((b) => (
+          <Card key={b.id} className='hover:shadow-xl transition-shadow'>
+            <CardHeader>
+              <CardIcon>
+                <Container className='w-5 h-5' />
+              </CardIcon>
+              <div className='flex-1 min-w-0'>
+                <CardTitle className='truncate'>{b.name}</CardTitle>
+                {b.description && (
+                  <CardDescription className='truncate'>
+                    {b.description}
+                  </CardDescription>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className='flex gap-2 flex-wrap'>
+              <Badge variant='outline' className='text-xs'>
+                visibility {b.default_visibility}
+              </Badge>
+              {b.archive_after_days != null && (
+                <Badge variant='outline' className='text-xs'>
+                  archive {b.archive_after_days}d
+                </Badge>
+              )}
+              {b.delete_after_days != null && (
+                <Badge variant='outline' className='text-xs'>
+                  delete {b.delete_after_days}d
+                </Badge>
+              )}
+            </CardContent>
+            <CardFooter className='gap-2'>
+              <ButtonLink
+                to={`/media/${b.id}`}
+                variant='secondary'
+                size='sm'
+                className='mr-auto'
+              >
+                Open
+              </ButtonLink>
+              <ProtectedComponent requireScope='wss:bucket:Delete'>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='text-destructive'
+                  onClick={() => setConfirmDelete(b.id)}
+                >
+                  <Trash2 className='w-4 h-4' />
+                </Button>
+              </ProtectedComponent>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      <CreateDialog open={createOpen} onOpenChange={setCreateOpen} />
 
       <ConfirmationDialog
-        open={!!deleteTarget}
-        onOpenChange={(v) => !v && setDeleteTarget(null)}
-        title='Delete file'
-        description={`Are you sure you want to delete "${deleteTarget?.basename}"? This action cannot be undone.`}
-        icon={<Trash2 className='w-5 h-5 text-destructive' />}
+        open={!!confirmDelete}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+        title='Delete Bucket'
+        description='Files inside may become unreachable. This cannot be undone.'
         confirmText='Delete'
         confirmVariant='destructive'
-        onConfirm={handleDelete}
-        isLoading={deleteFile.isPending}
-        loadingText='Deleting…'
+        onConfirm={() =>
+          confirmDelete &&
+          deleteBucket.mutate(confirmDelete, {
+            onSuccess: () => setConfirmDelete(null),
+          })
+        }
+        isLoading={deleteBucket.isPending}
+        loadingText='Deleting...'
       />
     </div>
   );
