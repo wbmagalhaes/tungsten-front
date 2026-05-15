@@ -17,6 +17,7 @@ import { useAuthStore } from '@stores/useAuthStore';
 import { useGetProfile } from '@hooks/profile/use-get-profile';
 import { usePwaInstall } from '@hooks/use-pwa-install';
 import { usePwaUpdate } from '@hooks/use-pwa-update';
+import { usePing } from '@hooks/system/use-ping';
 import { MainHeader } from './MainHeader';
 import { FeatureCard } from './FeatureCard';
 import { StackCard } from './StackCard';
@@ -27,6 +28,13 @@ export default function HomePage() {
   const { data: user, isLoading } = useGetProfile();
   const { canInstall, install } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
+  const { isLoading: healthLoading, isError: healthError } = usePing();
+  const isOnline = !healthLoading && !healthError;
+  const statusLabel = healthLoading
+    ? '> system booting'
+    : isOnline
+      ? '> system online'
+      : '> system offline';
 
   return (
     <div className='relative flex flex-col items-center justify-center'>
@@ -91,8 +99,16 @@ export default function HomePage() {
               &gt; personal self-hosted server
             </div>
 
-            <div className='glitch' data-text='> system online'>
-              &gt; system online
+            <div
+              className={`glitch ${healthError ? 'text-destructive' : ''}`}
+              data-text={statusLabel}
+            >
+              &gt;{' '}
+              {healthLoading
+                ? 'system booting'
+                : isOnline
+                  ? 'system online'
+                  : 'system offline'}
             </div>
 
             <div className='glitch' data-text='>'>

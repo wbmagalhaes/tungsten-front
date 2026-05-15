@@ -5,6 +5,11 @@ export const healthCheck = async () => {
   return res.data;
 };
 
+export const ping = async () => {
+  const res = await api.get<string>('/ping');
+  return res.data;
+};
+
 export const checkUpdates = async () => {
   const res = await api.get<CheckUpdatesResponse>('/api/system/updates');
   return res.data;
