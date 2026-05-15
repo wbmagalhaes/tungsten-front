@@ -67,8 +67,9 @@ export function HeaderAlerts() {
 
         <PopoverContent
           side='bottom'
+          align='end'
           sideOffset={12}
-          className='w-[calc(100vw-1rem)] sm:w-96 p-0'
+          className='w-[calc(100vw-2rem)] sm:w-96 p-0'
         >
           <PopoverHeader className='flex flex-row items-center justify-between gap-2 p-3 border-b border-border'>
             <div>
@@ -108,31 +109,31 @@ export function HeaderAlerts() {
                 {items.slice(0, 8).map((it) => {
                   const read = isInboxItemRead(it);
                   return (
-                  <button
-                    key={it.id}
-                    type='button'
-                    onClick={() => !read && markRead.mutate(it.id)}
-                    className={`text-left p-3 hover:bg-muted/40 transition-colors ${
-                      read ? 'opacity-60' : ''
-                    }`}
-                  >
-                    <div className='flex items-center gap-2 mb-1'>
-                      <span className='text-sm font-medium truncate flex-1'>
-                        {it.subject}
-                      </span>
-                      {!read && (
-                        <Badge variant='default' className='text-[10px]'>
-                          new
-                        </Badge>
-                      )}
-                    </div>
-                    <p className='text-xs text-muted-foreground line-clamp-2'>
-                      {it.body}
-                    </p>
-                    <p className='text-[10px] text-muted-foreground mt-1'>
-                      {new Date(it.created_at).toLocaleString()}
-                    </p>
-                  </button>
+                    <button
+                      key={it.id}
+                      type='button'
+                      onClick={() => !read && markRead.mutate(it.id)}
+                      className={`text-left p-3 hover:bg-muted/40 transition-colors ${
+                        read ? 'opacity-60' : ''
+                      }`}
+                    >
+                      <div className='flex items-center gap-2 mb-1'>
+                        <span className='text-sm font-medium truncate flex-1'>
+                          {it.subject}
+                        </span>
+                        {!read && (
+                          <Badge variant='default' className='text-[10px]'>
+                            new
+                          </Badge>
+                        )}
+                      </div>
+                      <p className='text-xs text-muted-foreground line-clamp-2'>
+                        {it.body}
+                      </p>
+                      <p className='text-[10px] text-muted-foreground mt-1'>
+                        {new Date(it.created_at).toLocaleString()}
+                      </p>
+                    </button>
                   );
                 })}
               </div>
