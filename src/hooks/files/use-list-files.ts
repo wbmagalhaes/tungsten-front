@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { listFiles, type ListFilesParams } from '@services/files.service';
 
-export const useListFiles = (params: ListFilesParams) => {
+export const useListFiles = (bucketId: string, params: ListFilesParams = {}) => {
   return useQuery({
-    queryKey: ['files', params],
-    queryFn: () => listFiles(params),
+    queryKey: ['files', bucketId, params],
+    queryFn: () => listFiles(bucketId, params),
+    enabled: !!bucketId,
   });
 };

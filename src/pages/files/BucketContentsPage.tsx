@@ -13,6 +13,10 @@ import {
   Loader2,
   Settings,
   Save,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Dot,
 } from 'lucide-react';
 import {
   Card,
@@ -26,6 +30,11 @@ import {
 import { Button, ButtonLink } from '@components/base/button';
 import { Badge } from '@components/base/badge';
 import { TextField } from '@components/base/text-field';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@components/base/input-group';
 import {
   Select,
   SelectContent,
@@ -560,10 +569,18 @@ function SettingsSection({
   );
 }
 
+const PAGE_SIZE = 25;
+
 export default function BucketContentsPage() {
   const { bucketId = '' } = useParams();
   const { data: bucket, isLoading, error } = useGetBucket(bucketId);
-  const { data: files } = useListFiles({ bucket_id: bucketId });
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const { data: files } = useListFiles(bucketId, {
+    search: search.trim() || undefined,
+    page,
+    page_size: PAGE_SIZE,
+  });
   const deleteFile = useDeleteFile();
   const [uploadOpen, setUploadOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -634,11 +651,27 @@ export default function BucketContentsPage() {
         </>
       )}
 
+      <InputGroup>
+        <InputGroupAddon>
+          <Search className='w-4 h-4' />
+        </InputGroupAddon>
+        <InputGroupInput
+          placeholder='Search files…'
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+      </InputGroup>
+
       {fileList.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
             <Archive className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No files in this bucket.</p>
+            <p className='text-muted-foreground'>
+              {search ? 'No files match your search.' : 'No files in this bucket.'}
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -652,6 +685,38 @@ export default function BucketContentsPage() {
             />
           ))}
         </div>
+      )}
+
+      {fileList.length > 0 && (
+        <Card>
+          <CardContent className='flex items-center justify-between p-2'>
+            <div className='text-sm text-muted-foreground flex gap-1 items-center'>
+              <span>Page {page}</span>
+              <Dot />
+              <span>{fileList.length} files</span>
+            </div>
+            <div className='flex gap-2'>
+              <Button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                variant='secondary'
+                size='sm'
+              >
+                <ChevronLeft className='w-4 h-4' />
+                <span className='hidden sm:inline'>Previous</span>
+              </Button>
+              <Button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={fileList.length < PAGE_SIZE}
+                variant='secondary'
+                size='sm'
+              >
+                <span className='hidden sm:inline'>Next</span>
+                <ChevronRight className='w-4 h-4' />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <UploadDialog

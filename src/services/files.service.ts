@@ -2,10 +2,14 @@ import api from './api';
 import type { FileMetadata } from '@models/file-metadata';
 import type { Paginated } from '@models/paginated';
 
-export const listFiles = async (params: ListFilesParams) => {
-  const res = await api.get<Paginated<FileMetadata>>('/api/files', {
-    params,
-  });
+export const listFiles = async (
+  bucketId: string,
+  params: ListFilesParams = {},
+) => {
+  const res = await api.get<Paginated<FileMetadata>>(
+    `/api/buckets/${bucketId}/files`,
+    { params },
+  );
   return res.data;
 };
 
@@ -165,11 +169,10 @@ export const signFile = async (id: string, body?: SignFileRequest) => {
 };
 
 export type ListFilesParams = {
-  bucket_id?: string;
   search?: string;
   dir_prefix?: string;
   page?: number;
-  per_page?: number;
+  page_size?: number;
   include_archived?: boolean;
 };
 
