@@ -84,14 +84,16 @@ export default function NotificationsHubPage() {
         </div>
       ) : (
         <Tabs value={active} onValueChange={setActive}>
-          <TabsList>
-            {visibleTabs.map((t) => (
-              <TabsTrigger key={t.value} value={t.value}>
-                {t.icon}
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className='overflow-x-auto'>
+            <TabsList>
+              {visibleTabs.map((t) => (
+                <TabsTrigger key={t.value} value={t.value}>
+                  {t.icon}
+                  <span className='hidden sm:inline'>{t.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {visibleTabs.map((t) => (
             <TabsContent key={t.value} value={t.value}>

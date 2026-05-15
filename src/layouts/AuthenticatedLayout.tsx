@@ -37,7 +37,7 @@ export default function AuthenticatedLayout() {
         style={{ marginLeft: desktop ? width : undefined }}
       >
         <Sidebar />
-        <main className='flex-1 p-4'>
+        <main className='flex-1 min-w-0 p-4'>
           <Outlet />
         </main>
       </div>

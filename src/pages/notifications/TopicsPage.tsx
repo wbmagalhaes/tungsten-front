@@ -87,8 +87,8 @@ export function TopicsSection() {
                 <Megaphone className='w-5 h-5' />
               </CardIcon>
               <div className='flex-1 min-w-0'>
-                <CardTitle className='flex items-center gap-2'>
-                  {t.name}
+                <CardTitle className='flex items-center gap-2 flex-wrap'>
+                  <span className='truncate max-w-full'>{t.name}</span>
                   {isSystemTopic(t) && (
                     <Badge variant='secondary'>system</Badge>
                   )}

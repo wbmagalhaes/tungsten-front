@@ -206,11 +206,11 @@ function NotificationSettings() {
           return (
             <div
               key={kind}
-              className='flex items-center justify-between gap-4 p-4 rounded-sm bg-muted/30 border border-border'
+              className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-4 rounded-sm bg-muted/30 border border-border'
             >
-              <div className='min-w-0'>
+              <div className='min-w-0 flex-1'>
                 <h4 className='font-medium text-foreground'>{title}</h4>
-                <p className='text-sm text-muted-foreground truncate'>
+                <p className='text-sm text-muted-foreground wrap-break-word'>
                   {row.description}
                 </p>
                 {(row.error || row.disabledReason) && (
@@ -219,7 +219,7 @@ function NotificationSettings() {
                   </p>
                 )}
               </div>
-              <div className='flex items-center gap-4 shrink-0'>
+              <div className='flex items-center gap-4 shrink-0 self-end sm:self-auto'>
                 {row.action}
                 {isPending ? (
                   <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />

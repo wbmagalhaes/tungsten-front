@@ -83,7 +83,7 @@ function ExecutionRow({ execution }: { execution: JobExecution }) {
             )}
           </div>
         </div>
-        {cfg.badge}
+        <div className='shrink-0'>{cfg.badge}</div>
       </CardHeader>
       {(execution.stdout || execution.stderr || execution.error) && (
         <CardContent className='space-y-2'>
@@ -398,12 +398,12 @@ export default function SingleJobPage() {
       </ButtonLink>
 
       <Card>
-        <CardHeader className='gap-3'>
+        <CardHeader className='gap-3 flex-wrap'>
           <CardIcon>
             <ServerCog className='w-5 h-5' />
           </CardIcon>
-          <div className='flex flex-col items-start gap-1 flex-1'>
-            <CardTitle>{job.name}</CardTitle>
+          <div className='flex flex-col items-start gap-1 flex-1 min-w-0'>
+            <CardTitle className='truncate max-w-full'>{job.name}</CardTitle>
             <div className='flex gap-2 flex-wrap'>
               <Badge variant='outline' className='text-xs'>
                 {job.language}
@@ -420,12 +420,12 @@ export default function SingleJobPage() {
                 </Badge>
               )}
             </div>
-            <span className='text-xs text-muted-foreground font-mono'>
+            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
               {job.id}
             </span>
           </div>
           <ProtectedComponent requireScope='wjb:job:Enqueue'>
-            <>
+            <div className='flex gap-2 shrink-0 w-full sm:w-auto sm:ml-auto justify-end'>
               <Button
                 size='sm'
                 onClick={() => runJob.mutate()}
@@ -446,7 +446,7 @@ export default function SingleJobPage() {
                 <Pencil className='w-4 h-4' />
                 Edit
               </Button>
-            </>
+            </div>
           </ProtectedComponent>
         </CardHeader>
       </Card>

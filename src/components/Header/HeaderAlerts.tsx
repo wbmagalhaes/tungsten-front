@@ -65,8 +65,12 @@ export function HeaderAlerts() {
           }
         />
 
-        <PopoverContent side='bottom' sideOffset={12} className='w-96 p-0'>
-          <PopoverHeader className='flex flex-row items-center justify-between gap-2'>
+        <PopoverContent
+          side='bottom'
+          sideOffset={12}
+          className='w-[calc(100vw-1rem)] sm:w-96 p-0'
+        >
+          <PopoverHeader className='flex flex-row items-center justify-between gap-2 p-3 border-b border-border'>
             <div>
               <PopoverTitle>Inbox</PopoverTitle>
               <PopoverDescription>

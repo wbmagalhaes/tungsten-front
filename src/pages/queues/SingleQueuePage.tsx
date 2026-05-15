@@ -190,19 +190,19 @@ export default function SingleQueuePage() {
       </ButtonLink>
 
       <Card>
-        <CardHeader className='gap-3'>
+        <CardHeader className='gap-3 flex-wrap'>
           <CardIcon>
             <Layers className='w-5 h-5' />
           </CardIcon>
-          <div className='flex flex-col items-start gap-1 flex-1'>
-            <CardTitle>{queue.name}</CardTitle>
+          <div className='flex flex-col items-start gap-1 flex-1 min-w-0'>
+            <CardTitle className='truncate max-w-full'>{queue.name}</CardTitle>
             <div className='flex gap-2 flex-wrap'>
               <Badge variant='outline'>vt {queue.visibility_timeout}s</Badge>
               <Badge variant='outline'>
                 max-recv {queue.max_receive_count}
               </Badge>
             </div>
-            <span className='text-xs text-muted-foreground font-mono'>
+            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
               {queue.id}
             </span>
           </div>
@@ -327,7 +327,7 @@ export default function SingleQueuePage() {
                     </span>
                   )}
                 </div>
-                <pre className='text-sm font-mono whitespace-pre-wrap'>
+                <pre className='text-sm font-mono whitespace-pre-wrap break-all'>
                   {m.payload}
                 </pre>
                 {m.receipt_handle && (

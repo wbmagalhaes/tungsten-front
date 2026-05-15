@@ -9,6 +9,7 @@ import {
   WifiOff,
   Loader2,
   Ban,
+  ArrowLeft,
 } from 'lucide-react';
 import {
   Card,
@@ -241,17 +242,15 @@ export default function ChatRoomPage() {
 
   return (
     <div className='space-y-4'>
+      <ButtonLink to='/chat' variant='link' className='p-0' size='sm'>
+        <ArrowLeft className='w-4 h-4' />
+        Back to rooms
+      </ButtonLink>
+
       <PageHeader
         title={`#${room.title}`}
         icon={<Hash className='w-5 h-5' />}
-        action={
-          <div className='flex items-center gap-3'>
-            <ConnectionBadge status={status} />
-            <ButtonLink to='/chat' variant='outline'>
-              Back to Rooms
-            </ButtonLink>
-          </div>
-        }
+        action={<ConnectionBadge status={status} />}
       />
 
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-4 h-[calc(100vh-12rem)]'>

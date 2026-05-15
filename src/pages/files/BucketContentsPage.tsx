@@ -321,24 +321,24 @@ function FileRow({
       className='hover:shadow-xl transition-shadow cursor-pointer'
       onClick={() => navigate(`/media/${bucketId}/files/${file.id}`)}
     >
-      <CardHeader>
-        <CardIcon>
+      <CardHeader className='flex-wrap min-w-0'>
+        <CardIcon className='shrink-0'>
           <FileIcon mime={file.mime} />
         </CardIcon>
-        <div className='flex-1 min-w-0'>
+        <div className='flex-1 min-w-0 basis-0'>
           <CardTitle className='truncate'>{file.basename}</CardTitle>
           <CardDescription className='truncate'>
             {file.filepath}
           </CardDescription>
         </div>
         <div
-          className='flex items-center gap-2 ml-auto'
+          className='flex items-center gap-2 shrink-0 basis-full sm:basis-auto sm:ml-auto justify-end'
           onClick={(e) => e.stopPropagation()}
         >
           <Badge variant={file.visibility === 'public' ? 'success' : 'warning'}>
             {file.visibility}
           </Badge>
-          <span className='text-xs text-muted-foreground'>
+          <span className='text-xs text-muted-foreground whitespace-nowrap'>
             {formatBytes(file.size)}
           </span>
           <Button
@@ -606,20 +606,22 @@ export default function BucketContentsPage() {
       </ButtonLink>
 
       <Card>
-        <CardHeader className='gap-3'>
+        <CardHeader className='gap-3 flex-wrap'>
           <CardIcon>
             <Container className='w-5 h-5' />
           </CardIcon>
-          <div className='flex flex-col items-start gap-1 flex-1'>
-            <CardTitle>{bucket.name}</CardTitle>
+          <div className='flex flex-col items-start gap-1 flex-1 min-w-0'>
+            <CardTitle className='truncate max-w-full'>{bucket.name}</CardTitle>
             {bucket.description && (
-              <CardDescription>{bucket.description}</CardDescription>
+              <CardDescription className='truncate max-w-full'>
+                {bucket.description}
+              </CardDescription>
             )}
-            <span className='text-xs text-muted-foreground font-mono'>
+            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
               {bucket.id}
             </span>
           </div>
-          <div className='flex gap-2 ml-auto'>
+          <div className='flex gap-2 shrink-0 w-full sm:w-auto sm:ml-auto justify-end'>
             <ProtectedComponent requireScope='wss:file:Upload'>
               <Button size='sm' onClick={() => setUploadOpen(true)}>
                 <Upload className='w-4 h-4' />
