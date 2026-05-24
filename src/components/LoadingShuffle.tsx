@@ -19,7 +19,7 @@ export function LoadingShuffle({ target, isLoading, speed = 20 }: Props) {
   useEffect(() => {
     function tick() {
       setDisplay((prev) => {
-        let next = [...prev];
+        let next = prev.length === n ? [...prev] : randomGlitchArray(n);
 
         if (lastTarget.current !== target) {
           lastTarget.current = target;
