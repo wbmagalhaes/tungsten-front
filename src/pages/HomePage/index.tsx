@@ -1,8 +1,10 @@
 import {
-  StickyNote,
   BotMessageSquare,
   ImagePlus,
-  FlaskConical,
+  Files,
+  Briefcase,
+  ListOrdered,
+  Bell,
 } from 'lucide-react';
 import CloudflareIcon from '@components/Icons/CloudflareIcon';
 import NginxIcon from '@components/Icons/NginxIcon';
@@ -22,19 +24,20 @@ import { MainHeader } from './MainHeader';
 import { FeatureCard } from './FeatureCard';
 import { StackCard } from './StackCard';
 import { LoadingShuffle } from '@components/LoadingShuffle';
+import { cn } from '@utils/cn';
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
   const { data: user, isLoading } = useGetProfile();
   const { canInstall, install } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
-  const { isLoading: healthLoading, isError: healthError } = usePing();
+  const { isLoading: healthLoading, isError: healthError } = usePing(5000);
   const isOnline = !healthLoading && !healthError;
   const statusLabel = healthLoading
-    ? '> system booting'
+    ? 'checking status...'
     : isOnline
-      ? '> system online'
-      : '> system offline';
+      ? 'system online'
+      : 'system offline';
 
   return (
     <div className='relative flex flex-col items-center justify-center'>
@@ -99,16 +102,31 @@ export default function HomePage() {
               &gt; personal self-hosted server
             </div>
 
-            <div
-              className={`glitch ${healthError ? 'text-destructive' : ''}`}
-              data-text={statusLabel}
-            >
-              &gt;{' '}
-              {healthLoading
-                ? 'system booting'
-                : isOnline
-                  ? 'system online'
-                  : 'system offline'}
+            <div className='flex gap-2 items-center'>
+              <div
+                className={cn('glitch', healthError && 'text-destructive')}
+                data-text={'> ' + statusLabel}
+              >
+                &gt;{' '}
+                {healthLoading
+                  ? 'checking status...'
+                  : isOnline
+                    ? 'system online'
+                    : 'system offline'}
+              </div>
+              {!healthLoading && (
+                <div className=' flex gap-0.5 items-center'>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={cn(
+                        'glitch h-2 w-1 rounded-full opacity-80',
+                        isOnline ? 'bg-success' : 'bg-destructive',
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className='glitch' data-text='>'>
@@ -220,28 +238,40 @@ export default function HomePage() {
 
           <div className='grid grid-cols-2 max-sm:grid-cols-1 gap-3 w-full'>
             <FeatureCard
-              icon={<StickyNote className='w-6 h-6' />}
-              title='Notes'
-              description='Note-taking with markdown support.'
-              color='yellow'
-            />
-            <FeatureCard
               icon={<BotMessageSquare className='w-6 h-6' />}
-              title='ChatBot'
-              description='Interface for language models.'
+              title='LLM Chat'
+              description='Conversational interface for large language models.'
               color='violet'
             />
             <FeatureCard
               icon={<ImagePlus className='w-6 h-6' />}
               title='Image Generation'
-              description='AI-powered image generation.'
+              description='Generate images from text prompts using AI models.'
               color='fuchsia'
             />
             <FeatureCard
-              icon={<FlaskConical className='w-6 h-6' />}
-              title='Sandbox'
-              description='Testing and experimentation environment.'
+              icon={<Files className='w-6 h-6' />}
+              title='Object Storage'
+              description='S3-style buckets for files and media.'
               color='cyan'
+            />
+            <FeatureCard
+              icon={<Briefcase className='w-6 h-6' />}
+              title='Functions'
+              description='Run code on demand, Lambda-style.'
+              color='yellow'
+            />
+            <FeatureCard
+              icon={<ListOrdered className='w-6 h-6' />}
+              title='Message Queues'
+              description='SQS-style queues for async work between services.'
+              color='green'
+            />
+            <FeatureCard
+              icon={<Bell className='w-6 h-6' />}
+              title='Pub/Sub Notifications'
+              description='SNS-style topics with multi-channel delivery.'
+              color='orange'
             />
           </div>
         </div>

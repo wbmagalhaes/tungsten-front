@@ -15,6 +15,21 @@ const api = axios.create({
 
 const publicRoutes = ['/ping', '/auth/token', '/auth/refresh'];
 
+let refreshingPromise: Promise<string> | null = null;
+let redirectingToLogin = false;
+
+function redirectToLogin() {
+  if (redirectingToLogin) return;
+  const path = window.location.pathname;
+  if (path.startsWith('/login') || path.startsWith('/logout')) return;
+  redirectingToLogin = true;
+  useAuthStore.getState().clearTokens();
+  const redirectTo = `/login?cb_url=${encodeURIComponent(
+    path + window.location.search,
+  )}`;
+  window.location.replace(redirectTo);
+}
+
 api.interceptors.request.use((config) => {
   if (!config.url) return config;
 
@@ -40,39 +55,55 @@ api.interceptors.response.use(
       method: err.config?.method,
       data: err.config?.data,
       error: err.message,
+      status: err.status,
+      retry: err.config?._retry,
     });
 
     const originalRequest = err.config;
 
-    if (
-      err.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry
-    ) {
+    if (err.response?.status === 401 && originalRequest) {
+      if (originalRequest.url?.endsWith('/auth/refresh')) {
+        redirectToLogin();
+        return Promise.reject(err);
+      }
+
+      if (originalRequest._retry) {
+        redirectToLogin();
+        return Promise.reject(err);
+      }
+
       originalRequest._retry = true;
 
+      const refreshToken = Cookies.get('refresh');
+      if (!refreshToken) {
+        redirectToLogin();
+        return Promise.reject(err);
+      }
+
       try {
-        const refreshToken = Cookies.get('refresh');
-        if (!refreshToken) {
-          return Promise.reject(err);
+        if (!refreshingPromise) {
+          refreshingPromise = refreshTokenRequest({ token: refreshToken })
+            .then((tokens) => {
+              if (!tokens?.access || !tokens?.refresh) {
+                throw new Error('Invalid refresh response');
+              }
+              useAuthStore.getState().setTokens(tokens.access, tokens.refresh);
+              return tokens.access;
+            })
+            .finally(() => {
+              refreshingPromise = null;
+            });
         }
 
-        const tokens = await refreshTokenRequest({ token: refreshToken });
-        useAuthStore.getState().setTokens(tokens.access, tokens.refresh);
+        const accessToken = await refreshingPromise;
 
         if (originalRequest.headers) {
-          originalRequest.headers['Authorization'] = `Bearer ${tokens.access}`;
+          originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
         return api(originalRequest);
       } catch (refreshErr) {
-        useAuthStore.getState().clearTokens();
-
-        const redirectTo = `/login?cb_url=${encodeURIComponent(
-          window.location.pathname + window.location.search,
-        )}`;
-        window.location.href = redirectTo;
-
+        redirectToLogin();
         return Promise.reject(refreshErr);
       }
     }
