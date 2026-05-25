@@ -32,12 +32,11 @@ export default function HomePage() {
   const { canInstall, install } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
   const { isLoading: healthLoading, isError: healthError } = usePing(1500);
+
+  const checkLabel = healthLoading ? 'checking status...' : 'system';
+
   const isOnline = !healthLoading && !healthError;
-  const statusLabel = healthLoading
-    ? 'checking status...'
-    : isOnline
-      ? 'system online'
-      : 'system offline';
+  const statusLabel = isOnline ? 'online ●' : 'offline ●';
 
   return (
     <div className='relative flex flex-col items-center justify-center'>
@@ -103,31 +102,18 @@ export default function HomePage() {
             </div>
 
             <div className='flex gap-2 items-center'>
-              <div
-                className={cn(
-                  'glitch',
-                  isOnline ? 'text-[#4ade80]' : 'text-[#fdb5b5]',
-                )}
-                data-text={'> ' + statusLabel}
-              >
-                &gt;{' '}
-                {healthLoading
-                  ? 'checking status...'
-                  : isOnline
-                    ? 'system online'
-                    : 'system offline'}
+              <div className='glitch' data-text={'> ' + checkLabel}>
+                &gt; {checkLabel}
               </div>
               {!healthLoading && (
-                <div className=' flex gap-0.5 items-center'>
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className={cn(
-                        'glitch h-2 w-1 rounded-full opacity-80',
-                        isOnline ? 'bg-[#4ade80]' : 'bg-[#fdb5b5]',
-                      )}
-                    />
-                  ))}
+                <div
+                  className={cn(
+                    'glitch',
+                    isOnline ? 'text-success' : 'text-destructive',
+                  )}
+                  data-text={statusLabel}
+                >
+                  {statusLabel}
                 </div>
               )}
             </div>
