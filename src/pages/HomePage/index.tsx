@@ -31,7 +31,7 @@ export default function HomePage() {
   const { data: user, isLoading } = useGetProfile();
   const { canInstall, install } = usePwaInstall();
   const { updateAvailable, update } = usePwaUpdate();
-  const { isLoading: healthLoading, isError: healthError } = usePing(5000);
+  const { isLoading: healthLoading, isError: healthError } = usePing(1500);
   const isOnline = !healthLoading && !healthError;
   const statusLabel = healthLoading
     ? 'checking status...'
@@ -104,7 +104,10 @@ export default function HomePage() {
 
             <div className='flex gap-2 items-center'>
               <div
-                className={cn('glitch', healthError && 'text-destructive')}
+                className={cn(
+                  'glitch',
+                  isOnline ? 'text-[#4ade80]' : 'text-[#fdb5b5]',
+                )}
                 data-text={'> ' + statusLabel}
               >
                 &gt;{' '}
@@ -121,7 +124,7 @@ export default function HomePage() {
                       key={i}
                       className={cn(
                         'glitch h-2 w-1 rounded-full opacity-80',
-                        isOnline ? 'bg-success' : 'bg-destructive',
+                        isOnline ? 'bg-[#4ade80]' : 'bg-[#fdb5b5]',
                       )}
                     />
                   ))}
