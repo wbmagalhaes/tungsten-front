@@ -28,6 +28,8 @@ import { ConfirmationDialog } from '@components/ConfirmationDialog';
 import { useSessions } from '@hooks/auth/use-sessions';
 import { useRevokeSession } from '@hooks/auth/use-revoke-session';
 import { useRevokeAll } from '@hooks/auth/use-revoke-all';
+import { useAuthStore } from '@stores/useAuthStore';
+import { Badge } from '@components/base/badge';
 import formatDate from '@utils/formatDate';
 
 dayjs.extend(relativeTime);
@@ -36,6 +38,7 @@ export default function SessionsCard() {
   const { data: sessions, isLoading, error } = useSessions();
   const revokeSession = useRevokeSession();
   const revokeAll = useRevokeAll();
+  const currentSessionId = useAuthStore((s) => s.user?.session_id ?? null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [confirmRevokeId, setConfirmRevokeId] = useState<string | null>(null);
   const [confirmRevokeAllOpen, setConfirmRevokeAllOpen] = useState(false);
@@ -85,10 +88,16 @@ export default function SessionsCard() {
           <ul className='space-y-2'>
             {sessions!.map((s) => {
               const { label, Icon } = describeSession(s.user_agent);
+              const isCurrent = s.id === currentSessionId;
               return (
                 <li
                   key={s.id}
-                  className='border border-border rounded-sm p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'
+                  className={
+                    'rounded-sm p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border ' +
+                    (isCurrent
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border')
+                  }
                 >
                   <div className='min-w-0 flex-1 space-y-1'>
                     <div className='flex items-center gap-2 font-medium text-sm'>
@@ -96,6 +105,11 @@ export default function SessionsCard() {
                       <span className='truncate' title={s.user_agent ?? ''}>
                         {label}
                       </span>
+                      {isCurrent && (
+                        <Badge variant='outline' className='shrink-0'>
+                          this device
+                        </Badge>
+                      )}
                     </div>
                     <div className='flex flex-col gap-1 text-xs text-muted-foreground'>
                       {s.ip && (
