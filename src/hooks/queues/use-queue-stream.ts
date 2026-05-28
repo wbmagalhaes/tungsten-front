@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ensureFreshToken } from '@services/ensure-fresh-token';
 
 const baseURL =
   import.meta.env.VITE_API_BASE_URL ?? 'https://api.tungsten.rocks';
@@ -24,15 +23,9 @@ export const useQueueStream = (queueId: string, enabled = true) => {
 
     const connect = async () => {
       if (destroyed) return;
-      const token = await ensureFreshToken();
-      if (destroyed) return;
-      if (!token) {
-        scheduleReconnect();
-        return;
-      }
 
-      const url = `${baseURL}/api/queues/${queueId}/stream?token=${encodeURIComponent(token)}`;
-      es = new EventSource(url);
+      const url = `${baseURL}/api/queues/${queueId}/stream`;
+      es = new EventSource(url, { withCredentials: true });
 
       es.onopen = () => {
         attempts = 0;

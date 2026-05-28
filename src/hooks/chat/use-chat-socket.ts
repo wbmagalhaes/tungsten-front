@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Cookies from 'js-cookie';
 
 export interface TalkMessage {
   type: 'talk';
@@ -94,9 +93,6 @@ export const useChatSocket = ({
   useEffect(() => {
     if (!roomId) return;
 
-    const token = Cookies.get('access');
-    if (!token) return;
-
     let destroyed = false;
 
     const tryConnect = () => {
@@ -104,7 +100,7 @@ export const useChatSocket = ({
 
       setStatus('connecting');
 
-      const url = `${WS_BASE}/ws/chat/join/${roomId}?token=${encodeURIComponent(token)}`;
+      const url = `${WS_BASE}/ws/chat/join/${roomId}`;
       const ws = new WebSocket(url);
       wsRef.current = ws;
 

@@ -42,7 +42,7 @@ export async function updatePermissions(
 }
 
 export async function updateSudo(id: string, req: UpdateSudoRequest) {
-  const { data } = await api.patch<User>(`/api/users/${id}/sudo`, req);
+  const { data } = await api.patch<User>(`/api/users/${id}/sudoer`, req);
   return data;
 }
 
@@ -71,5 +71,5 @@ export interface UpdatePermissionsRequest {
 }
 
 export interface UpdateSudoRequest {
-  is_sudo: boolean;
+  is_sudoer: boolean;
 }

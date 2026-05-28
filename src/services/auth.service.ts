@@ -1,17 +1,16 @@
 import api from './api';
 
 export const login = async (body: LoginRequest) => {
-  const res = await api.post<TokenPair>('/auth/token', body);
+  const res = await api.post<AuthResponse>('/auth/token', body);
   return res.data;
 };
 
-export const refreshToken = async (body: RefreshRequest) => {
-  const res = await api.post<TokenPair>('/auth/refresh', body);
-  return res.data;
+export const refreshToken = async () => {
+  await api.post('/auth/refresh');
 };
 
 export const register = async (body: RegisterRequest) => {
-  const res = await api.post<TokenPair>('/auth/register', body);
+  const res = await api.post<AuthResponse>('/auth/register', body);
   return res.data;
 };
 
@@ -35,27 +34,20 @@ export const forceSetPassword = async (
 };
 
 export const switchSudo = async (body: SudoRequest) => {
-  const res = await api.post<TokenPair>('/auth/switch-sudo', body);
-  return res.data;
+  await api.post('/auth/switch-sudo', body);
 };
 
 export const logout = async () => {
-  const res = await api.post('/auth/logout');
-  return res.data;
+  await api.post('/auth/logout');
 };
 
 export const revokeAll = async () => {
-  const res = await api.post('/auth/revoke-all');
-  return res.data;
+  await api.post('/auth/revoke-all');
 };
 
 export type LoginRequest = {
   username: string;
   password: string;
-  token: string;
-};
-
-export type RefreshRequest = {
   token: string;
 };
 
@@ -89,7 +81,6 @@ export type SudoRequest = {
   password: string;
 };
 
-export type TokenPair = {
-  access: string;
-  refresh: string;
+export type AuthResponse = {
+  user_id: string;
 };

@@ -1,119 +1,81 @@
 import { create } from 'zustand';
-import { jwtDecode } from 'jwt-decode';
-import Cookies from 'js-cookie';
+import type { Me } from '@models/user';
 
-export interface RefreshClaims {
-  sub: string;
-  exp: number;
-  nbf: number;
-  iss: string;
-  aud: string;
-  jti: string;
-}
-
-export interface AccessClaims extends RefreshClaims {
-  scope: string[];
-}
+export type AuthStatus = 'unknown' | 'authed' | 'anon';
 
 interface AuthState {
-  accessClaims: AccessClaims | null;
-
-  setTokens: (access: string, refresh: string) => void;
-  setAccessToken: (access: string) => void;
-  clearTokens: () => void;
+  status: AuthStatus;
+  user: Me | null;
 
   isAuthenticated: boolean;
+  isSudo: boolean;
+  canSudo: boolean;
   userId: string | null;
   userScope: string[] | null;
-  isSudo: boolean;
+
+  setUser: (user: Me) => void;
+  setAnon: () => void;
+  clear: () => void;
+  setSudoExpired: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => {
-  const accessToken = Cookies.get('access') || null;
-  const accessClaims = decodeToken<AccessClaims>(accessToken);
+export const useAuthStore = create<AuthState>((set) => ({
+  status: 'unknown',
+  user: null,
 
-  const refreshToken = Cookies.get('refresh') || null;
-  const refreshIsValid = isTokenValid(refreshToken);
+  isAuthenticated: false,
+  isSudo: false,
+  canSudo: false,
+  userId: null,
+  userScope: null,
 
-  return {
-    accessClaims,
+  setUser: (user) =>
+    set({
+      status: 'authed',
+      user,
+      isAuthenticated: true,
+      isSudo: user.sudo_active,
+      canSudo: user.is_sudoer,
+      userId: user.id,
+      userScope: user.effective_scopes,
+    }),
 
-    isAuthenticated: refreshIsValid,
-    userId: accessClaims?.sub || null,
-    userScope: accessClaims?.scope || null,
-    isSudo: accessClaims?.scope?.includes('sudo') || false,
+  setAnon: () =>
+    set({
+      status: 'anon',
+      user: null,
+      isAuthenticated: false,
+      isSudo: false,
+      canSudo: false,
+      userId: null,
+      userScope: null,
+    }),
 
-    setTokens: (access, refresh) => {
-      const refreshClaims = decodeToken<RefreshClaims>(refresh);
+  clear: () =>
+    set({
+      status: 'anon',
+      user: null,
+      isAuthenticated: false,
+      isSudo: false,
+      canSudo: false,
+      userId: null,
+      userScope: null,
+    }),
 
-      const expires = refreshClaims
-        ? (refreshClaims.exp - Date.now() / 1000) / 86400
-        : undefined;
-
-      Cookies.set('refresh', refresh, {
-        sameSite: 'strict',
-        expires: expires,
-      });
-
-      const claims = decodeToken<AccessClaims>(access);
-      Cookies.set('access', access, { sameSite: 'strict' });
-
-      set({
-        accessClaims: claims,
-        isAuthenticated: !!claims,
-        userId: claims?.sub || null,
-        userScope: claims?.scope || null,
-        isSudo: claims?.scope?.includes('sudo') || false,
-      });
-    },
-
-    setAccessToken: (access) => {
-      const claims = decodeToken<AccessClaims>(access);
-      Cookies.set('access', access, { sameSite: 'strict' });
-
-      set({
-        accessClaims: claims,
-        isAuthenticated: !!claims,
-        userId: claims?.sub || null,
-        userScope: claims?.scope || null,
-        isSudo: claims?.scope?.includes('sudo') || false,
-      });
-    },
-
-    clearTokens: () => {
-      Cookies.remove('access');
-      Cookies.remove('refresh');
-
-      set({
-        accessClaims: null,
-        isAuthenticated: false,
-        userId: null,
-        userScope: null,
-        isSudo: false,
-      });
-    },
-  };
-});
-
-function decodeToken<T extends AccessClaims | RefreshClaims>(
-  token: string | null,
-): T | null {
-  if (!token) {
-    return null;
-  }
-
-  try {
-    return jwtDecode<T>(token);
-  } catch {
-    console.warn('invalid token in cookie');
-  }
-
-  return null;
-}
-
-function isTokenValid(token: string | null): boolean {
-  if (!token) return false;
-  const decoded = decodeToken<RefreshClaims>(token);
-  if (!decoded) return false;
-  return decoded.exp * 1000 > Date.now();
-}
+  setSudoExpired: () =>
+    set((state) =>
+      state.user
+        ? {
+            isSudo: false,
+            user: {
+              ...state.user,
+              sudo_active: false,
+              effective_scopes: state.user.effective_scopes.filter(
+                (s) => s !== 'sudo',
+              ),
+            },
+            userScope: state.userScope?.filter((s) => s !== 'sudo') ?? null,
+          }
+        : state,
+    ),
+}));

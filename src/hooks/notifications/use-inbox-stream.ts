@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ensureFreshToken } from '@services/ensure-fresh-token';
 import { listInbox } from '@services/notifications.service';
 
 const baseURL =
@@ -59,18 +58,12 @@ export const useInboxStream = (
 
     const connect = async () => {
       if (destroyed) return;
-      const token = await ensureFreshToken();
-      if (destroyed) return;
-      if (!token) {
-        scheduleReconnect();
-        return;
-      }
 
       const path = topicId
         ? `/api/notifications/inbox/stream/${topicId}`
         : `/api/notifications/inbox/stream`;
-      const url = `${baseURL}${path}?token=${encodeURIComponent(token)}`;
-      es = new EventSource(url);
+      const url = `${baseURL}${path}`;
+      es = new EventSource(url, { withCredentials: true });
 
       es.onopen = () => {
         attempts = 0;

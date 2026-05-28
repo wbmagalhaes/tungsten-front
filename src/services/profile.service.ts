@@ -1,8 +1,8 @@
 import api from './api';
-import type { User } from '@models/user';
+import type { Me, User } from '@models/user';
 
 export const getProfile = async () => {
-  const res = await api.get<User>('/api/me');
+  const res = await api.get<Me>('/api/me');
   return res.data;
 };
 

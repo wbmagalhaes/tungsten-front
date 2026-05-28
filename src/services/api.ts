@@ -1,5 +1,4 @@
 import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
-import Cookies from 'js-cookie';
 import { useAuthStore } from '@stores/useAuthStore';
 import { refreshToken as refreshTokenRequest } from './auth.service';
 
@@ -8,14 +7,13 @@ const baseURL =
 
 const api = axios.create({
   baseURL: new URL(baseURL).toString(),
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-const publicRoutes = ['/ping', '/auth/token', '/auth/refresh'];
-
-let refreshingPromise: Promise<string> | null = null;
+let refreshingPromise: Promise<void> | null = null;
 let redirectingToLogin = false;
 
 function redirectToLogin() {
@@ -23,7 +21,7 @@ function redirectToLogin() {
   const path = window.location.pathname;
   if (path.startsWith('/login') || path.startsWith('/logout')) return;
   redirectingToLogin = true;
-  useAuthStore.getState().clearTokens();
+  useAuthStore.getState().clear();
   const redirectTo = `/login?cb_url=${encodeURIComponent(
     path + window.location.search,
   )}`;
@@ -31,17 +29,11 @@ function redirectToLogin() {
 }
 
 api.interceptors.request.use((config) => {
-  if (!config.url) return config;
-
-  const isPublic = publicRoutes.some((route) => config.url?.endsWith(route));
-  if (!isPublic) {
-    const accessToken = Cookies.get('access');
-    if (accessToken) {
-      config.headers = config.headers || {};
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
+  const method = (config.method ?? 'get').toLowerCase();
+  if (method !== 'get' && method !== 'head' && method !== 'options') {
+    config.headers = config.headers || {};
+    config.headers['X-CSRF-Protection'] = '1';
   }
-
   return config;
 });
 
@@ -53,7 +45,6 @@ api.interceptors.response.use(
     console.error('[API ERROR]', {
       url: err.config?.url,
       method: err.config?.method,
-      data: err.config?.data,
       error: err.message,
       status: err.status,
       retry: err.config?._retry,
@@ -74,33 +65,13 @@ api.interceptors.response.use(
 
       originalRequest._retry = true;
 
-      const refreshToken = Cookies.get('refresh');
-      if (!refreshToken) {
-        redirectToLogin();
-        return Promise.reject(err);
-      }
-
       try {
         if (!refreshingPromise) {
-          refreshingPromise = refreshTokenRequest({ token: refreshToken })
-            .then((tokens) => {
-              if (!tokens?.access || !tokens?.refresh) {
-                throw new Error('Invalid refresh response');
-              }
-              useAuthStore.getState().setTokens(tokens.access, tokens.refresh);
-              return tokens.access;
-            })
-            .finally(() => {
-              refreshingPromise = null;
-            });
+          refreshingPromise = refreshTokenRequest().finally(() => {
+            refreshingPromise = null;
+          });
         }
-
-        const accessToken = await refreshingPromise;
-
-        if (originalRequest.headers) {
-          originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
+        await refreshingPromise;
         return api(originalRequest);
       } catch (refreshErr) {
         redirectToLogin();

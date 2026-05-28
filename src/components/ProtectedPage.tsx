@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@stores/useAuthStore';
+import { LoadingState } from '@components/LoadingState';
 import matchesScope from '@utils/matchesScope';
 
 interface ProtectedPageProps {
@@ -12,8 +13,12 @@ export default function ProtectedPage({
   children,
   requireScope,
 }: ProtectedPageProps) {
-  const { isAuthenticated, userScope, isSudo } = useAuthStore();
+  const { status, isAuthenticated, userScope, isSudo } = useAuthStore();
   const location = useLocation();
+
+  if (status === 'unknown') {
+    return <LoadingState message='Loading...' />;
+  }
 
   if (!isAuthenticated) {
     const redirectTo = `/login?cb_url=${encodeURIComponent(

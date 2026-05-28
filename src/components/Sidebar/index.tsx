@@ -215,7 +215,7 @@ function SidebarMenuItem({
           className,
         )}
       >
-        <div className='flex items-center w-full gap-3 -ml-[3px]'>
+        <div className='flex items-center w-full gap-3 -ml-0.75'>
           {children}
         </div>
       </div>
@@ -237,7 +237,7 @@ function SidebarMenuItem({
               className,
             )}
           >
-            <div className='flex items-center w-full gap-3 -ml-[3px]'>
+            <div className='flex items-center w-full gap-3 -ml-0.75'>
               {children}
             </div>
           </div>
@@ -284,7 +284,7 @@ function SidebarProfile({ user, loading }: SidebarProfileProps) {
   const avatarSrc = user?.avatar;
   const avatarFallback = getInitials(user);
   const switchSudo = useSwitchSudo();
-  const canBeSudo = user?.is_sudo ?? false;
+  const canBeSudo = user?.is_sudoer ?? false;
 
   const [showSudoDialog, setShowSudoDialog] = useState(false);
   const [password, setPassword] = useState('');

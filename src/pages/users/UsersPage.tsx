@@ -144,7 +144,7 @@ export default function UsersPage() {
                       {formatDate(u.last_login)}
                     </td>
                     <td className='p-3'>
-                      {u.is_sudo ? (
+                      {u.is_sudoer ? (
                         <Badge variant='purple'>
                           <ShieldCheck className='w-3 h-3' />
                           Yes
@@ -226,7 +226,7 @@ export default function UsersPage() {
                       </div>
                     </div>
 
-                    {u.is_sudo && (
+                    {u.is_sudoer && (
                       <Badge variant='purple' className='ml-2 shrink-0'>
                         <ShieldCheck className='w-3 h-3' />
                         Sudo

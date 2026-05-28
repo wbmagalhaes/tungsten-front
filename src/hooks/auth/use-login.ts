@@ -1,19 +1,21 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { login as loginService } from '@services/auth.service';
 import type { LoginRequest } from '@services/auth.service';
+import { getProfile } from '@services/profile.service';
 import { useAuthStore } from '@stores/useAuthStore';
 
 export const useLogin = () => {
   const qc = useQueryClient();
-  const setTokens = useAuthStore((state) => state.setTokens);
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: async (body: LoginRequest) => {
-      const tokens = await loginService(body);
-      setTokens(tokens.access, tokens.refresh);
-      return tokens;
+      await loginService(body);
+      const me = await getProfile();
+      setUser(me);
+      qc.setQueryData(['me'], me);
+      return me;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
     retry: 0,
   });
 };

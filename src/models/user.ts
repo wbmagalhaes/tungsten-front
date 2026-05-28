@@ -5,10 +5,17 @@ export type User = {
   fullname?: string;
   email?: string;
   scope?: string[];
-  is_sudo: boolean;
+  is_sudoer: boolean;
   created_at: string;
   deleted_at?: string;
   last_login?: string;
+};
+
+export type Me = User & {
+  sudo_active: boolean;
+  effective_scopes: string[];
+  session_id: string;
+  access_expires_at: number;
 };
 
 export function getInitials(user?: User) {

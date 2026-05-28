@@ -352,13 +352,15 @@ export default function SingleUserPage() {
         </CardHeader>
         <CardContent>
           <div className='flex flex-col items-start gap-3'>
-            <Badge variant={user.is_sudo ? 'purple' : 'outline'}>
+            <Badge variant={user.is_sudoer ? 'purple' : 'outline'}>
               <ShieldCheck className='w-3 h-3' />
-              {user.is_sudo ? 'Enabled' : 'Disabled'}
+              {user.is_sudoer ? 'Enabled' : 'Disabled'}
             </Badge>
             <ProtectedComponent requireScope='iam:scope:GiveSudo'>
               <Button
-                onClick={() => updateSudo.mutate({ is_sudo: !user.is_sudo })}
+                onClick={() =>
+                  updateSudo.mutate({ is_sudoer: !user.is_sudoer })
+                }
                 variant='secondary'
                 size='sm'
               >

@@ -4,14 +4,17 @@ import { useAuthStore } from '@stores/useAuthStore';
 
 export const useLogout = () => {
   const qc = useQueryClient();
-  const clearTokens = useAuthStore((state) => state.clearTokens);
+  const clear = useAuthStore((state) => state.clear);
 
   return useMutation({
     mutationFn: async () => {
-      const res = await logoutService();
-      clearTokens();
-      return res;
+      try {
+        await logoutService();
+      } catch {
+        // ignore network/401 - we're logging out anyway
+      }
+      clear();
+      qc.clear();
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   });
 };
