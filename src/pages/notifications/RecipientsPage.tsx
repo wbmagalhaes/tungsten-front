@@ -251,7 +251,7 @@ export function RecipientsSection() {
         <p className='text-sm text-destructive'>{enablePush.error.message}</p>
       )}
 
-      {isLoading && <p className='text-sm text-muted-foreground'>Loading…</p>}
+      {isLoading && <p className='text-sm text-muted-fg'>Loading…</p>}
 
       <div className='space-y-3'>
         {recipients.map((r) => (

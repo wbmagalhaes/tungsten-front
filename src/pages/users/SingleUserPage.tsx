@@ -157,7 +157,7 @@ export default function SingleUserPage() {
                   className='w-full h-full object-cover'
                 />
               ) : (
-                <User className='w-6 h-6 text-foreground' />
+                <User className='w-6 h-6 text-main-fg' />
               )}
             </div>
           </CardIcon>

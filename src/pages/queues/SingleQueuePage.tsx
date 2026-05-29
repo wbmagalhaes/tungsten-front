@@ -202,7 +202,7 @@ export default function SingleQueuePage() {
                 max-recv {queue.max_receive_count}
               </Badge>
             </div>
-            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
+            <span className='text-xs text-muted-fg font-mono truncate max-w-full'>
               {queue.id}
             </span>
           </div>
@@ -305,7 +305,7 @@ export default function SingleQueuePage() {
         </CardHeader>
         <CardContent className='space-y-2'>
           {!messages?.length ? (
-            <p className='text-sm text-muted-foreground text-center py-4'>
+            <p className='text-sm text-muted-fg text-center py-4'>
               No visible messages.
             </p>
           ) : (
@@ -314,7 +314,7 @@ export default function SingleQueuePage() {
                 key={m.id}
                 className='p-3 bg-muted/30 border border-border rounded-sm space-y-2'
               >
-                <div className='flex gap-2 items-center text-xs text-muted-foreground flex-wrap'>
+                <div className='flex gap-2 items-center text-xs text-muted-fg flex-wrap'>
                   <span className='font-mono'>{m.id.slice(0, 8)}</span>
                   <Badge variant='outline' className='text-[10px]'>
                     {m.status}
@@ -379,7 +379,7 @@ export default function SingleQueuePage() {
           </CardHeader>
           <CardContent className='space-y-3'>
             {!grants.length ? (
-              <p className='text-sm text-muted-foreground'>No grants yet.</p>
+              <p className='text-sm text-muted-fg'>No grants yet.</p>
             ) : (
               <div className='space-y-2'>
                 {grants.map((g) => (

@@ -23,7 +23,7 @@ export function FeatureCard({
 }: FeatureCardProps) {
   return (
     <div
-      className={`group tg-card tg-feature-card tg-accent-${color} relative border border-foreground/6 rounded-md bg-foreground/2 transition-[border-color,box-shadow] duration-200 p-5 flex items-start gap-4 cursor-default`}
+      className={`group tg-card tg-feature-card tg-accent-${color} relative border border-main-fg/6 rounded-md bg-main-fg/2 transition-[border-color,box-shadow] duration-200 p-5 flex items-start gap-4 cursor-default`}
     >
       <div
         className={`tg-feature-icon-wrap tg-accent-${color} w-12 h-12 rounded border border-current flex items-center justify-center shrink-0 relative overflow-hidden transition-[box-shadow,border-color] duration-200`}
@@ -31,10 +31,10 @@ export function FeatureCard({
         {icon}
       </div>
       <div>
-        <div className='tg-feature-title font-cyber text-sm font-semibold tracking-[0.05em] text-foreground/85 mb-1 transition-[text-shadow,color] duration-150'>
+        <div className='tg-feature-title font-cyber text-sm font-semibold tracking-[0.05em] text-main-fg/85 mb-1 transition-[text-shadow,color] duration-150'>
           {title}
         </div>
-        <div className='tg-feature-desc font-chakra text-base text-foreground/40 group-hover:text-foreground/80 leading-relaxed tracking-[0.02em] transition-colors duration-150'>
+        <div className='tg-feature-desc font-chakra text-base text-main-fg/40 group-hover:text-main-fg/80 leading-relaxed tracking-[0.02em] transition-colors duration-150'>
           {description}
         </div>
       </div>

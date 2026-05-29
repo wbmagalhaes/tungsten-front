@@ -99,13 +99,13 @@ export default function SingleNotePage() {
         </CardHeader>
         <CardContent className='space-y-4'>
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Icon
             </label>
             <IconPicker value={icon} onChange={setIcon} />
           </div>
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Color
             </label>
             <ColorPicker value={color} onChange={setColor} />
@@ -117,7 +117,7 @@ export default function SingleNotePage() {
             onChange={(e) => setTitle(e.target.value)}
           />
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Content
             </label>
             <Textarea

@@ -101,8 +101,8 @@ export default function UsersPage() {
       {!data?.results.length ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Users className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No users found</p>
+            <Users className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No users found</p>
           </CardContent>
         </Card>
       ) : (
@@ -111,22 +111,22 @@ export default function UsersPage() {
             <table className='w-full text-sm'>
               <thead className='bg-muted border-b border-border'>
                 <tr>
-                  <th className='p-3 text-left text-foreground font-semibold'>
+                  <th className='p-3 text-left text-main-fg font-semibold'>
                     Username
                   </th>
-                  <th className='p-3 text-left text-foreground font-semibold'>
+                  <th className='p-3 text-left text-main-fg font-semibold'>
                     Full Name
                   </th>
-                  <th className='p-3 text-left text-foreground font-semibold'>
+                  <th className='p-3 text-left text-main-fg font-semibold'>
                     Email
                   </th>
-                  <th className='p-3 text-left text-foreground font-semibold'>
+                  <th className='p-3 text-left text-main-fg font-semibold'>
                     Last Login
                   </th>
-                  <th className='p-3 text-left text-foreground font-semibold'>
+                  <th className='p-3 text-left text-main-fg font-semibold'>
                     Sudo
                   </th>
-                  <th className='p-3 text-right text-foreground font-semibold'>
+                  <th className='p-3 text-right text-main-fg font-semibold'>
                     Actions
                   </th>
                 </tr>
@@ -137,10 +137,10 @@ export default function UsersPage() {
                     key={u.id}
                     className='border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors'
                   >
-                    <td className='p-3 text-foreground'>{u.username}</td>
-                    <td className='p-3 text-foreground'>{u.fullname || '-'}</td>
-                    <td className='p-3 text-foreground'>{u.email || '-'}</td>
-                    <td className='p-3 text-foreground'>
+                    <td className='p-3 text-main-fg'>{u.username}</td>
+                    <td className='p-3 text-main-fg'>{u.fullname || '-'}</td>
+                    <td className='p-3 text-main-fg'>{u.email || '-'}</td>
+                    <td className='p-3 text-main-fg'>
                       {formatDate(u.last_login)}
                     </td>
                     <td className='p-3'>
@@ -195,29 +195,29 @@ export default function UsersPage() {
                 <CardContent>
                   <div className='flex items-start justify-between mb-3'>
                     <div className='flex-1 min-w-0'>
-                      <h3 className='font-semibold text-foreground text-lg mb-2'>
+                      <h3 className='font-semibold text-main-fg text-lg mb-2'>
                         {u.username}
                       </h3>
                       <div className='space-y-1'>
                         <div>
-                          <span className='text-xs text-muted-foreground'>
+                          <span className='text-xs text-muted-fg'>
                             Fullname:
                           </span>
-                          <p className='text-sm text-foreground'>
+                          <p className='text-sm text-main-fg'>
                             {u.fullname || (
-                              <span className='text-muted-foreground/60 italic'>
+                              <span className='text-muted-fg/60 italic'>
                                 not informed
                               </span>
                             )}
                           </p>
                         </div>
                         <div>
-                          <span className='text-xs text-muted-foreground'>
+                          <span className='text-xs text-muted-fg'>
                             Email:
                           </span>
-                          <p className='text-sm text-foreground'>
+                          <p className='text-sm text-main-fg'>
                             {u.email || (
-                              <span className='text-muted-foreground/60 italic'>
+                              <span className='text-muted-fg/60 italic'>
                                 not informed
                               </span>
                             )}
@@ -265,7 +265,7 @@ export default function UsersPage() {
       {data && data.results.length > 0 && (
         <Card>
           <CardContent className='flex items-center justify-between p-2'>
-            <div className='text-sm text-muted-foreground flex gap-1 items-center'>
+            <div className='text-sm text-muted-fg flex gap-1 items-center'>
               <span>Page {page}</span>
               <Dot />
               <span>{data.results.length} users</span>

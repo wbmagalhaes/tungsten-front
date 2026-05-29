@@ -74,7 +74,7 @@ export default function AuthenticatedLayout() {
           />
 
           <div className='fixed inset-0 border-4 border-destructive flex z-9999 rounded-xl pointer-events-none'>
-            <div className='bg-destructive text-foreground text-center pb-1 px-2 rounded-b-sm mx-auto mb-auto font-bold text-xs uppercase tracking-wide'>
+            <div className='bg-destructive text-main-fg text-center pb-1 px-2 rounded-b-sm mx-auto mb-auto font-bold text-xs uppercase tracking-wide'>
               Sudo Mode
             </div>
           </div>

@@ -196,15 +196,15 @@ export default function SingleFilePage() {
         </CardHeader>
         <CardContent className='space-y-3 text-sm'>
           <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Type</span>
-            <span className='text-foreground'>{file.mime || 'Unknown'}</span>
+            <span className='text-muted-fg'>Type</span>
+            <span className='text-main-fg'>{file.mime || 'Unknown'}</span>
           </div>
           <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Size</span>
-            <span className='text-foreground'>{formatBytes(file.size)}</span>
+            <span className='text-muted-fg'>Size</span>
+            <span className='text-main-fg'>{formatBytes(file.size)}</span>
           </div>
           <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Visibility</span>
+            <span className='text-muted-fg'>Visibility</span>
             <Badge
               variant={file.visibility === 'public' ? 'success' : 'warning'}
               className='py-0'
@@ -213,14 +213,14 @@ export default function SingleFilePage() {
             </Badge>
           </div>
           <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Created</span>
-            <span className='text-foreground'>
+            <span className='text-muted-fg'>Created</span>
+            <span className='text-main-fg'>
               {new Date(file.created_at).toLocaleString('pt-BR')}
             </span>
           </div>
           {file.canonical_uri && (
             <div className='flex justify-between items-center'>
-              <span className='text-muted-foreground'>URL</span>
+              <span className='text-muted-fg'>URL</span>
               <a
                 href={file.canonical_uri}
                 target='_blank'

@@ -7,7 +7,7 @@ export default function LoginPage() {
       <div className='w-full max-w-md space-y-4'>
         <LoginForm />
 
-        <p className='text-sm text-muted-foreground flex gap-1 justify-center'>
+        <p className='text-sm text-muted-fg flex gap-1 justify-center'>
           <span>Tungsten Server</span>
           <Dot />
           <span>Personal Self-Hosted</span>

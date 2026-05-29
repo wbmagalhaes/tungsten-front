@@ -13,7 +13,7 @@ export const STATUS_CONFIG: Record<
         Queued
       </Badge>
     ),
-    icon: <Clock className='w-5 h-5 text-muted-foreground' />,
+    icon: <Clock className='w-5 h-5 text-muted-fg' />,
   },
   running: {
     badge: (
@@ -44,7 +44,7 @@ export const STATUS_CONFIG: Record<
   },
   cancelled: {
     badge: <Badge variant='outline'>Cancelled</Badge>,
-    icon: <StopCircle className='w-5 h-5 text-muted-foreground' />,
+    icon: <StopCircle className='w-5 h-5 text-muted-fg' />,
   },
 };
 

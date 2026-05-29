@@ -62,8 +62,8 @@ export default function InboxPage() {
       {items.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Mail className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>Inbox is empty.</p>
+            <Mail className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>Inbox is empty.</p>
           </CardContent>
         </Card>
       ) : (
@@ -85,7 +85,7 @@ export default function InboxPage() {
                     {it.subject}
                     {!read && <Badge variant='default'>new</Badge>}
                   </CardTitle>
-                  <span className='text-xs text-muted-foreground'>
+                  <span className='text-xs text-muted-fg'>
                     {new Date(it.created_at).toLocaleString()}
                   </span>
                 </div>

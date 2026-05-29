@@ -81,8 +81,8 @@ export default function SystemTopicsPage() {
       {topics.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <ShieldAlert className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No system topics yet.</p>
+            <ShieldAlert className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No system topics yet.</p>
           </CardContent>
         </Card>
       ) : (
@@ -102,7 +102,7 @@ export default function SystemTopicsPage() {
                     )}
                   </CardTitle>
                   {t.description && (
-                    <p className='text-sm text-muted-foreground mt-1'>
+                    <p className='text-sm text-muted-fg mt-1'>
                       {t.description}
                     </p>
                   )}

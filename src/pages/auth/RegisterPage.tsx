@@ -140,9 +140,9 @@ export default function RegisterPage() {
                 </Button>
               </div>
 
-              <p className='text-center text-sm text-muted-foreground'>
+              <p className='text-center text-sm text-muted-fg'>
                 Already have an account?{' '}
-                <Link to='/login' className='text-foreground hover:underline'>
+                <Link to='/login' className='text-main-fg hover:underline'>
                   Sign in
                 </Link>
               </p>
@@ -150,7 +150,7 @@ export default function RegisterPage() {
           </CardContent>
         </Card>
 
-        <p className='text-sm text-muted-foreground flex gap-1 justify-center'>
+        <p className='text-sm text-muted-fg flex gap-1 justify-center'>
           <span>Tungsten Server</span>
           <Dot />
           <span>Personal Self-Hosted</span>

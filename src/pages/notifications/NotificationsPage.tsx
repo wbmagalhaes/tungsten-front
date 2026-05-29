@@ -100,8 +100,8 @@ export function NotificationsSection() {
       {items.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Megaphone className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No notifications sent yet.</p>
+            <Megaphone className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No notifications sent yet.</p>
           </CardContent>
         </Card>
       ) : (
@@ -117,7 +117,7 @@ export function NotificationsSection() {
                     <span className='truncate'>{n.subject}</span>
                     {STATUS_CONFIG[n.status].badge}
                   </CardTitle>
-                  <div className='flex gap-3 mt-1 text-xs text-muted-foreground font-mono'>
+                  <div className='flex gap-3 mt-1 text-xs text-muted-fg font-mono'>
                     <span>topic {n.topic_id.slice(0, 8)}</span>
                     <span>recipient {n.recipient_id.slice(0, 8)}</span>
                     {n.sent_at && (

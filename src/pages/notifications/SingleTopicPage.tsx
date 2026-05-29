@@ -154,11 +154,11 @@ export default function SingleTopicPage() {
               )}
             </CardTitle>
             {topic.description && (
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-fg'>
                 {topic.description}
               </p>
             )}
-            <span className='text-xs text-muted-foreground font-mono'>
+            <span className='text-xs text-muted-fg font-mono'>
               {topic.id}
             </span>
           </div>
@@ -307,7 +307,7 @@ export default function SingleTopicPage() {
         </CardHeader>
         <CardContent className='space-y-3'>
           {subscriptionList.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-sm text-muted-fg'>
               No subscribers yet.
             </p>
           ) : (
@@ -338,7 +338,7 @@ export default function SingleTopicPage() {
           <ProtectedComponent requireScope='was:subscriber:Create'>
             <div className='pt-2 border-t border-border space-y-2'>
               {recipients.length === 0 ? (
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-sm text-muted-fg'>
                   You don't have any recipients yet.{' '}
                   <Link to='/recipients' className='text-primary underline'>
                     Create one
@@ -346,7 +346,7 @@ export default function SingleTopicPage() {
                   to subscribe to this topic.
                 </p>
               ) : availableRecipients.length === 0 ? (
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-sm text-muted-fg'>
                   All your recipients are already subscribed.
                 </p>
               ) : (
@@ -399,7 +399,7 @@ export default function SingleTopicPage() {
           </CardHeader>
           <CardContent className='space-y-3'>
             {permissions.length === 0 ? (
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-fg'>
                 No permissions granted.
               </p>
             ) : (

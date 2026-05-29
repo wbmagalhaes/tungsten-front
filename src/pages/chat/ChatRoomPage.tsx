@@ -80,7 +80,7 @@ function ConnectionBadge({ status }: { status: ConnectionStatus }) {
     },
     disconnected: {
       label: 'Disconnected',
-      color: 'text-muted-foreground',
+      color: 'text-muted-fg',
       icon: <WifiOff className='w-3 h-3' />,
     },
     error: {
@@ -112,14 +112,14 @@ function MessageBubble({ msg, isOwn }: { msg: LocalMessage; isOwn: boolean }) {
         className={`flex-1 max-w-md ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}
       >
         {!isOwn && (
-          <span className='text-xs text-muted-foreground mb-1'>{name}</span>
+          <span className='text-xs text-muted-fg mb-1'>{name}</span>
         )}
         <div
-          className={`px-4 py-2 rounded-sm ${isOwn ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}
+          className={`px-4 py-2 rounded-sm ${isOwn ? 'bg-primary text-primary-fg' : 'bg-muted text-main-fg'}`}
         >
           <p className='text-sm whitespace-pre-wrap'>{msg.body}</p>
         </div>
-        <span className='text-xs text-muted-foreground mt-1'>
+        <span className='text-xs text-muted-fg mt-1'>
           {formatTimestamp(msg.created_at)}
         </span>
       </div>
@@ -130,7 +130,7 @@ function MessageBubble({ msg, isOwn }: { msg: LocalMessage; isOwn: boolean }) {
 function SystemEvent({ text }: { text: string }) {
   return (
     <div className='flex justify-center'>
-      <span className='text-xs text-muted-foreground bg-muted/50 px-3 py-0.5 rounded-full'>
+      <span className='text-xs text-muted-fg bg-muted/50 px-3 py-0.5 rounded-full'>
         {text}
       </span>
     </div>
@@ -257,7 +257,7 @@ export default function ChatRoomPage() {
         <Card className='lg:col-span-3 flex flex-col overflow-hidden'>
           <CardContent className='flex-1 overflow-y-auto p-4 space-y-4'>
             {feed.length === 0 && status === 'connected' && (
-              <div className='text-center py-8 text-muted-foreground text-sm'>
+              <div className='text-center py-8 text-muted-fg text-sm'>
                 No messages yet. Say something!
               </div>
             )}
@@ -288,7 +288,7 @@ export default function ChatRoomPage() {
             <ProtectedComponent
               requireScope='wct:room:Join'
               fallback={
-                <p className='text-sm text-muted-foreground text-center py-2'>
+                <p className='text-sm text-muted-fg text-center py-2'>
                   You don't have permission to send messages.
                 </p>
               }
@@ -327,7 +327,7 @@ export default function ChatRoomPage() {
           </CardHeader>
           <CardContent className='flex-1 overflow-y-auto space-y-1'>
             {activeUsers.length === 0 ? (
-              <p className='text-xs text-muted-foreground text-center py-4'>
+              <p className='text-xs text-muted-fg text-center py-4'>
                 Nobody here yet
               </p>
             ) : (
@@ -347,7 +347,7 @@ export default function ChatRoomPage() {
                       </Avatar>
                       <Circle className='w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5 fill-success text-success' />
                     </div>
-                    <span className='text-sm text-foreground truncate'>
+                    <span className='text-sm text-main-fg truncate'>
                       {name}
                     </span>
                     <ProtectedComponent

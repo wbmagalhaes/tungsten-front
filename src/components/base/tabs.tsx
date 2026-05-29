@@ -21,7 +21,7 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  'rounded-sm p-1 group-data-horizontal/tabs:h-10 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
+  'rounded-sm p-1 group-data-horizontal/tabs:h-10 data-[variant=line]:rounded-none group/tabs-list text-muted-fg inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
   {
     variants: {
       variant: {
@@ -55,10 +55,10 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot='tabs-trigger'
       className={cn(
-        "gap-1.5 rounded-sm px-3 py-2 text-sm font-medium [&_svg:not([class*='size-'])]:size-4 text-muted-foreground hover:text-foreground relative inline-flex h-full items-center justify-center whitespace-nowrap transition-all group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "gap-1.5 rounded-sm px-3 py-2 text-sm font-medium [&_svg:not([class*='size-'])]:size-4 text-muted-fg hover:text-main-fg relative inline-flex h-full items-center justify-center whitespace-nowrap transition-all group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         'group-data-[variant=line]/tabs-list:rounded-none group-data-[variant=line]/tabs-list:border-b-2 group-data-[variant=line]/tabs-list:border-transparent',
-        'data-active:bg-background data-active:text-foreground data-active:shadow-sm',
-        'group-data-[variant=line]/tabs-list:data-active:bg-transparent group-data-[variant=line]/tabs-list:data-active:border-ring group-data-[variant=line]/tabs-list:data-active:text-foreground',
+        'data-active:bg-background data-active:text-main-fg data-active:shadow-sm',
+        'group-data-[variant=line]/tabs-list:data-active:bg-transparent group-data-[variant=line]/tabs-list:data-active:border-ring group-data-[variant=line]/tabs-list:data-active:text-main-fg',
         className,
       )}
       {...props}

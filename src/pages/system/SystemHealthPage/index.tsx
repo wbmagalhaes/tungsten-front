@@ -95,7 +95,7 @@ export default function SystemHealthPage() {
             </div>
 
             <div className='pt-2 border-t border-border'>
-              <h4 className='text-sm font-semibold text-foreground mb-2'>
+              <h4 className='text-sm font-semibold text-main-fg mb-2'>
                 Temperatures
               </h4>
               <div className='space-y-1.5'>
@@ -202,7 +202,7 @@ export default function SystemHealthPage() {
             </div>
 
             {data.battery_hours_left >= 0 && data.battery_status !== 'full' && (
-              <div className='text-sm text-muted-foreground text-nowrap'>
+              <div className='text-sm text-muted-fg text-nowrap'>
                 {data.battery_status === 'charging'
                   ? `Time to 100%: ${data.battery_hours_left.toFixed(1)}h`
                   : `Time remaining: ${data.battery_hours_left.toFixed(1)}h`}
@@ -224,8 +224,8 @@ function ScheduleBanner({
 }) {
   const styles =
     variant === 'warning'
-      ? 'bg-warning/10 border-warning/30 text-warning-foreground'
-      : 'bg-destructive/10 border-destructive/30 text-destructive-foreground';
+      ? 'bg-warning/10 border-warning/30 text-warning-fg'
+      : 'bg-destructive/10 border-destructive/30 text-destructive-fg';
 
   return (
     <div

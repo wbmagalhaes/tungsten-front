@@ -77,7 +77,7 @@ export default function ChatBotPage() {
       </Card>
 
       <div>
-        <h2 className='text-lg font-semibold text-foreground mb-3 flex items-center gap-2'>
+        <h2 className='text-lg font-semibold text-main-fg mb-3 flex items-center gap-2'>
           <MessageSquare className='w-5 h-5' />
           Conversation History
         </h2>
@@ -90,14 +90,14 @@ export default function ChatBotPage() {
             >
               <CardContent className='p-4 flex-1 min-w-0'>
                 <div className='flex items-center gap-2 mb-2'>
-                  <h3 className='font-semibold text-foreground truncate'>
+                  <h3 className='font-semibold text-main-fg truncate'>
                     {conv.title}
                   </h3>
                 </div>
-                <p className='text-sm text-muted-foreground line-clamp-1 mb-2'>
+                <p className='text-sm text-muted-fg line-clamp-1 mb-2'>
                   {conv.preview}
                 </p>
-                <div className='flex items-center gap-4 text-xs text-muted-foreground/60'>
+                <div className='flex items-center gap-4 text-xs text-muted-fg/60'>
                   <span className='flex items-center gap-1'>
                     <MessageSquare className='w-3 h-3' />
                     {conv.messages} messages
@@ -116,8 +116,8 @@ export default function ChatBotPage() {
       {conversations.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <BotMessageSquare className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>
+            <BotMessageSquare className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>
               No conversations yet. Start chatting above!
             </p>
           </CardContent>

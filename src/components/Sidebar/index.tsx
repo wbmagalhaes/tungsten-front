@@ -209,7 +209,7 @@ function SidebarMenuItem({
     return (
       <div
         className={cn(
-          'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-primary/20 border-l-3 border-transparent text-foreground',
+          'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-primary/20 border-l-3 border-transparent text-main-fg',
           active &&
             'bg-primary/20 hover:bg-primary/20 font-medium border-primary',
           className,
@@ -231,7 +231,7 @@ function SidebarMenuItem({
           <div
             {...props}
             className={cn(
-              'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-primary/20 border-l-3 border-transparent text-foreground',
+              'rounded-md px-3 py-2 transition-colors duration-200 hover:bg-primary/20 border-l-3 border-transparent text-main-fg',
               active &&
                 'bg-primary/20 hover:bg-primary/20 font-medium border-primary',
               className,

@@ -37,8 +37,8 @@ export function DiscoverTopicsSection() {
       {topics.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Compass className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No discoverable topics.</p>
+            <Compass className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No discoverable topics.</p>
           </CardContent>
         </Card>
       ) : (
@@ -55,7 +55,7 @@ export function DiscoverTopicsSection() {
                     {t.is_system && <Badge variant='secondary'>system</Badge>}
                   </CardTitle>
                   {t.description && (
-                    <p className='text-sm text-muted-foreground mt-1'>
+                    <p className='text-sm text-muted-fg mt-1'>
                       {t.description}
                     </p>
                   )}

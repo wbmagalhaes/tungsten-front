@@ -45,10 +45,10 @@ export default function HelpPage() {
   return (
     <div className='flex flex-col items-center justify-center pt-16'>
       <div className='max-w-4xl mx-auto text-center'>
-        <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-4'>
+        <h1 className='text-5xl md:text-6xl font-bold text-main-fg mb-4'>
           Help Center
         </h1>
-        <p className='text-xl text-muted-foreground mb-10 max-w-2xl mx-auto'>
+        <p className='text-xl text-muted-fg mb-10 max-w-2xl mx-auto'>
           Find guides and information to help you use Tungsten efficiently.
         </p>
 
@@ -66,10 +66,10 @@ export default function HelpPage() {
                     {topic.icon}
                   </div>
                   <div className='text-left'>
-                    <h3 className='font-semibold text-foreground mb-1'>
+                    <h3 className='font-semibold text-main-fg mb-1'>
                       {topic.title}
                     </h3>
-                    <p className='text-muted-foreground text-sm'>
+                    <p className='text-muted-fg text-sm'>
                       {topic.description}
                     </p>
                   </div>

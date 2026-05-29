@@ -416,8 +416,8 @@ export default function BackgroundJobsPage() {
       {jobs.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <ServerCog className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No jobs yet.</p>
+            <ServerCog className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No jobs yet.</p>
           </CardContent>
         </Card>
       )}
@@ -438,7 +438,7 @@ export default function BackgroundJobsPage() {
           >
             Previous
           </Button>
-          <span className='text-sm text-muted-foreground self-center'>
+          <span className='text-sm text-muted-fg self-center'>
             Page {page}
           </span>
           <Button

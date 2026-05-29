@@ -73,7 +73,7 @@ function ExecutionRow({ execution }: { execution: JobExecution }) {
           <CardTitle className='font-mono text-sm truncate'>
             {execution.id.slice(0, 8)}
           </CardTitle>
-          <div className='flex gap-2 mt-1 flex-wrap text-xs text-muted-foreground'>
+          <div className='flex gap-2 mt-1 flex-wrap text-xs text-muted-fg'>
             <span>Started {formatTimestamp(execution.started_at)}</span>
             {execution.duration_ms != null && (
               <span>· {formatDuration(execution.duration_ms)}</span>
@@ -420,7 +420,7 @@ export default function SingleJobPage() {
                 </Badge>
               )}
             </div>
-            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
+            <span className='text-xs text-muted-fg font-mono truncate max-w-full'>
               {job.id}
             </span>
           </div>
@@ -482,7 +482,7 @@ export default function SingleJobPage() {
               <ExecutionRow key={e.id} execution={e} />
             ))
           ) : (
-            <p className='text-sm text-muted-foreground text-center py-4'>
+            <p className='text-sm text-muted-fg text-center py-4'>
               No executions yet.
             </p>
           )}

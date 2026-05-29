@@ -80,13 +80,13 @@ function CreateNoteDialog({
 
         <div className='space-y-4'>
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Icon
             </label>
             <IconPicker value={icon} onChange={setIcon} />
           </div>
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Color
             </label>
             <ColorPicker value={color} onChange={setColor} />
@@ -100,7 +100,7 @@ function CreateNoteDialog({
             autoFocus
           />
           <div>
-            <label className='text-sm text-muted-foreground mb-2 block'>
+            <label className='text-sm text-muted-fg mb-2 block'>
               Content
             </label>
             <Textarea
@@ -196,10 +196,10 @@ function NoteCard({ note, onDelete }: NoteCardProps) {
       </CardHeader>
 
       <CardContent className='relative'>
-        <pre className='text-sm text-foreground/90 whitespace-pre-wrap font-sans line-clamp-6 mb-3'>
+        <pre className='text-sm text-main-fg/90 whitespace-pre-wrap font-sans line-clamp-6 mb-3'>
           {note.body}
         </pre>
-        <div className='flex items-center gap-1 text-xs text-muted-foreground'>
+        <div className='flex items-center gap-1 text-xs text-muted-fg'>
           <Clock className='w-3 h-3' />
           {formatTimestamp(note.updated_at)}
         </div>
@@ -263,7 +263,7 @@ export default function NotesPage() {
       />
 
       <div className='relative max-w-sm'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-fg' />
         <TextField
           placeholder='Search notes…'
           value={search}
@@ -287,8 +287,8 @@ export default function NotesPage() {
       {!isLoading && !isError && notes.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <StickyNote className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground mb-4'>
+            <StickyNote className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg mb-4'>
               No notes yet. Create your first note!
             </p>
             <ProtectedComponent requireScope='wnt:note:Create'>
@@ -319,7 +319,7 @@ export default function NotesPage() {
           >
             Previous
           </Button>
-          <span className='text-sm text-muted-foreground self-center'>
+          <span className='text-sm text-muted-fg self-center'>
             Page {page}
           </span>
           <Button

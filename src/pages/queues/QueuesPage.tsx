@@ -131,8 +131,8 @@ export default function QueuesPage() {
       {queues.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Layers className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No queues yet.</p>
+            <Layers className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No queues yet.</p>
           </CardContent>
         </Card>
       )}

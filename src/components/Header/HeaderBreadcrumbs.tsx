@@ -35,7 +35,7 @@ export function HeaderBreadcrumbs() {
                     {c.label}
                   </BreadcrumbPage>
                 ) : isCollapsed ? (
-                  <span className='text-foreground select-none'>...</span>
+                  <span className='text-main-fg select-none'>...</span>
                 ) : (
                   <BreadcrumbLink
                     className={cn(isFirst && 'font-bold')}

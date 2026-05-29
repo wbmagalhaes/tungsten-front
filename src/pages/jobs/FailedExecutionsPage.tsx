@@ -42,8 +42,8 @@ export default function FailedExecutionsPage() {
       {items.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <AlertTriangle className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No failed executions.</p>
+            <AlertTriangle className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No failed executions.</p>
           </CardContent>
         </Card>
       ) : (
@@ -66,7 +66,7 @@ export default function FailedExecutionsPage() {
                       </Badge>
                     )}
                   </CardTitle>
-                  <div className='flex gap-3 mt-1 text-xs text-muted-foreground'>
+                  <div className='flex gap-3 mt-1 text-xs text-muted-fg'>
                     <span className='font-mono'>
                       job {e.job_id.slice(0, 8)}
                     </span>

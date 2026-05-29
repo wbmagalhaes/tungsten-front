@@ -49,7 +49,7 @@ export function EventRouteSelector({
         <div>
           <p className='text-sm font-medium mb-1'>{label.topics}</p>
           {topicList.length === 0 ? (
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs text-muted-fg'>
               No topics available.
             </p>
           ) : (
@@ -78,7 +78,7 @@ export function EventRouteSelector({
         <div>
           <p className='text-sm font-medium mb-1'>{label.queues}</p>
           {queueList.length === 0 ? (
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs text-muted-fg'>
               No queues available.
             </p>
           ) : (

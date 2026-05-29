@@ -213,8 +213,8 @@ export default function MediaPage() {
       {buckets.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Container className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No buckets yet.</p>
+            <Container className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No buckets yet.</p>
           </CardContent>
         </Card>
       )}

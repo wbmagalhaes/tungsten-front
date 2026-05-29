@@ -13,7 +13,7 @@ export default function Header() {
           onClick={toggle}
           className='block md:hidden p-2 rounded-md hover:bg-secondary'
         >
-          <Menu className='h-5 w-5 text-foreground' />
+          <Menu className='h-5 w-5 text-main-fg' />
         </button>
 
         <div className='flex-1 overflow-hidden mr-1 md:mr-4'>

@@ -158,11 +158,11 @@ export default function RootPage() {
             <AvatarFallback>{getInitials(user)}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className='text-2xl font-bold text-foreground flex flex-wrap gap-x-2'>
+            <h1 className='text-2xl font-bold text-main-fg flex flex-wrap gap-x-2'>
               <span>{greeting},</span>
               <span>{displayName}!</span>
             </h1>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-sm text-muted-fg'>
               Welcome back to Tungsten
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function RootPage() {
                     ? 'text-primary'
                     : line.type === 'error'
                       ? 'text-destructive'
-                      : 'text-muted-foreground'
+                      : 'text-muted-fg'
                 }
               >
                 {line.content}
@@ -202,7 +202,7 @@ export default function RootPage() {
                 value={currentCommand}
                 onChange={(e) => setCurrentCommand(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className='flex-1 bg-transparent outline-none text-foreground'
+                className='flex-1 bg-transparent outline-none text-main-fg'
                 placeholder='Type a command...'
                 autoFocus
               />
@@ -340,10 +340,10 @@ function SystemMetric({
   return (
     <div className='flex items-center gap-1 shrink-0'>
       <div className='text-primary'>{icon}</div>
-      <p className='text-xs text-muted-foreground mr-1'>{label}</p>
+      <p className='text-xs text-muted-fg mr-1'>{label}</p>
       <p
         className={`text-sm font-bold whitespace-nowrap ${
-          status === 'warning' ? 'text-warning' : 'text-foreground'
+          status === 'warning' ? 'text-warning' : 'text-main-fg'
         }`}
       >
         {value}
@@ -374,10 +374,10 @@ function QuickActionCard({
         {icon}
       </div>
       <div className='flex-1 min-w-0'>
-        <h3 className='font-semibold text-foreground text-sm'>{title}</h3>
-        <p className='text-xs text-muted-foreground truncate'>{description}</p>
+        <h3 className='font-semibold text-main-fg text-sm'>{title}</h3>
+        <p className='text-xs text-muted-fg truncate'>{description}</p>
       </div>
-      <ArrowRight className='w-4 h-4 text-muted-foreground shrink-0' />
+      <ArrowRight className='w-4 h-4 text-muted-fg shrink-0' />
     </div>
   );
 }
@@ -430,14 +430,14 @@ function RecentNotesCard() {
               onClick={() => navigate(`/notes/${note.id}`)}
             >
               <div className='flex items-start justify-between gap-2 mb-1'>
-                <h4 className='font-medium text-foreground text-sm'>
+                <h4 className='font-medium text-main-fg text-sm'>
                   {note.title}
                 </h4>
-                <span className='text-xs text-muted-foreground whitespace-nowrap'>
+                <span className='text-xs text-muted-fg whitespace-nowrap'>
                   {note.updated}
                 </span>
               </div>
-              <p className='text-xs text-muted-foreground line-clamp-1'>
+              <p className='text-xs text-muted-fg line-clamp-1'>
                 {note.preview}
               </p>
             </div>

@@ -273,7 +273,7 @@ export default function TemplatesPage() {
                 <div key={field.name}>
                   {field.type === 'textarea' ? (
                     <div>
-                      <label className='text-sm text-muted-foreground mb-2 block'>
+                      <label className='text-sm text-muted-fg mb-2 block'>
                         {field.label}
                         {field.required && (
                           <span className='text-destructive ml-1'>*</span>
@@ -288,7 +288,7 @@ export default function TemplatesPage() {
                             [field.name]: e.target.value,
                           })
                         }
-                        className='w-full min-h-24 px-3 py-2 bg-input border border-border rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring'
+                        className='w-full min-h-24 px-3 py-2 bg-input border border-border rounded-sm text-main-fg placeholder-muted-fg focus:outline-none focus:ring-2 focus:ring-ring'
                         required={field.required}
                       />
                     </div>
@@ -344,7 +344,7 @@ function TemplateCard({
           </div>
           <div className='flex-1 min-w-0'>
             <CardTitle className='text-base mb-1'>{template.name}</CardTitle>
-            <p className='text-sm text-muted-foreground line-clamp-2'>
+            <p className='text-sm text-muted-fg line-clamp-2'>
               {template.description}
             </p>
           </div>

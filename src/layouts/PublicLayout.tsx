@@ -164,7 +164,7 @@ function PublicFooter() {
                   'font-mono-tech text-xs tracking-widest uppercase',
                   isActive
                     ? 'border-ring/50 bg-ring/5 text-ring/80'
-                    : 'border-foreground/6 bg-transparent text-foreground/20 hover:border-ring/25 hover:text-ring/45',
+                    : 'border-main-fg/6 bg-transparent text-main-fg/20 hover:border-ring/25 hover:text-ring/45',
                 ].join(' ')}
               >
                 <span>{meta.label}</span>

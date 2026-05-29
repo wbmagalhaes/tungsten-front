@@ -209,8 +209,8 @@ function NotificationSettings() {
               className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-4 rounded-sm bg-muted/30 border border-border'
             >
               <div className='min-w-0 flex-1'>
-                <h4 className='font-medium text-foreground'>{title}</h4>
-                <p className='text-sm text-muted-foreground wrap-break-word'>
+                <h4 className='font-medium text-main-fg'>{title}</h4>
+                <p className='text-sm text-muted-fg wrap-break-word'>
                   {row.description}
                 </p>
                 {(row.error || row.disabledReason) && (
@@ -222,7 +222,7 @@ function NotificationSettings() {
               <div className='flex items-center gap-4 shrink-0 self-end sm:self-auto'>
                 {row.action}
                 {isPending ? (
-                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-fg' />
                 ) : null}
                 <Switch
                   checked={row.enabled}
@@ -251,7 +251,7 @@ function AppearanceSettings() {
       </CardHeader>
       <CardContent className='space-y-4'>
         <div>
-          <h4 className='text-sm font-medium text-foreground mb-3'>
+          <h4 className='text-sm font-medium text-main-fg mb-3'>
             Theme Selection
           </h4>
           <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
@@ -266,7 +266,7 @@ function AppearanceSettings() {
                     'relative p-4 rounded-sm border-2 transition-all text-left overflow-hidden',
                     isActive
                       ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-muted-foreground',
+                      : 'border-border hover:border-muted-fg',
                   )}
                 >
                   <div
@@ -286,7 +286,7 @@ function AppearanceSettings() {
                   <p
                     className={cn(
                       'text-sm font-medium',
-                      isActive ? 'text-primary' : 'text-foreground',
+                      isActive ? 'text-primary' : 'text-main-fg',
                     )}
                   >
                     {meta.label}
@@ -294,7 +294,7 @@ function AppearanceSettings() {
 
                   {isActive && (
                     <span className='absolute top-2 right-2 w-4 h-4 rounded-full bg-primary flex items-center justify-center'>
-                      <Check className='w-2.5 h-2.5 text-primary-foreground' />
+                      <Check className='w-2.5 h-2.5 text-primary-fg' />
                     </span>
                   )}
                 </button>

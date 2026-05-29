@@ -48,7 +48,7 @@ function BreadcrumbLink({
     props: mergeProps<'a'>(
       {
         className: cn(
-          'text-muted-foreground hover:text-foreground transition-colors truncate max-w-full',
+          'text-muted-fg hover:text-main-fg transition-colors truncate max-w-full',
           className,
         ),
       },
@@ -67,7 +67,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
       aria-disabled='true'
       aria-current='page'
       className={cn(
-        'text-foreground font-normal truncate max-w-full',
+        'text-main-fg font-normal truncate max-w-full',
         className,
       )}
       {...props}
@@ -85,7 +85,7 @@ function BreadcrumbSeparator({
       data-slot='breadcrumb-separator'
       role='presentation'
       aria-hidden='true'
-      className={cn('[&>svg]:size-3.5 select-none text-muted-foreground', className)}
+      className={cn('[&>svg]:size-3.5 select-none text-muted-fg', className)}
       {...props}
     >
       {children ?? '/'}
@@ -103,7 +103,7 @@ function BreadcrumbEllipsis({
       role='presentation'
       aria-hidden='true'
       className={cn(
-        'size-5 [&>svg]:size-4 flex items-center justify-center text-muted-foreground',
+        'size-5 [&>svg]:size-4 flex items-center justify-center text-muted-fg',
         className,
       )}
       {...props}

@@ -18,7 +18,7 @@ function FieldLegend({ className, ...props }: React.ComponentProps<'legend'>) {
   return (
     <legend
       data-slot='field-legend'
-      className={cn('mb-2 text-base font-semibold text-foreground', className)}
+      className={cn('mb-2 text-base font-semibold text-main-fg', className)}
       {...props}
     />
   );
@@ -89,7 +89,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='field-title'
-      className={cn('text-sm font-medium text-muted-foreground', className)}
+      className={cn('text-sm font-medium text-muted-fg', className)}
       {...props}
     />
   );
@@ -100,7 +100,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot='field-description'
       className={cn(
-        'text-sm text-foreground/90 leading-normal',
+        'text-sm text-main-fg/90 leading-normal',
         '[&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-blue-300',
         className,
       )}
@@ -125,7 +125,7 @@ function FieldSeparator({
       <Separator className='absolute inset-0 top-1/2' />
       {children && (
         <span
-          className='relative mx-auto block w-fit px-2 bg-background text-sm text-muted-foreground'
+          className='relative mx-auto block w-fit px-2 bg-background text-sm text-muted-fg'
           data-slot='field-separator-content'
         >
           {children}

@@ -111,7 +111,7 @@ export default function ImageGenerationPage() {
       </Card>
 
       <div>
-        <h2 className='text-lg font-semibold text-foreground mb-3 flex items-center gap-2'>
+        <h2 className='text-lg font-semibold text-main-fg mb-3 flex items-center gap-2'>
           <ImagePlus className='w-5 h-5' />
           Generation History
         </h2>
@@ -126,8 +126,8 @@ export default function ImageGenerationPage() {
       {images.length === 0 && (
         <Card>
           <CardContent className='p-12 text-center'>
-            <ImagePlus className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>
+            <ImagePlus className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>
               No images generated yet. Start creating above!
             </p>
           </CardContent>
@@ -160,7 +160,7 @@ function ImageCard({ image }: { image: GeneratedImage }) {
           <div className='absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-accent/20'>
             <div className='text-center'>
               <Loader2 className='w-12 h-12 text-primary animate-spin mx-auto mb-2' />
-              <p className='text-sm text-muted-foreground'>Generating...</p>
+              <p className='text-sm text-muted-fg'>Generating...</p>
             </div>
           </div>
         ) : image.imageUrl ? (
@@ -171,7 +171,7 @@ function ImageCard({ image }: { image: GeneratedImage }) {
           />
         ) : (
           <div className='absolute inset-0 flex items-center justify-center'>
-            <ImagePlus className='w-12 h-12 text-muted-foreground' />
+            <ImagePlus className='w-12 h-12 text-muted-fg' />
           </div>
         )}
 
@@ -188,10 +188,10 @@ function ImageCard({ image }: { image: GeneratedImage }) {
         <div className='flex items-start justify-between gap-2 mb-2'>
           {statusConfig[image.status].badge}
         </div>
-        <p className='text-sm text-foreground line-clamp-2 mb-2'>
+        <p className='text-sm text-main-fg line-clamp-2 mb-2'>
           {image.prompt}
         </p>
-        <div className='flex items-center gap-1 text-xs text-muted-foreground'>
+        <div className='flex items-center gap-1 text-xs text-muted-fg'>
           <Clock className='w-3 h-3' />
           {image.createdAt}
         </div>

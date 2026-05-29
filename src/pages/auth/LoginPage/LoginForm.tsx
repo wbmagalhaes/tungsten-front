@@ -84,7 +84,7 @@ export default function LoginForm() {
         <CardContent className='p-6 text-center space-y-4'>
           <CheckCircle className='w-10 h-10 text-success mx-auto' />
           <p className='font-medium'>Check your email</p>
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-sm text-muted-fg'>
             If an account with that email exists, we sent a reset link.
           </p>
           <Button
@@ -107,7 +107,7 @@ export default function LoginForm() {
           <form onSubmit={handleRecover} className='space-y-4'>
             <div>
               <p className='font-medium mb-1'>Recover password</p>
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-fg'>
                 Enter your email and we'll send you a reset link.
               </p>
             </div>

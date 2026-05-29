@@ -37,8 +37,8 @@ export default function FailedEventsPage() {
       {events.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <AlertTriangle className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No failed events.</p>
+            <AlertTriangle className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No failed events.</p>
           </CardContent>
         </Card>
       ) : (
@@ -56,7 +56,7 @@ export default function FailedEventsPage() {
                       {e.attempts} attempts
                     </Badge>
                   </CardTitle>
-                  <span className='text-xs text-muted-foreground'>
+                  <span className='text-xs text-muted-fg'>
                     Failed {new Date(e.failed_at).toLocaleString()}
                   </span>
                 </div>

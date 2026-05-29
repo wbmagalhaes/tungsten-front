@@ -235,7 +235,7 @@ export default function SystemActionsSection() {
             <TooltipContent
               side='top'
               align='start'
-              className='bg-warning text-warning-foreground'
+              className='bg-warning text-warning-fg'
             >
               New updates available!
             </TooltipContent>
@@ -279,7 +279,7 @@ export default function SystemActionsSection() {
                 {rebootScheduled.data?.scheduled && (
                   <TooltipContent
                     side='top'
-                    className='bg-warning text-warning-foreground max-w-xs'
+                    className='bg-warning text-warning-fg max-w-xs'
                   >
                     {rebootScheduled.data.detail ?? 'Reboot already scheduled'}
                   </TooltipContent>
@@ -311,7 +311,7 @@ export default function SystemActionsSection() {
                 {shutdownScheduled.data?.scheduled && (
                   <TooltipContent
                     side='top'
-                    className='bg-destructive text-destructive-foreground max-w-xs'
+                    className='bg-destructive text-destructive-fg max-w-xs'
                   >
                     {shutdownScheduled.data.detail ??
                       'Shutdown already scheduled'}
@@ -340,7 +340,7 @@ export default function SystemActionsSection() {
               <div className='flex items-center justify-center py-12'>
                 <div className='text-center'>
                   <Loader2 className='w-8 h-8 text-primary animate-spin mx-auto mb-2' />
-                  <p className='text-sm text-muted-foreground'>
+                  <p className='text-sm text-muted-fg'>
                     Checking for updates...
                   </p>
                 </div>
@@ -348,7 +348,7 @@ export default function SystemActionsSection() {
             ) : hasUpdates ? (
               <>
                 <div>
-                  <label className='text-sm text-muted-foreground mb-3 flex items-center gap-2'>
+                  <label className='text-sm text-muted-fg mb-3 flex items-center gap-2'>
                     <Package className='w-4 h-4' />
                     Available Packages ({availablePackages.length})
                   </label>
@@ -394,7 +394,7 @@ export default function SystemActionsSection() {
                   </Badge>
                 </div>
 
-                <div className='text-sm text-muted-foreground'>
+                <div className='text-sm text-muted-fg'>
                   {selectedPackages.length === 0
                     ? 'No packages selected'
                     : `${selectedPackages.length} package${selectedPackages.length !== 1 ? 's' : ''} selected`}
@@ -403,10 +403,10 @@ export default function SystemActionsSection() {
             ) : (
               <div className='text-center py-8'>
                 <CheckCircle className='w-12 h-12 text-success mx-auto mb-3' />
-                <p className='text-foreground font-medium mb-1'>
+                <p className='text-main-fg font-medium mb-1'>
                   No updates available
                 </p>
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-sm text-muted-fg'>
                   All packages are up to date
                 </p>
               </div>
@@ -458,15 +458,15 @@ export default function SystemActionsSection() {
               <div className='flex items-center justify-center py-10'>
                 <div className='text-center'>
                   <Loader2 className='w-7 h-7 text-primary animate-spin mx-auto mb-2' />
-                  <p className='text-sm text-muted-foreground'>
+                  <p className='text-sm text-muted-fg'>
                     Scanning networks...
                   </p>
                 </div>
               </div>
             ) : networks.length === 0 ? (
               <div className='text-center py-8'>
-                <WifiOff className='w-10 h-10 text-muted-foreground mx-auto mb-2' />
-                <p className='text-sm text-muted-foreground'>
+                <WifiOff className='w-10 h-10 text-muted-fg mx-auto mb-2' />
+                <p className='text-sm text-muted-fg'>
                   No networks found
                 </p>
                 <Button
@@ -502,14 +502,14 @@ export default function SystemActionsSection() {
                             className={`w-4 h-4 shrink-0 ${
                               isSelected || network.connected
                                 ? 'text-primary'
-                                : 'text-muted-foreground'
+                                : 'text-muted-fg'
                             }`}
                           />
-                          <span className='text-sm font-medium truncate text-foreground'>
+                          <span className='text-sm font-medium truncate text-main-fg'>
                             {network.ssid}
                           </span>
                           {network.security && (
-                            <Lock className='w-3 h-3 text-muted-foreground shrink-0' />
+                            <Lock className='w-3 h-3 text-muted-fg shrink-0' />
                           )}
                           {network.saved && (
                             <BookmarkCheck className='w-3 h-3 text-success shrink-0' />
@@ -542,7 +542,7 @@ export default function SystemActionsSection() {
                     <button
                       type='button'
                       onClick={() => setForgetting(true)}
-                      className='flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors'
+                      className='flex items-center gap-1 text-xs text-muted-fg hover:text-destructive transition-colors'
                     >
                       <Trash2 className='w-3 h-3' />
                       Forget
@@ -551,7 +551,7 @@ export default function SystemActionsSection() {
                 ) : selectedNetwork.security ? (
                   <div className='relative'>
                     {forgetting && (
-                      <p className='text-xs text-muted-foreground mb-2'>
+                      <p className='text-xs text-muted-fg mb-2'>
                         Enter a new password to reconnect, or{' '}
                         <button
                           type='button'

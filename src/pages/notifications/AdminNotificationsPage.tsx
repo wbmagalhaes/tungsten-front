@@ -70,20 +70,20 @@ export default function AdminNotificationsPage() {
           {cleanup ? (
             <>
               <div className='flex justify-between'>
-                <span className='text-muted-foreground'>Eligible</span>
+                <span className='text-muted-fg'>Eligible</span>
                 <span className='font-mono'>
                   {cleanup.deleted_count.toLocaleString()}
                 </span>
               </div>
               <div className='flex justify-between'>
-                <span className='text-muted-foreground'>Cutoff</span>
+                <span className='text-muted-fg'>Cutoff</span>
                 <span className='font-mono text-xs'>
                   {new Date(cleanup.cutoff).toLocaleString()}
                 </span>
               </div>
             </>
           ) : (
-            <p className='text-muted-foreground'>No report yet.</p>
+            <p className='text-muted-fg'>No report yet.</p>
           )}
         </CardContent>
         <CardFooter>
@@ -110,8 +110,8 @@ export default function AdminNotificationsPage() {
       {items.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Send className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No failed notifications.</p>
+            <Send className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No failed notifications.</p>
           </CardContent>
         </Card>
       ) : (
@@ -127,7 +127,7 @@ export default function AdminNotificationsPage() {
                     <span className='truncate'>{n.subject}</span>
                     <Badge variant='destructive'>failed</Badge>
                   </CardTitle>
-                  <div className='flex gap-3 mt-1 text-xs text-muted-foreground font-mono'>
+                  <div className='flex gap-3 mt-1 text-xs text-muted-fg font-mono'>
                     <span>topic {n.topic_id.slice(0, 8)}</span>
                     <span>recipient {n.recipient_id.slice(0, 8)}</span>
                   </div>

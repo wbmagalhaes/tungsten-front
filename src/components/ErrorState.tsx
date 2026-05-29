@@ -29,10 +29,10 @@ export function ErrorState({
       <Card className='max-w-md'>
         <CardContent className='p-8 text-center'>
           <AlertTriangle className='w-12 h-12 text-destructive mx-auto mb-4' />
-          <h3 className='text-lg font-semibold text-foreground mb-2'>
+          <h3 className='text-lg font-semibold text-main-fg mb-2'>
             {title}
           </h3>
-          <p className='text-sm text-muted-foreground mb-4'>{message}</p>
+          <p className='text-sm text-muted-fg mb-4'>{message}</p>
           <Button onClick={handleRetry} variant='secondary'>
             <RefreshCw className='w-4 h-4' />
             Retry

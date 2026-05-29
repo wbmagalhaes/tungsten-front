@@ -87,7 +87,7 @@ export default function QuotasPage() {
                   return (
                     <div key={flat}>
                       <div className='flex justify-between text-sm mb-1'>
-                        <span className='text-muted-foreground font-mono text-xs'>
+                        <span className='text-muted-fg font-mono text-xs'>
                           {key}
                         </span>
                         <span className='font-mono text-xs'>

@@ -102,12 +102,12 @@ function ApiKeysCardInner() {
         </CardHeader>
         <CardContent className='pt-0'>
           {isLoading ? (
-            <div className='flex items-center justify-center py-6 text-muted-foreground'>
+            <div className='flex items-center justify-center py-6 text-muted-fg'>
               <Loader2 className='w-4 h-4 animate-spin mr-2' />
               Loading...
             </div>
           ) : !keys?.length ? (
-            <div className='text-sm text-muted-foreground text-center py-6'>
+            <div className='text-sm text-muted-fg text-center py-6'>
               No API keys yet.
             </div>
           ) : (
@@ -135,7 +135,7 @@ function ApiKeysCardInner() {
                         </Badge>
                       ))}
                     </div>
-                    <p className='text-xs text-muted-foreground mt-1'>
+                    <p className='text-xs text-muted-fg mt-1'>
                       Created {formatDate(k.created_at)}
                       {k.last_used_at &&
                         ` · Last used ${formatDate(k.last_used_at)}`}
@@ -330,7 +330,7 @@ function CreateApiKeyDialog({
               })}
             </div>
             {availableScopes.length === 0 && (
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-fg'>
                 No scopes available.
               </p>
             )}
@@ -447,7 +447,7 @@ function EditApiKeyDialog({
               })}
             </div>
             {allScopes.length === 0 && (
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-fg'>
                 No scopes available.
               </p>
             )}

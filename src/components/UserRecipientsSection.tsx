@@ -40,9 +40,9 @@ export function UserRecipientsSection({ userId }: Props) {
       </CardHeader>
       <CardContent className='space-y-2'>
         {isLoading ? (
-          <p className='text-sm text-muted-foreground'>Loading…</p>
+          <p className='text-sm text-muted-fg'>Loading…</p>
         ) : recipients.length === 0 ? (
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-sm text-muted-fg'>
             No recipients configured for this user.
           </p>
         ) : (

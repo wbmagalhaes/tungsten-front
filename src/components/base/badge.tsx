@@ -11,7 +11,7 @@ const badgeVariants = cva(
         default:
           'bg-[color-mix(in_srgb,var(--color-info)_15%,transparent)] text-[var(--color-info)] border border-[color-mix(in_srgb,var(--color-info)_40%,transparent)]',
         secondary:
-          'bg-[var(--color-muted)] text-[var(--color-muted-foreground)] border border-transparent',
+          'bg-[var(--color-muted)] text-[var(--color-muted-fg)] border border-transparent',
         success:
           'bg-[color-mix(in_srgb,var(--color-success)_15%,transparent)] text-[var(--color-success)] border border-[color-mix(in_srgb,var(--color-success)_40%,transparent)]',
         warning:
@@ -21,7 +21,7 @@ const badgeVariants = cva(
         purple:
           'bg-[color-mix(in_srgb,var(--color-primary)_15%,transparent)] text-[var(--color-primary)] border border-[color-mix(in_srgb,var(--color-primary)_40%,transparent)]',
         outline:
-          'bg-transparent text-[var(--color-secondary-foreground)] border border-[var(--color-border)]',
+          'bg-transparent text-[var(--color-secondary-fg)] border border-[var(--color-border)]',
       },
     },
     defaultVariants: {

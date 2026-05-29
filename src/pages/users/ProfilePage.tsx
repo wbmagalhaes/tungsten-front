@@ -126,7 +126,7 @@ export default function ProfilePage() {
                   className='w-full h-full object-cover'
                 />
               ) : (
-                <User className='w-7 h-7 text-foreground' />
+                <User className='w-7 h-7 text-main-fg' />
               )}
             </div>
           </CardIcon>

@@ -95,12 +95,12 @@ export function HeaderAlerts() {
 
           <div className='max-h-80 overflow-y-auto'>
             {isLoading ? (
-              <div className='flex items-center justify-center py-6 text-muted-foreground'>
+              <div className='flex items-center justify-center py-6 text-muted-fg'>
                 <Loader2 className='w-4 h-4 animate-spin mr-2' />
                 Loading…
               </div>
             ) : items.length === 0 ? (
-              <div className='flex flex-col items-center py-8 text-muted-foreground'>
+              <div className='flex flex-col items-center py-8 text-muted-fg'>
                 <Mail className='w-8 h-8 mb-2' />
                 <p className='text-sm'>Inbox is empty.</p>
               </div>
@@ -127,10 +127,10 @@ export function HeaderAlerts() {
                           </Badge>
                         )}
                       </div>
-                      <p className='text-xs text-muted-foreground line-clamp-2'>
+                      <p className='text-xs text-muted-fg line-clamp-2'>
                         {it.body}
                       </p>
-                      <p className='text-[10px] text-muted-foreground mt-1'>
+                      <p className='text-[10px] text-muted-fg mt-1'>
                         {new Date(it.created_at).toLocaleString()}
                       </p>
                     </button>

@@ -80,7 +80,7 @@ export default function SessionsCard() {
           <ErrorState title='Could not load sessions' message={error.message} />
         )}
         {!isLoading && !error && (sessions?.length ?? 0) === 0 && (
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-sm text-muted-fg'>
             No active sessions found.
           </p>
         )}
@@ -111,7 +111,7 @@ export default function SessionsCard() {
                         </Badge>
                       )}
                     </div>
-                    <div className='flex flex-col gap-1 text-xs text-muted-foreground'>
+                    <div className='flex flex-col gap-1 text-xs text-muted-fg'>
                       {s.ip && (
                         <span className='flex items-center gap-1'>
                           <Globe className='w-3 h-3' />

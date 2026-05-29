@@ -95,7 +95,7 @@ function RoomCard({
         )}
       </CardHeader>
       <CardContent>
-        <div className='text-xs text-muted-foreground flex items-center gap-1 mt-1'>
+        <div className='text-xs text-muted-fg flex items-center gap-1 mt-1'>
           <Clock className='w-3 h-3' />
           {new Date(room.updated_at).toLocaleTimeString([], {
             hour: '2-digit',
@@ -235,7 +235,7 @@ export default function ChatPage() {
       />
 
       <div className='relative max-w-sm'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-fg' />
         <TextField
           placeholder='Search rooms…'
           value={search}
@@ -257,7 +257,7 @@ export default function ChatPage() {
       )}
 
       {!roomsLoading && !roomsError && rooms.length === 0 && (
-        <div className='text-center py-16 text-muted-foreground'>
+        <div className='text-center py-16 text-muted-fg'>
           No rooms found.{' '}
           <ProtectedComponent requireScope='wct:room:Create' fallback={null}>
             <Button
@@ -294,7 +294,7 @@ export default function ChatPage() {
           >
             Previous
           </Button>
-          <span className='text-sm text-muted-foreground self-center'>
+          <span className='text-sm text-muted-fg self-center'>
             Page {page}
           </span>
           <Button

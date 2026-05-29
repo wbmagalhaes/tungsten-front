@@ -40,7 +40,7 @@ export default function HomePage() {
 
   return (
     <div className='relative flex flex-col items-center justify-center'>
-      <div className='text-sm font-black-ops text-foreground text-shadow-sm text-shadow-ring/50 pointer-events-none'>
+      <div className='text-sm font-black-ops text-main-fg text-shadow-sm text-shadow-ring/50 pointer-events-none'>
         <span className='absolute top-6 left-3'>
           <span className='glitch' data-text='74'>
             74
@@ -54,7 +54,7 @@ export default function HomePage() {
         </span>
       </div>
 
-      <div className='text-sm font-vt tracking-wide text-foreground/60 text-shadow-xs text-shadow-ring pointer-events-none'>
+      <div className='text-sm font-vt tracking-wide text-main-fg/60 text-shadow-xs text-shadow-ring pointer-events-none'>
         <span className='absolute top-6 left-10'>
           <span className='glitch'>
             [Xe] 4f<sup>14</sup> 5d<sup>4</sup> 6s<sup>2</sup>
@@ -77,7 +77,7 @@ export default function HomePage() {
                 <span className='hidden sm:inline tracking-widest'> ---</span>
               </div>
 
-              <span className='font-raj text-xs tracking-widest uppercase text-muted-foreground mt-2 text-center'>
+              <span className='font-raj text-xs tracking-widest uppercase text-muted-fg mt-2 text-center'>
                 Want to login with another account?{' '}
                 <ButtonLink
                   variant='glitch'
@@ -196,7 +196,7 @@ export default function HomePage() {
                 <ButtonLink to='/login' size='lg' className='w-full sm:w-48'>
                   Login
                 </ButtonLink>
-                <span className='text-muted-foreground'>or</span>
+                <span className='text-muted-fg'>or</span>
                 <ButtonLink
                   variant='secondary'
                   to='/register'
@@ -215,7 +215,7 @@ export default function HomePage() {
                 <Button
                   onClick={install}
                   variant='secondary'
-                  className='bg-success hover:bg-success/80 text-success-foreground'
+                  className='bg-success hover:bg-success/80 text-success-fg'
                 >
                   Install App
                 </Button>
@@ -268,7 +268,7 @@ export default function HomePage() {
 
       {updateAvailable && (
         <div
-          className='fixed bottom-4 right-4 bg-success text-success-foreground px-4 py-2 rounded shadow-lg cursor-pointer z-50'
+          className='fixed bottom-4 right-4 bg-success text-success-fg px-4 py-2 rounded shadow-lg cursor-pointer z-50'
           onClick={update}
         >
           New version available - Click to update

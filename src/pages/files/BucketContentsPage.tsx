@@ -200,14 +200,14 @@ function UploadDialog({
               'flex flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed px-4 py-6 text-sm transition-colors',
               dragging
                 ? 'border-primary bg-primary/10'
-                : 'border-border text-muted-foreground',
+                : 'border-border text-muted-fg',
               !pendingFile &&
                 'cursor-pointer hover:border-primary/50 hover:bg-muted/50',
             )}
           >
             {pendingFile ? (
               <>
-                <span className='font-medium text-foreground truncate max-w-full'>
+                <span className='font-medium text-main-fg truncate max-w-full'>
                   {pendingFile.name}
                 </span>
                 <Button
@@ -249,7 +249,7 @@ function UploadDialog({
                     'flex-1 flex items-center justify-center gap-2 rounded-sm border px-3 py-2 text-sm transition-colors cursor-pointer capitalize',
                     visibility === v
                       ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border text-muted-foreground hover:border-primary/50',
+                      : 'border-border text-muted-fg hover:border-primary/50',
                   )}
                 >
                   {v === 'public' ? (
@@ -264,7 +264,7 @@ function UploadDialog({
           </div>
 
           {pendingFile && useMultipart && (
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs text-muted-fg'>
               Large file — using multipart upload (
               {(pendingFile.size / 1024 / 1024).toFixed(1)} MB).
             </p>
@@ -338,7 +338,7 @@ function FileRow({
           <Badge variant={file.visibility === 'public' ? 'success' : 'warning'}>
             {file.visibility}
           </Badge>
-          <span className='text-xs text-muted-foreground whitespace-nowrap'>
+          <span className='text-xs text-muted-fg whitespace-nowrap'>
             {formatBytes(file.size)}
           </span>
           <Button
@@ -381,7 +381,7 @@ function GrantsSection({ bucketId }: { bucketId: string }) {
       </CardHeader>
       <CardContent className='space-y-3'>
         {!grants?.length ? (
-          <p className='text-sm text-muted-foreground'>No grants yet.</p>
+          <p className='text-sm text-muted-fg'>No grants yet.</p>
         ) : (
           <div className='space-y-2'>
             {grants.map((g) => (
@@ -617,7 +617,7 @@ export default function BucketContentsPage() {
                 {bucket.description}
               </CardDescription>
             )}
-            <span className='text-xs text-muted-foreground font-mono truncate max-w-full'>
+            <span className='text-xs text-muted-fg font-mono truncate max-w-full'>
               {bucket.id}
             </span>
           </div>
@@ -670,8 +670,8 @@ export default function BucketContentsPage() {
       {fileList.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Archive className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>
+            <Archive className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>
               {search ? 'No files match your search.' : 'No files in this bucket.'}
             </p>
           </CardContent>
@@ -692,7 +692,7 @@ export default function BucketContentsPage() {
       {fileList.length > 0 && (
         <Card>
           <CardContent className='flex items-center justify-between p-2'>
-            <div className='text-sm text-muted-foreground flex gap-1 items-center'>
+            <div className='text-sm text-muted-fg flex gap-1 items-center'>
               <span>Page {page}</span>
               <Dot />
               <span>{fileList.length} files</span>

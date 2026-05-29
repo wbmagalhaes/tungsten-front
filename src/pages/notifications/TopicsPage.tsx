@@ -77,7 +77,7 @@ export function TopicsSection() {
         </div>
       </ProtectedComponent>
 
-      {isLoading && <p className='text-sm text-muted-foreground'>Loading…</p>}
+      {isLoading && <p className='text-sm text-muted-fg'>Loading…</p>}
 
       <div className='space-y-3'>
         {topics.map((t) => (
@@ -97,7 +97,7 @@ export function TopicsSection() {
                   )}
                 </CardTitle>
                 {t.description && (
-                  <CardContent className='p-0 mt-1 text-sm text-muted-foreground'>
+                  <CardContent className='p-0 mt-1 text-sm text-muted-fg'>
                     {t.description}
                   </CardContent>
                 )}

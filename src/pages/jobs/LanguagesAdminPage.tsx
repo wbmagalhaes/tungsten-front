@@ -82,8 +82,8 @@ export default function LanguagesAdminPage() {
       {languages.length === 0 ? (
         <Card>
           <CardContent className='p-12 text-center'>
-            <Code className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-            <p className='text-muted-foreground'>No languages configured.</p>
+            <Code className='w-16 h-16 text-muted-fg mx-auto mb-4' />
+            <p className='text-muted-fg'>No languages configured.</p>
           </CardContent>
         </Card>
       ) : (
@@ -109,7 +109,7 @@ export default function LanguagesAdminPage() {
                       </Badge>
                     )}
                   </CardTitle>
-                  <div className='flex gap-2 mt-1 flex-wrap text-xs text-muted-foreground'>
+                  <div className='flex gap-2 mt-1 flex-wrap text-xs text-muted-fg'>
                     <Badge variant='outline' className='text-[10px]'>
                       timeout {l.default_timeout_seconds}s
                     </Badge>
