@@ -25,23 +25,22 @@
     "noUncheckedSideEffectImports": true,
 
     /* Path aliases */
-    "baseUrl": ".",
     "paths": {
-        "@images/*": ["src/assets/images/*"],
-        "@styles/*": ["src/assets/styles/*"],
-        "@assets/*": ["src/assets/*"],
-        "@core/*": ["src/components/core/*"],
-        "@components/*": ["src/components/*"],
-        "@services/*": ["src/services/*"],
-        "@layouts/*": ["src/layouts/*"],
-        "@pages/*": ["src/pages/*"],
-        "@hooks/*": ["src/hooks/*"],
-        "@models/*": ["src/models/*"],
-        "@stores/*": ["src/stores/*"],
-        "@utils/*": ["src/utils/*"],
-        "@lib/*": ["lib/*"],
-        "@*": ["src/*"],
+        "@images/*": ["./src/assets/images/*"],
+        "@styles/*": ["./src/assets/styles/*"],
+        "@assets/*": ["./src/assets/*"],
+        "@core/*": ["./src/components/core/*"],
+        "@components/*": ["./src/components/*"],
+        "@services/*": ["./src/services/*"],
+        "@layouts/*": ["./src/layouts/*"],
+        "@pages/*": ["./src/pages/*"],
+        "@hooks/*": ["./src/hooks/*"],
+        "@models/*": ["./src/models/*"],
+        "@stores/*": ["./src/stores/*"],
+        "@utils/*": ["./src/utils/*"],
+        "@lib/*": ["./lib/*"],
+        "@*": ["./src/*"],
       },
   },
-  "include": ["src", "lib", ".storybook/preview.tsx"]
+  "include": ["./src", "./lib", "./.storybook/preview.tsx"]
 }

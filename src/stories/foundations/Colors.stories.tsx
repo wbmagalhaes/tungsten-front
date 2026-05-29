@@ -54,7 +54,7 @@ function Palette() {
       <div>
         <h2 className='text-xl font-cyber font-bold text-main-fg mb-1'>Color tokens</h2>
         <p className='text-sm text-muted-fg mb-6'>
-          Trocar o tema na toolbar (Cyberpunk / Dark / Light / Neon) atualiza todos os valores.
+          Switching the theme in the toolbar (Cyberpunk / Dark / Light / Neon) updates every value.
         </p>
         <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5'>
           {PAIRS.map((p) => (

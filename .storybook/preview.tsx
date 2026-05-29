@@ -2,6 +2,8 @@ import type { Preview } from '@storybook/react-vite';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 
 import '@styles/global.css';
+import '@styles/hero.css';
+import './preview.css';
 
 const preview: Preview = {
   parameters: {
@@ -29,7 +31,7 @@ const preview: Preview = {
       attributeName: 'data-theme',
     }),
     (Story) => (
-      <div className='bg-main text-main-fg font-mono min-h-screen p-10'>
+      <div className='text-main-fg font-mono p-6'>
         <Story />
       </div>
     ),
