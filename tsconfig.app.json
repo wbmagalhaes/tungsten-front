@@ -43,5 +43,5 @@
         "@*": ["src/*"],
       },
   },
-  "include": ["src", "lib"]
+  "include": ["src", "lib", ".storybook/preview.tsx"]
 }
