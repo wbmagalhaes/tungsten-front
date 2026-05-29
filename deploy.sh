@@ -14,4 +14,11 @@ echo "[Deploy] Moving dist..."
 rm -rf "$FRONT_DIR/dist"
 mv dist "$FRONT_DIR/dist"
 
+echo "[Deploy] Building storybook..."
+npm run build-storybook
+
+echo "[Deploy] Moving storybook-static..."
+rm -rf "$FRONT_DIR/storybook-static"
+mv storybook-static "$FRONT_DIR/storybook-static"
+
 echo "[Deploy] Done."
