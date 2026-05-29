@@ -80,7 +80,7 @@ function ScanLine() {
   );
 }
 
-function PublicHeader() {
+export function PublicHeader() {
   const { isAuthenticated } = useAuthStore();
 
   return (
@@ -140,7 +140,7 @@ function TgLogo() {
   );
 }
 
-function PublicFooter() {
+export function PublicFooter() {
   const { theme, setTheme } = useTheme();
 
   return (
