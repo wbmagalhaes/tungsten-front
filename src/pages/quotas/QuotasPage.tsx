@@ -16,19 +16,24 @@ import {
   type FlatQuotaKey,
 } from '@services/quotas.service';
 
-const MODULES: QuotaModule[] = ['files', 'buckets', 'jobs', 'queues'];
+const MODULES: QuotaModule[] = [
+  'files',
+  'buckets',
+  'jobs',
+  'queues',
+  'deploys',
+];
 
 function formatValue(key: string, value: number): string {
+  if (value === -1) return '∞';
   if (key.includes('bytes')) {
     if (value > 1024 * 1024 * 1024)
       return `${(value / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-    if (value > 1024 * 1024)
-      return `${(value / (1024 * 1024)).toFixed(2)} MB`;
+    if (value > 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(2)} MB`;
     if (value > 1024) return `${(value / 1024).toFixed(2)} KB`;
   }
   if (key.includes('_ms_')) {
-    if (value > 60_000)
-      return `${(value / 60_000).toFixed(1)} min`;
+    if (value > 60_000) return `${(value / 60_000).toFixed(1)} min`;
     if (value > 1000) return `${(value / 1000).toFixed(1)} s`;
     return `${value} ms`;
   }
@@ -53,6 +58,7 @@ export default function QuotasPage() {
     buckets: [],
     jobs: [],
     queues: [],
+    deploys: [],
   };
 
   for (const flat of Object.keys(data.effective) as FlatQuotaKey[]) {
@@ -83,7 +89,11 @@ export default function QuotasPage() {
                 {keys.map(({ key, flat }) => {
                   const limit = data.effective[flat] ?? 0;
                   const used = data.usage[flat] ?? 0;
-                  const pct = limit ? Math.min(100, (used / limit) * 100) : 0;
+                  const unlimited = limit === -1;
+                  const pct =
+                    unlimited || limit <= 0
+                      ? 0
+                      : Math.min(100, (used / limit) * 100);
                   return (
                     <div key={flat}>
                       <div className='flex justify-between text-sm mb-1'>
@@ -91,8 +101,7 @@ export default function QuotasPage() {
                           {key}
                         </span>
                         <span className='font-mono text-xs'>
-                          {formatValue(key, used)} /{' '}
-                          {formatValue(key, limit)}
+                          {formatValue(key, used)} / {formatValue(key, limit)}
                         </span>
                       </div>
                       <div className='h-1.5 bg-muted rounded-full overflow-hidden'>

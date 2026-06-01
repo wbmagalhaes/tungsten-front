@@ -13,6 +13,7 @@ import {
   Megaphone,
   Mail,
   Gauge,
+  Rocket,
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -59,6 +60,12 @@ export const sidebarItems: SidebarItem[] = [
     to: '/queues',
     icon: Layers,
     scope: 'wqs:queue:List',
+  },
+  {
+    label: 'Deploys',
+    to: '/deploys',
+    icon: Rocket,
+    scope: 'wdp:project:List',
   },
   {
     label: 'Notifications',

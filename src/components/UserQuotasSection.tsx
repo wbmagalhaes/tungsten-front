@@ -30,7 +30,13 @@ import {
   type FlatQuotaKey,
 } from '@services/quotas.service';
 
-const MODULES: QuotaModule[] = ['files', 'buckets', 'jobs', 'queues'];
+const MODULES: QuotaModule[] = [
+  'files',
+  'buckets',
+  'jobs',
+  'queues',
+  'deploys',
+];
 const KEYS: QuotaKey[] = [
   'max_count',
   'max_storage_bytes',
@@ -69,15 +75,14 @@ export function UserQuotasSection({ userId }: Props) {
     setDraft((prev) => ({ ...prev, [flat]: value }));
   };
 
-  const grouped: Record<
-    QuotaModule,
-    { key: QuotaKey; flat: FlatQuotaKey }[]
-  > = {
-    files: [],
-    buckets: [],
-    jobs: [],
-    queues: [],
-  };
+  const grouped: Record<QuotaModule, { key: QuotaKey; flat: FlatQuotaKey }[]> =
+    {
+      files: [],
+      buckets: [],
+      jobs: [],
+      queues: [],
+      deploys: [],
+    };
 
   if (quotas) {
     for (const flat of Object.keys(quotas.effective) as FlatQuotaKey[]) {
@@ -101,9 +106,7 @@ export function UserQuotasSection({ userId }: Props) {
         <CardTitle>Quotas</CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>
-        {isLoading && (
-          <p className='text-sm text-muted-fg'>Loading…</p>
-        )}
+        {isLoading && <p className='text-sm text-muted-fg'>Loading…</p>}
 
         {quotas &&
           MODULES.map((mod) => {

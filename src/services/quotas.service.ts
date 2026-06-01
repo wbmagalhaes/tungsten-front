@@ -1,6 +1,6 @@
 import api from './api';
 
-export type QuotaModule = 'files' | 'buckets' | 'jobs' | 'queues';
+export type QuotaModule = 'files' | 'buckets' | 'jobs' | 'queues' | 'deploys';
 
 export type QuotaKey =
   | 'max_count'
@@ -37,10 +37,7 @@ export const updateUserQuotas = async (
   userId: string,
   body: Partial<Record<FlatQuotaKey, number>>,
 ) => {
-  const res = await api.patch<UserQuotas>(
-    `/api/admin/quotas/${userId}`,
-    body,
-  );
+  const res = await api.patch<UserQuotas>(`/api/admin/quotas/${userId}`, body);
   return res.data;
 };
 

@@ -41,6 +41,8 @@ import FailedExecutionsPage from '@pages/jobs/FailedExecutionsPage';
 import LanguagesAdminPage from '@pages/jobs/LanguagesAdminPage';
 import QuotasPage from '@pages/quotas/QuotasPage';
 import FailedEventsPage from '@pages/events/FailedEventsPage';
+import DeploysPage from '@pages/deploys/DeploysPage';
+import SingleProjectPage from '@pages/deploys/SingleProjectPage';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -207,6 +209,23 @@ export default function AppRoutes() {
             element={
               <ProtectedPage requireScope='wqs:queue:Get'>
                 <SingleQueuePage />
+              </ProtectedPage>
+            }
+          />
+
+          <Route
+            path='deploys'
+            element={
+              <ProtectedPage requireScope='wdp:project:List'>
+                <DeploysPage />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='deploys/:id'
+            element={
+              <ProtectedPage requireScope='wdp:project:Get'>
+                <SingleProjectPage />
               </ProtectedPage>
             }
           />
