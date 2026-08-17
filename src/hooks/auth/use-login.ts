@@ -11,6 +11,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: async (body: LoginRequest) => {
       await loginService(body);
+      qc.clear();
       const me = await getProfile();
       setUser(me);
       qc.setQueryData(['me'], me);
